@@ -6,7 +6,8 @@
 #include <maxutils/Logger.h>
 #include <maxutils/Mutex.h>
 #include <maxutils/Thread.h>
+#include <maxutils/TimedThread.h>
 #include <maxutils/Time.h>
-
+#include <maxutils/MTWrapper.h>
 
 #endif

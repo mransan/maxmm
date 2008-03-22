@@ -50,6 +50,7 @@ void Logger::close()
     {
         if ( (it->first != "cout") && (it->first != "cerr"))
         {
+            //it->second->close();
             delete it->second;
             it->second = 0;
         }
