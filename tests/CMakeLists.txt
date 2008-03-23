@@ -26,3 +26,6 @@ TARGET_LINK_LIBRARIES (testCondition_1 maxutils boost_thread)
 ADD_EXECUTABLE        (testMTWrapper_1 TestCommon.cpp testMTWrapper_1.cpp)
 TARGET_LINK_LIBRARIES (testMTWrapper_1 maxutils boost_thread)
 
+ADD_EXECUTABLE        (testMTWrapper_2 TestCommon.cpp testMTWrapper_2.cpp)
+TARGET_LINK_LIBRARIES (testMTWrapper_2 maxutils boost_thread )
+

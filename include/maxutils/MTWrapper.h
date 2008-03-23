@@ -44,6 +44,8 @@ namespace maxutils
         static void release(HPtrRecord *p);
     };
     
+
+
     template<typename DATA>
     class MTWrapper : public boost::noncopyable
     {
@@ -57,6 +59,11 @@ namespace maxutils
         MTWrapper(int sizeLimit, DATA *dataPtr)
         {
             m_dataPtr   = dataPtr;
+            m_sizeLimit = sizeLimit; 
+        }
+        MTWrapper(int sizeLimit)
+        {
+            m_dataPtr   = new DATA();
             m_sizeLimit = sizeLimit; 
         }
         ~MTWrapper()
@@ -76,11 +83,9 @@ namespace maxutils
             }
         }
         
-        void getPtr(DATA **ptr, HPtrRecord **hp)
+        void getPtr(DATA **ptr)
         {
             while(!__sync_bool_compare_and_swap(ptr,*ptr,m_dataPtr));
-            *hp = HPtrRecord::acquire();
-            (*hp)->m_hazardPtr = *ptr; 
         }
 
         void removeRetired(RetiredList &rlist)
@@ -116,6 +121,25 @@ namespace maxutils
         MTWrapper();
     };
     
+    template<typename DATA>
+    class HPRecReaderScopeLock
+    {
+    private:
+        HPtrRecord *m_record;
+        HPRecReaderScopeLock();
+    public:
+        HPRecReaderScopeLock(MTWrapper<DATA> &data, DATA **ptr)
+        {
+            m_record = HPtrRecord::acquire();
+            data.getPtr(ptr);
+            m_record->m_hazardPtr = *ptr; 
+        }
+        ~HPRecReaderScopeLock()
+        {
+            HPtrRecord::release(m_record);
+        }
+    };
+   
 }//namespace maxutils
 
 

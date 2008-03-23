@@ -62,11 +62,17 @@ void Logger::insertLogFile(const std::string& fileName)
 {
     std::ofstream* file = new std::ofstream();
     file->open(fileName.c_str(), std::ios_base::app);
-	*file 	<< std::endl
+    boost::posix_time::ptime    time = boost::posix_time::second_clock::local_time();
+
+    *file 	<< std::endl
 			<< std::endl
-			<< "---------------------------------------------------------------------------------------------"
+			<< "----------------------------------------------------------------------------------------------"
 			<< std::endl
-			<< "---------------------------------------------------------------------------------------------"
+		    << "----------------------------         " 
+            << time 
+            << "         ----------------------------"
+            << std::endl
+            << "----------------------------------------------------------------------------------------------"
 			<< std::endl
 			<< std::endl;
     Logger::streamList.insert(std::make_pair(fileName , file));
