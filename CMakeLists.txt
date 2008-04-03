@@ -17,7 +17,7 @@ INCLUDE_DIRECTORIES (./include/)
 aux_source_directory (./src SRC)
 add_library          (maxutils SHARED ${SRC})
 
-add_subdirectory     (tests)
+add_subdirectory     (tests EXCLUDE_FROM_ALL)
 
 CONFIGURE_FILE(${maxutils_SOURCE_DIR}/maxutils.pc.cmake 
 			   ${maxutils_BINARY_DIR}/maxutils.pc @ONLY)
