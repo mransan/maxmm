@@ -27,9 +27,6 @@ target_link_libraries (test ${LINK_LIBS})
 #
 
 
-ADD_EXECUTABLE        (testThread_1 testThread_1.cpp)                                                         
-TARGET_LINK_LIBRARIES (testThread_1     ${LINK_LIBS})
-                                                                                                              
 ADD_EXECUTABLE        (testThread_2 testThread_2.cpp)                                                         
 TARGET_LINK_LIBRARIES (testThread_2     ${LINK_LIBS})
                                                                                                               
