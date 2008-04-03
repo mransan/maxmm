@@ -11,10 +11,10 @@
 #include <fstream>
 #include <map>
 
-#define LOG_DEBUG   ::maxutils::Logger::debugConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::debugStream
-#define LOG_INFO    ::maxutils::Logger::infoConfig.setup   (__FILE__ , __LINE__); ::maxutils::Logger::infoStream
-#define LOG_WARNING ::maxutils::Logger::warningConfig.setup(__FILE__ , __LINE__); ::maxutils::Logger::warningStream
-#define LOG_ERROR   ::maxutils::Logger::errorConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::errorStream
+#define LOG_DEBUG   ::maxutils::Logger::debugConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::debugStream()
+#define LOG_INFO    ::maxutils::Logger::infoConfig.setup   (__FILE__ , __LINE__); ::maxutils::Logger::infoStream()
+#define LOG_WARNING ::maxutils::Logger::warningConfig.setup(__FILE__ , __LINE__); ::maxutils::Logger::warningStream()
+#define LOG_ERROR   ::maxutils::Logger::errorConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::errorStream()
 
 
 namespace maxutils
@@ -58,7 +58,6 @@ namespace maxutils
             LevelConfig (Level _level)
             :m_level(_level)
             {
-            
             }
             void            insertStream(const std::string& streamName);
             void            setup(const std::string& _file, const int _line);
@@ -81,10 +80,15 @@ namespace maxutils
         static LevelConfig warningConfig;
         static LevelConfig errorConfig;
 
-        static boost::iostreams::stream<LevelSink> debugStream;
-        static boost::iostreams::stream<LevelSink> infoStream;
-        static boost::iostreams::stream<LevelSink> warningStream;
-        static boost::iostreams::stream<LevelSink> errorStream;
+        static boost::iostreams::stream<LevelSink>&  debugStream  (){ return m_debugStream; } ; 
+        static boost::iostreams::stream<LevelSink>&  infoStream   (){ return m_infoStream; } ;
+        static boost::iostreams::stream<LevelSink>&  warningStream(){ return m_warningStream; } ;
+        static boost::iostreams::stream<LevelSink>&  errorStream  (){ return m_errorStream; } ;
+
+        static boost::iostreams::stream<LevelSink> m_debugStream;
+        static boost::iostreams::stream<LevelSink> m_infoStream;
+        static boost::iostreams::stream<LevelSink> m_warningStream;
+        static boost::iostreams::stream<LevelSink> m_errorStream;
 
     };
 

@@ -33,12 +33,31 @@ Time Time::operator=(const Time& t)
 	return *this;
 }
 
+Time Time::operator=(const double& t)
+{
+	
+    double sec; 
+    ts.tv_sec  = static_cast<__time_t>(floor(t));
+	
+    sec = t - floor(t);
+    
+    ts.tv_nsec = static_cast<long int>(sec*Time::NANOSEC_IN_SEC);
+
+    if (ts.tv_nsec < 0)
+	{
+		ts.tv_sec --;
+		ts.tv_nsec += Time::NANOSEC_IN_SEC;
+	}
+
+	return *this;
+}
+
 Time Time::operator+(const Time& _t)
 {
 	Time ret;
 	ret.ts.tv_sec  = ts.tv_sec  + _t.ts.tv_sec ;
 	ret.ts.tv_nsec = ts.tv_nsec + _t.ts.tv_nsec;
-	if(ret.ts.tv_nsec > Time::NANOSEC_IN_SEC)
+	if(ret.ts.tv_nsec >= Time::NANOSEC_IN_SEC)
 	{
 		ret.ts.tv_nsec -= Time::NANOSEC_IN_SEC;
 		ret.ts.tv_sec  += 1;
@@ -69,7 +88,7 @@ Time Time::operator+=(const Time& _t)
 {
 	ts.tv_sec  += _t.ts.tv_sec ;
 	ts.tv_nsec += _t.ts.tv_nsec;
-	if (ts.tv_nsec > Time::NANOSEC_IN_SEC)
+	if (ts.tv_nsec >= Time::NANOSEC_IN_SEC)
 	{
 		ts.tv_nsec -= Time::NANOSEC_IN_SEC;
 		ts.tv_sec  += 1;
@@ -91,10 +110,49 @@ bool Time::operator>=(const Time& _t)
 	}
 }
 
+bool Time::operator>(const Time& _t)
+{
+	Time t = *this - _t;
+	if ( (t.ts.tv_sec > 0) || ((t.ts.tv_sec == 0) && (t.ts.tv_nsec > 0))) 
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+bool Time::operator==(const Time& _t)
+{
+	if ( (ts.tv_sec  == _t.ts.tv_sec)
+          &&
+         (ts.tv_nsec == _t.ts.tv_nsec)
+       )
+    {
+        return true;
+    }
+    return false;
+}
+
 bool Time::operator<=(const Time& _t)
 {
 	Time t = *this - _t;
-	if (t.ts.tv_sec <= 0)
+	if ((t.ts.tv_sec < 0 ) || ((t.ts.tv_sec == 0 ) &&(t.ts.tv_nsec == 0)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Time::operator<(const Time& _t)
+{
+	Time t = *this - _t;
+	if (t.ts.tv_sec < 0)
 	{
 		return true;
 	}
@@ -187,7 +245,7 @@ Time maxutils::operator+(Time t , double sec)
 
 	ret.ts.tv_nsec = static_cast<long int>(t.ts.tv_nsec + sec*Time::NANOSEC_IN_SEC);
 
-	if (ret.ts.tv_nsec > Time::NANOSEC_IN_SEC)
+	if (ret.ts.tv_nsec >= Time::NANOSEC_IN_SEC)
 	{
 		ret.ts.tv_sec ++;
 		ret.ts.tv_nsec -= Time::NANOSEC_IN_SEC;

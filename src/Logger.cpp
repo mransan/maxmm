@@ -1,22 +1,18 @@
-
-#ifndef URBOT_UTILS_LOGGER_H
-#define URBOT_UTILS_LOGGER_H
-
 #include <maxutils/Logger.h>
 #include <iomanip>
 #include <iostream>
 
 using namespace maxutils;
 
-Logger::LevelConfig Logger::debugConfig(Logger::Debug);
-Logger::LevelConfig Logger::infoConfig(Logger::Info);
-Logger::LevelConfig Logger::warningConfig(Logger::Warning);
-Logger::LevelConfig Logger::errorConfig(Logger::Error);
+Logger::LevelConfig Logger::debugConfig(Logger::Debug);     
+Logger::LevelConfig Logger::infoConfig(Logger::Info);       
+Logger::LevelConfig Logger::warningConfig(Logger::Warning); 
+Logger::LevelConfig Logger::errorConfig(Logger::Error);     
 
-boost::iostreams::stream<Logger::LevelSink> Logger::debugStream(Logger::debugConfig);
-boost::iostreams::stream<Logger::LevelSink> Logger::infoStream(Logger::infoConfig);
-boost::iostreams::stream<Logger::LevelSink> Logger::warningStream(Logger::warningConfig);
-boost::iostreams::stream<Logger::LevelSink> Logger::errorStream(Logger::errorConfig);
+boost::iostreams::stream<Logger::LevelSink> Logger::m_debugStream(Logger::debugConfig);    
+boost::iostreams::stream<Logger::LevelSink> Logger::m_infoStream(Logger::infoConfig);      
+boost::iostreams::stream<Logger::LevelSink> Logger::m_warningStream(Logger::warningConfig);
+boost::iostreams::stream<Logger::LevelSink> Logger::m_errorStream(Logger::errorConfig);    
 
 Logger::StreamList Logger::streamList;
 
@@ -167,4 +163,3 @@ std::streamsize Logger::LevelSink::write(const char* s, std::streamsize n)
     return n;
 }
 
-#endif

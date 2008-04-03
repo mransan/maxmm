@@ -59,7 +59,14 @@ namespace maxutils
 		 * Equal Operator.
 		 */
 		Time operator= (const Time&   _t);
-		/**
+		
+        /**
+		 * Equal Operator.
+		 */
+		Time operator= (const double  &_d);
+
+        
+        /**
 		 * Operator Plus
 		 */
 		Time operator+ (const Time&   _t);
@@ -91,7 +98,12 @@ namespace maxutils
 		
 		bool operator>=(const Time&   _t);
 		bool operator<=(const Time&   _t);
-		/**
+		bool operator> (const Time&   _t);
+		bool operator< (const Time&   _t);
+
+        bool operator==(const Time&   _t);
+
+        /**
 		 * Update to the current time.
 		 */
 		void   update();
