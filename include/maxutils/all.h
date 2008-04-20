@@ -9,5 +9,7 @@
 #include <maxutils/TimedThread.h>
 #include <maxutils/Time.h>
 #include <maxutils/MTWrapper.h>
+#include <maxutils/Observer.h>
+#include <maxutils/Observable.h>
 
 #endif

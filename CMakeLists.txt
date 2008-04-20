@@ -1,14 +1,15 @@
 PROJECT(maxutils)
  
-SET(INCLUDE_FILES ./include/maxutils/Condition.h
-				  ./include/maxutils/Mutex.h
-				  ./include/maxutils/Time.h
-   				  ./include/maxutils/Thread.h
-				  ./include/maxutils/TimedThread.h
-				  ./include/maxutils/MTWrapper.h
-				  ./include/maxutils/Logger.h
-                  ./include/maxutils/all.h
-
+SET(INCLUDE_FILES   ./include/maxutils/Condition.h
+				    ./include/maxutils/Mutex.h
+				    ./include/maxutils/Time.h
+   				    ./include/maxutils/Thread.h
+				    ./include/maxutils/TimedThread.h
+				    ./include/maxutils/MTWrapper.h
+				    ./include/maxutils/Logger.h
+				    ./include/maxutils/Observer.h
+				    ./include/maxutils/Observable.h
+                    ./include/maxutils/all.h
 )
 
 add_definitions (-g)
