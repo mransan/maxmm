@@ -72,8 +72,14 @@ namespace maxutils
         }
         void update(DATA *newPtr, RetiredList &rlist)
         {
-            rlist.push_back(m_dataPtr);
-            m_dataPtr = newPtr;
+            DATA* oldPtr;
+            do
+            {
+                oldPtr   = m_dataPtr;   
+            }
+            while(!__sync_bool_compare_and_swap(&m_dataPtr, oldPtr, newPtr));
+            rlist.push_back(oldPtr);
+            
             if (rlist.size() > m_sizeLimit)
             {
                 LOG_INFO    << "retired list as reach limit size: "
@@ -83,9 +89,14 @@ namespace maxutils
             }
         }
         
-        void getPtr(DATA **ptr)
+        void getPtr(DATA **ptr, HPtrRecord *record)
         {
-            while(!__sync_bool_compare_and_swap(ptr,*ptr,m_dataPtr));
+            //while(!__sync_bool_compare_and_swap(ptr,*ptr,m_dataPtr));
+            do
+            {
+                *ptr               = m_dataPtr;
+                record->m_hazardPtr = *ptr;
+            }while(*ptr != m_dataPtr);
         }
 
         void removeRetired(RetiredList &rlist)
@@ -131,8 +142,7 @@ namespace maxutils
         HPRecReaderScopeLock(MTWrapper<DATA> &data, DATA **ptr)
         {
             m_record = HPtrRecord::acquire();
-            data.getPtr(ptr);
-            m_record->m_hazardPtr = *ptr; 
+            data.getPtr(ptr,m_record);
         }
         ~HPRecReaderScopeLock()
         {

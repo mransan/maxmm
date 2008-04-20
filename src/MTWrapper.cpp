@@ -39,7 +39,8 @@ HPtrRecord* HPtrRecord::acquire()
     HPtrRecord *oldHead ;
     do
     {
-        oldHead = m_head;    
+        oldHead   = m_head;   
+        p->m_next = oldHead; 
     }
     while(!__sync_bool_compare_and_swap(&m_head, oldHead, p));
     return p;
@@ -47,8 +48,9 @@ HPtrRecord* HPtrRecord::acquire()
 
 void HPtrRecord::release(HPtrRecord *p)
 {
-    p->m_active    = 0;
     p->m_hazardPtr = 0;
+    while(!__sync_bool_compare_and_swap(&p->m_active, 1, 0));
+    //p->m_active    = 0;
 }
 
 

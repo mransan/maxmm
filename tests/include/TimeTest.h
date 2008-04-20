@@ -10,9 +10,11 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
+#include <maxutils/all.h>
 
 class TimeTest : public CppUnit::TestFixture
 {
+
 public:
     void setUp()
     {}

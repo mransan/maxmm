@@ -11,7 +11,7 @@ SET(INCLUDE_FILES ./include/maxutils/Condition.h
 
 )
 
-
+add_definitions (-g)
 INCLUDE_DIRECTORIES (./include/)
 
 aux_source_directory (./src SRC)

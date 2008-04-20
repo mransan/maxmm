@@ -2,7 +2,7 @@ INCLUDE(FindPkgConfig)
 
 include_directories   (${maxutils_SOURCE_DIRECTORY}/include)
 link_directories      (${maxutils_SOURCE_DIRECTORY})
-
+add_definitions       (-g)
 
 #
 # CPPUNIT_LIB
@@ -22,20 +22,4 @@ set(LINK_LIBS     ${BOOST_LIB} ${cppunit_LIBRARIES} dl maxutils maxutilsTest)
 add_executable        (test main.cpp)
 target_link_libraries (test ${LINK_LIBS})
 
-#
-# List of Test executables.
-#
-
-
-ADD_EXECUTABLE        (testThread_2 testThread_2.cpp)                                                         
-TARGET_LINK_LIBRARIES (testThread_2     ${LINK_LIBS})
-                                                                                                              
-ADD_EXECUTABLE        (testThread_3 testThread_3.cpp)                                          
-TARGET_LINK_LIBRARIES (testThread_3     ${LINK_LIBS}) 
-                                                                                                              
-ADD_EXECUTABLE        (testMTWrapper_1 testMTWrapper_1.cpp)                                    
-TARGET_LINK_LIBRARIES (testMTWrapper_1  ${LINK_LIBS})
-                                                                                                              
-ADD_EXECUTABLE        (testMTWrapper_2 testMTWrapper_2.cpp)                                    
-TARGET_LINK_LIBRARIES (testMTWrapper_2  ${LINK_LIBS})
 

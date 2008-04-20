@@ -3,8 +3,10 @@
 
 #include <TimeTest.h>
 #include <ConditionTest.h>
+#include <MTWrapperTest.h>
 #include <ThreadTest.h>
 #include <TestCommon.h>
+#include <ObservableTest.h>
 
 #include <cppunit/TestResult.h>
 #include <cppunit/TestSuite.h>
@@ -31,7 +33,9 @@ int main()
     runner.addTest(TimeTest::getSuite()) ;
     runner.addTest(ConditionTest::getSuite()) ;
     runner.addTest(ThreadTest::getSuite()) ;
-  
+    runner.addTest(ObservableTest::getSuite()) ;
+    runner.addTest(MTWrapperTest::getSuite()) ;
+
     bool ret = !runner.run(); 
     Logger::close();
     return ret;

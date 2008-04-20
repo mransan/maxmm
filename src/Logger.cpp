@@ -104,16 +104,9 @@ void Logger::LevelConfig::insertStream(const std::string& streamName)
 
 void Logger::LevelConfig::setup(const std::string& _file, const int _line)
 {
+    ScopeLock lock(m_mutex);
     m_file = basename(_file.c_str());
     m_line = _line;
-    
-    int lastSlashPos = m_file.rfind('/');
-    if (m_file.size() - lastSlashPos > 30)
-    {
-        lastSlashPos = m_file.size() - 30;
-    }
-    //m_file.erase(0, lastSlashPos);
-
     m_time  = boost::posix_time::second_clock::local_time();
     m_reset = true;
 }

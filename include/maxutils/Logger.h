@@ -11,6 +11,8 @@
 #include <fstream>
 #include <map>
 
+#include <maxutils/Mutex.h>
+
 #define LOG_DEBUG   ::maxutils::Logger::debugConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::debugStream()
 #define LOG_INFO    ::maxutils::Logger::infoConfig.setup   (__FILE__ , __LINE__); ::maxutils::Logger::infoStream()
 #define LOG_WARNING ::maxutils::Logger::warningConfig.setup(__FILE__ , __LINE__); ::maxutils::Logger::warningStream()
@@ -54,6 +56,7 @@ namespace maxutils
             int                         m_line;
             boost::posix_time::ptime    m_time;
             bool                        m_reset;
+            Mutex                       m_mutex;
         public:
             LevelConfig (Level _level)
             :m_level(_level)
