@@ -1,5 +1,8 @@
 PROJECT(maxutils)
- 
+
+INCLUDE(FindBoost)
+
+
 SET(INCLUDE_FILES   ./include/maxutils/Condition.h
 				    ./include/maxutils/Mutex.h
 				    ./include/maxutils/Time.h
@@ -14,6 +17,7 @@ SET(INCLUDE_FILES   ./include/maxutils/Condition.h
 
 add_definitions (-g)
 INCLUDE_DIRECTORIES (./include/)
+INCLUDE_DIRECTORIES (${BOOST_INCLUDE_DIRS})
 
 aux_source_directory (./src SRC)
 add_library          (maxutils SHARED ${SRC})
