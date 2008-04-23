@@ -15,10 +15,9 @@ SET(INCLUDE_FILES   ./include/maxutils/Condition.h
                     ./include/maxutils/all.h
 )
 
-add_definitions (-g)
-INCLUDE_DIRECTORIES (./include/)
-INCLUDE_DIRECTORIES (${BOOST_INCLUDE_DIRS})
-
+add_definitions (${CMAKE_CXX_FLAGS_DEBUG})
+INCLUDE_DIRECTORIES (include)
+INCLUDE_DIRECTORIES (${Boost_INCLUDE_DIR})
 aux_source_directory (./src SRC)
 add_library          (maxutils SHARED ${SRC})
 
