@@ -16,7 +16,7 @@ include_directories   (./include     )
 aux_source_directory  (./src TEST_SRC)
 add_library           (maxutilsTest SHARED ${TEST_SRC})
 
-set(BOOST_LIB     boost_thread                )
+set(BOOST_LIB     boost_thread boost_filesystem )
 set(LINK_LIBS     ${BOOST_LIB} ${cppunit_LIBRARIES} dl maxutils maxutilsTest)
 
 add_executable        (test main.cpp)
