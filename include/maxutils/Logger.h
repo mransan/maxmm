@@ -3,7 +3,7 @@
 
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/concepts.hpp>
-
+#include <boost/filesystem/path.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 
@@ -52,7 +52,7 @@ namespace maxutils
         private:
             Level                       m_level;
             StreamList                  m_streamList;
-            std::string                 m_file;
+            boost::filesystem::path     m_file;
             int                         m_line;
             boost::posix_time::ptime    m_time;
             bool                        m_reset;
@@ -63,7 +63,7 @@ namespace maxutils
             {
             }
             void            insertStream(const std::string& streamName);
-            void            setup(const std::string& _file, const int _line);
+            void            setup(const char  *_file, const int _line);
         };
         class LevelSink : public boost::iostreams::sink
         {

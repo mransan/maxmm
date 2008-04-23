@@ -102,10 +102,10 @@ void Logger::LevelConfig::insertStream(const std::string& streamName)
     }
 }
 
-void Logger::LevelConfig::setup(const std::string& _file, const int _line)
+void Logger::LevelConfig::setup(const char* _file, const int _line)
 {
     ScopeLock lock(m_mutex);
-    m_file = basename(_file.c_str());
+    m_file = _file;
     m_line = _line;
     m_time  = boost::posix_time::second_clock::local_time();
     m_reset = true;
@@ -125,7 +125,7 @@ std::streamsize Logger::LevelSink::write(const char* s, std::streamsize n)
 			<< " "
 			<< std::setw(20)
 			<< std::setiosflags(std::ios::right)
-			<< m_config.m_file
+			<< m_config.m_file.leaf()
             << "@" 
             << std::setw(4)
 			<< std::resetiosflags(std::ios::right)
