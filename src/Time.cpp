@@ -7,274 +7,151 @@
 #include <maxutils/Time.h>
 #include <cmath>
 
-using namespace maxutils;
-
-const long int Time::NANOSEC_IN_SEC  = 1000000000;
-const long int Time::MICROSEC_IN_SEC = 1000000;
-const long int Time::MILLISEC_IN_SEC = 1000;
-
-Time::Time()
+namespace maxutils
 {
-	ts.tv_sec  = 0;
-	ts.tv_nsec = 0;
-}
-
-Time::Time(const Time& t)
-{
-	ts.tv_sec  = t.ts.tv_sec;
-	ts.tv_nsec = t.ts.tv_nsec;
-}
-
-Time Time::operator=(const Time& t)
-{
-	ts.tv_sec  = t.ts.tv_sec;
-	ts.tv_nsec = t.ts.tv_nsec;
-
-	return *this;
-}
-
-Time Time::operator=(const double& t)
-{
-	
-    double sec; 
-    ts.tv_sec  = static_cast<__time_t>(floor(t));
-	
-    sec = t - floor(t);
+    const long int Time::NANOSEC_IN_SEC  = 1000000000;
+    const long int Time::MICROSEC_IN_SEC = 1000000;
+    const long int Time::MILLISEC_IN_SEC = 1000;
     
-    ts.tv_nsec = static_cast<long int>(sec*Time::NANOSEC_IN_SEC);
-
-    if (ts.tv_nsec < 0)
-	{
-		ts.tv_sec --;
-		ts.tv_nsec += Time::NANOSEC_IN_SEC;
-	}
-
-	return *this;
-}
-
-Time Time::operator+(const Time& _t)
-{
-	Time ret;
-	ret.ts.tv_sec  = ts.tv_sec  + _t.ts.tv_sec ;
-	ret.ts.tv_nsec = ts.tv_nsec + _t.ts.tv_nsec;
-	if(ret.ts.tv_nsec >= Time::NANOSEC_IN_SEC)
-	{
-		ret.ts.tv_nsec -= Time::NANOSEC_IN_SEC;
-		ret.ts.tv_sec  += 1;
-	}
-	return ret;
-}
-
-Time Time::operator-(const Time& _t)
-{
-	Time ret;
-	ret.ts.tv_sec  = ts.tv_sec  - _t.ts.tv_sec ;
-	ret.ts.tv_nsec = ts.tv_nsec - _t.ts.tv_nsec;
-	if(ret.ts.tv_nsec < 0)
-	{
-		ret.ts.tv_nsec += Time::NANOSEC_IN_SEC;
-		ret.ts.tv_sec  -= 1;
-	}
-	return ret;
-}
-
-Time Time::operator+=(const double& d)
-{
-	*this = *this + d;
-	return  *this;
-}
-
-Time Time::operator+=(const Time& _t)
-{
-	ts.tv_sec  += _t.ts.tv_sec ;
-	ts.tv_nsec += _t.ts.tv_nsec;
-	if (ts.tv_nsec >= Time::NANOSEC_IN_SEC)
-	{
-		ts.tv_nsec -= Time::NANOSEC_IN_SEC;
-		ts.tv_sec  += 1;
-	}
-
-	return *this;
-}
-
-bool Time::operator>=(const Time& _t)
-{
-	Time t = *this - _t;
-	if (t.ts.tv_sec >= 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool Time::operator>(const Time& _t)
-{
-	Time t = *this - _t;
-	if ( (t.ts.tv_sec > 0) || ((t.ts.tv_sec == 0) && (t.ts.tv_nsec > 0))) 
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-
-bool Time::operator==(const Time& _t)
-{
-	if ( (ts.tv_sec  == _t.ts.tv_sec)
-          &&
-         (ts.tv_nsec == _t.ts.tv_nsec)
-       )
+    Time::Time( void )
     {
-        return true;
+        _ts.tv_sec  = 0;
+        _ts.tv_nsec = 0;
     }
-    return false;
-}
+    
+    Time::Time( const Time& t )
+    {
+        _ts.tv_sec  = t._ts.tv_sec;
+        _ts.tv_nsec = t._ts.tv_nsec;
+    }
+    
+    Time::Time( double sec )
+    {
+        _ts.tv_sec  = 0;
+        _ts.tv_nsec = 0;
+       
+        _ts = Time::toTimespec( sec ) ;
+    }
+    
+    Time & Time::operator=(const Time& t)
+    {
+        _ts.tv_sec  = t._ts.tv_sec;
+        _ts.tv_nsec = t._ts.tv_nsec;
+    
+        return *this;
+    }
+    
+    Time Time::operator+=(const Time& t)
+    {
+        _ts.tv_sec  += t._ts.tv_sec ;
+        _ts.tv_nsec += t._ts.tv_nsec;
 
-bool Time::operator<=(const Time& _t)
-{
-	Time t = *this - _t;
-	if ((t.ts.tv_sec < 0 ) || ((t.ts.tv_sec == 0 ) &&(t.ts.tv_nsec == 0)))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
+        if( _ts.tv_nsec >= Time::NANOSEC_IN_SEC )
+        {
+            _ts.tv_nsec -= Time::NANOSEC_IN_SEC;
+            ++_ts.tv_sec ;
+        }
+    
+        return *this;
+    }
+    
+    Time Time::operator-=(const Time& t)
+    {
+        _ts.tv_sec  -= t._ts.tv_sec ;
+        _ts.tv_nsec -= t._ts.tv_nsec;
 
-bool Time::operator<(const Time& _t)
-{
-	Time t = *this - _t;
-	if (t.ts.tv_sec < 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-Time Time::operator-=(const double& d)
-{
-	*this = *this - d;
-	return  *this;
-}
+        if( _ts.tv_nsec <= Time::NANOSEC_IN_SEC )
+        {
+            _ts.tv_nsec += Time::NANOSEC_IN_SEC;
+            --_ts.tv_sec ;
+        }
+    
+        return *this;
+    }
 
-Time Time::operator-=(const Time& _t)
-{
-	ts.tv_sec  -= _t.ts.tv_sec ;
-	ts.tv_nsec -= _t.ts.tv_nsec;
-	if (ts.tv_nsec < 0)
-	{
-		ts.tv_nsec += Time::NANOSEC_IN_SEC;
-		ts.tv_sec  -= 1;
-	}
+    
+    bool operator==(const Time& lhs , const Time& rhs)
+    {
+        if ( 
+                ( lhs._ts.tv_sec  == rhs._ts.tv_sec)
+                &&
+                ( lhs._ts.tv_nsec == rhs._ts.tv_nsec)
+           )
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    bool operator<( const Time & lhs , const Time & rhs )
+    {
+        if( lhs._ts.tv_sec > rhs._ts.tv_sec )
+        {
+            return false;
+        }
+        if( lhs._ts.tv_sec < rhs._ts.tv_sec )
+        {
+            return true;
+        }
+        //
+        // case where tv_sec are equal
+        //
+        if( lhs._ts.tv_nsec < rhs._ts.tv_nsec )
+        {
+            return true;
+        }
+        return false;
+    }
 
-	return *this;
-}
+    Time & Time::update()
+    {
+        ::clock_gettime(CLOCK_REALTIME , &_ts);
+        return *this;
+    }
+    
+    Time Time::now()
+    {
+        Time t;
+        return t.update();
+    }
+    
+    void Time::sleep(double sec)
+    {
+        Time tToSleep( sec );
+    
+        ::clock_nanosleep(
+                CLOCK_REALTIME ,
+                0              ,
+                &tToSleep._ts  ,
+                NULL);
+    }
+    
+    void Time::sleep_until( const Time &t )
+    {
+        clock_nanosleep(
+                CLOCK_REALTIME ,
+                TIMER_ABSTIME  ,
+                &t._ts          ,
+                NULL);
+    }
+    
+    
+    struct timespec Time::toTimespec (double sec)
+    {
+        struct timespec ts;
+    
+        ts.tv_sec  = static_cast<__time_t>(floor(sec));
+        sec       -= ts.tv_sec;
+        ts.tv_nsec = static_cast<long int>(sec*Time::NANOSEC_IN_SEC);
+    
+        return ts;
+    }
+    
+    std::ostream& operator<< (std::ostream& o, const Time& t)
+    {
+        return o << "time(sec:" << t._ts.tv_sec 
+                 << " , nsec:"  << t._ts.tv_nsec 
+                 << ")";
+    }
 
-void Time::update()
-{
-	int ret = clock_gettime(CLOCK_REALTIME , &ts);
-}
-
-Time Time::now()
-{
-	Time t;
-	t.update();
-	return t;
-}
-
-void Time::sleep(double sec)
-{
-	struct timespec tsToSleep = toTimespec(sec);
-
-	clock_nanosleep(CLOCK_REALTIME ,
-					0              ,
-					&tsToSleep      ,
-					NULL);
-}
-
-void Time::sleepUntil(double sec)
-{
-
-	struct timespec tsToSleep = toTimespec(sec);
-
-	clock_nanosleep(CLOCK_REALTIME ,
-					TIMER_ABSTIME  ,
-					&tsToSleep      ,
-					NULL);
-}
-
-void Time::sleepUntil(Time t)
-{
-
-
-	clock_nanosleep(CLOCK_REALTIME ,
-					TIMER_ABSTIME  ,
-					&t.ts          ,
-					NULL);
-}
-
-
-struct timespec Time::toTimespec (double sec)
-{
-	struct timespec ts;
-
-	ts.tv_sec  = static_cast<__time_t>(floor(sec));
-	sec       -= ts.tv_sec;
-	ts.tv_nsec = static_cast<long int>(sec*Time::NANOSEC_IN_SEC);
-
-	return ts;
-}
-
-
-Time maxutils::operator+(Time t , double sec) 
-{
-	Time ret;
-	ret.ts.tv_sec = static_cast<__time_t>(t.ts.tv_sec + floor(sec));
-	
-	sec -= floor(sec);
-
-	ret.ts.tv_nsec = static_cast<long int>(t.ts.tv_nsec + sec*Time::NANOSEC_IN_SEC);
-
-	if (ret.ts.tv_nsec >= Time::NANOSEC_IN_SEC)
-	{
-		ret.ts.tv_sec ++;
-		ret.ts.tv_nsec -= Time::NANOSEC_IN_SEC;
-	}
-	
-	return ret;
-}
-
-Time maxutils::operator-(Time t , double sec) 
-{
-	Time ret;
-	ret.ts.tv_sec = static_cast<__time_t>(t.ts.tv_sec - floor(sec));
-	
-	sec -= floor(sec);
-
-	ret.ts.tv_nsec = static_cast<long int>(t.ts.tv_nsec - sec*Time::NANOSEC_IN_SEC);
-
-	if (ret.ts.tv_nsec < 0)
-	{
-		ret.ts.tv_sec --;
-		ret.ts.tv_nsec += Time::NANOSEC_IN_SEC;
-	}
-	
-	return ret;
-}
-
-std::ostream& maxutils::operator<< (std::ostream& o, const Time& t)
-{
-	return o << "time(sec:" << t.ts.tv_sec 
-		     << " , nsec:"   << t.ts.tv_nsec 
-		     << ")";
 }

@@ -6,28 +6,34 @@
 
 #include <maxutils/Condition.h>
 
-using namespace maxutils;
 
-Condition::Condition(ScopeLock& _sl)
-:sl(_sl)
+namespace maxutils
 {
+
+    Condition::Condition( ScopeLock& lock )
+    :_lock( lock )
+    {
+        // No - Op.
+    }
+    
+    void Condition::wait( void )
+    {
+    	_condition.wait(* ( _lock.lock_p ) );
+    }
+    
+    void Condition::broadcast( void )
+    {
+    	_condition.notify_all( );
+    }
+    
+    ScopeLock& Condition::scope_lock( void )
+    {
+    	return _lock;
+    }
+    Condition::~Condition( void )
+    {
+        // No - Op.
+    }
 }
 
-void Condition::wait()
-{
-	cd.wait(*(sl.lock_p));
-}
-
-void Condition::broadcast()
-{
-	cd.notify_all();
-}
-
-ScopeLock& Condition::scopeLock()
-{
-	return sl;
-}
-Condition::~Condition()
-{
-}
 

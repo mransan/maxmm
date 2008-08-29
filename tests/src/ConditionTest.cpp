@@ -50,15 +50,15 @@ void ConditionTest::testSignal()
     ThreadTest tt1(condition, 1);
     ThreadTest tt2(condition, 2);
 
-    tt1.start();
-    tt2.start();
+    tt1.start( );
+    tt2.start( );
 
     Time::sleep(10);
 
-    tt1.shouldStop();
-    tt2.shouldStop();
-    tt1.join();
-    tt2.join();
+    tt1.should_stop( );
+    tt2.should_stop( );
+    tt1.join( );
+    tt2.join( );
 }
 
 CppUnit::TestSuite* ConditionTest::getSuite()

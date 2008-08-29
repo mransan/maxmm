@@ -9,37 +9,40 @@
 #include <maxutils/Logger.h>
 #include <maxutils/Time.h>
 
-using namespace maxutils;
-
-TimedThread::TimedThread(double _period) 
-: Thread::Thread(),
-  m_period(_period)
+namespace maxutils
 {
-    // No - Op
-}
 
-TimedThread::~TimedThread()
-{
-    // No - Op
-}
-
-void TimedThread::run()
-{
-    Time current = Time::now();
-    Time until   = current + m_period;
-    while (! shouldStop())
+    TimedThread::TimedThread( double  period ) 
+    : Thread::Thread( ),
+      _period( period )
     {
-        this->loop();        
-        current = Time::now();
-        if (current >= until)
+        // No - Op
+    }
+    
+    TimedThread::~TimedThread()
+    {
+        // No - Op
+    }
+    
+    void TimedThread::run()
+    {
+        Time current = Time::now();
+        Time until   = current + _period;
+        
+        while( ! should_stop( ) )
         {
-            LOG_WARNING << "thread cannot keep up with period of " 
-                        << m_period
-                        << " sec"
-                        << std::endl;
+            this->loop( );        
+            current = Time::now( );
+            if( current >= until )
+            {
+                LOG_WARNING << "thread cannot keep up with period of " 
+                            << _period
+                            << " sec"
+                            << std::endl;
+            }
+            Time::sleep_until( until );
+            until  += _period;
+            current = Time::now();
         }
-        Time::sleepUntil(until);
-        until  += m_period;
-        current = Time::now();
     }
 }

@@ -34,7 +34,7 @@ int main()
     runner.addTest(ConditionTest::getSuite()) ;
     runner.addTest(ThreadTest::getSuite()) ;
     runner.addTest(ObservableTest::getSuite()) ;
-    runner.addTest(MTWrapperTest::getSuite()) ;
+    runner.addTest(maxutils::test::LockFreeWrapperTest::getSuite()) ;
 
     bool ret = !runner.run(); 
     Logger::close();

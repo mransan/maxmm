@@ -9,46 +9,54 @@
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-using namespace maxutils;
-Thread::~Thread()
-{
-}
 
-Thread::Thread()
-:m_thr_ptr(),  m_shouldStop(false)
-{
-}
-bool Thread::start()
-{
-	boost::function0<void> f= boost::bind(&Thread::run,this);
-	try
-	{
-		m_thr_ptr.reset(new boost::thread(f));
-		LOG_DEBUG << "New thread successfully created" << std::endl;
-	}
-	catch(...)
-	{
-		LOG_ERROR << "Error while creating the thread " << std::endl;
-		return false;
-	}
-	
-	return true;
-}
 
-bool Thread::shouldStop()
+namespace maxutils
 {
-	ScopeLock sl(m_shouldStopMutex);
-	return m_shouldStop;
-}
-
-void Thread::shouldStop(bool b)
-{
-	ScopeLock sl(m_shouldStopMutex);
-	LOG_DEBUG << "Should Stop value changed:" << b << std::endl;
-	m_shouldStop = b;
-}
-
-bool Thread::join()
-{
-	m_thr_ptr->join();
+    Thread::~Thread( void )
+    {
+        // No - Op.
+    }
+    
+    Thread::Thread( void )
+    :   _boost_thrd( 0 ),  
+        _should_stop( false )
+    {
+        // No - Op.
+    }
+    
+    bool Thread::start( void )
+    {
+    	try
+    	{
+    		_boost_thrd.reset( 
+                    new boost::thread( 
+                        boost::bind (
+                            &Thread::run , 
+                            this ) ) ) ;
+    	}
+    	catch( ... )
+    	{
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+    bool Thread::should_stop( void ) const 
+    {
+    	ScopeLock lock( _should_stop_mtx );
+    	return _should_stop;
+    }
+    
+    void Thread::should_stop( bool b )
+    {
+    	ScopeLock lock( _should_stop_mtx );
+        _should_stop = b;
+    }
+    
+    bool Thread::join( void )
+    {
+    	_boost_thrd->join();
+    }
 }

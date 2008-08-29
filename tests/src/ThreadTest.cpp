@@ -39,7 +39,7 @@ void ThreadTest::testThread()
     TThread tt(23);
     tt.start();
     Time::sleep(3);
-    tt.shouldStop();
+    tt.should_stop();
     tt.join();
     
     int result = tt.getInt();

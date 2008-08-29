@@ -10,64 +10,70 @@
 #include <memory>
 
 #include <boost/thread.hpp>
+#include <boost/utility.hpp>
 
 #include <maxutils/Mutex.h>
 
 namespace maxutils
 {
-    /**
-     * Thread Class
-     * In order to create your thread, inherit from this class and overide the run method.
-     */
-    class Thread
+    //! \brief thread abstraction class. 
+    //!
+    class Thread : private boost::noncopyable
     {
     protected:
-        /**
-         * Variable to indicate to the run() method that it should stop;
-         */
-        bool                         m_shouldStop;
-        /**
-         * Mutext to protect access to the m_shouldStop variable.
-         */
-        Mutex                        m_shouldStopMutex;
-        /**
-         * Pointer to a boost::thread.
-         */
-        std::auto_ptr<boost::thread> m_thr_ptr;
+        //! \brief indicate that the thread should stop.
+        //!
+        bool                         _should_stop;
+        
+        //! \brief mutex to protec the _should_stop variable.
+        //!
+        mutable Mutex                        _should_stop_mtx;
+        
+        //! \brief pointer to the underlying boost thread.
+        //!
+        std::auto_ptr<boost::thread> _boost_thrd;
     
     public:
-        /**
-         * Constructor
-         */
-        Thread();
-        /**
-         * Destructor
-         */
-        virtual ~Thread();
         
-        /**
-         * Stat the Thread.
-         * This function star the run function in its owns thread.
-         * @return true if the thread was successfully created.
-         */
-        bool start();
-        /**
-         * Join the thread - wait for its completion.
-         */
-        bool join();
-        /**
-         * Indicate if the thread should stop.
-         */
-        bool shouldStop();
-        /**
-         * Set the should stop variable.
-         */
-        void shouldStop(bool b);
+        //! \brief Constructor.
+        //!
+        Thread( void );
         
-        /**
-         * Function that will be executed in a separate thread.
-         */
+        //! \brief Destructor.
+        //!
+        virtual ~Thread( void );
+        
+        //! \brief this method start the run method in a separated thread.
+        //!
+        //! return true if the thread was started correctly, false otherwise.
+        //!
+        bool start( void );
+        
+        //! \brief join the thread ( i.e. wait for its termination );
+        //! 
+        //! \return true if the thread was correctly joined.
+        //!
+        bool join( void );
+        
+        //! \brief indicate that the thread should stop.
+        //!
+        //! Mutex protected method 
+        //!
+        //! \return true if the thread should stop.
+        //!
+        bool should_stop( void ) const ;
+        
+        
+        //! \brief set the should stop flag.
+        //!
+        //!  Mutex protected method.
+        //!
+        void should_stop (bool b );
+        
+        //! \brief pure virtual method that contains the code to be threaded.
+        //!
         virtual void run() = 0;
+
     };
 
 }//namespace utils

@@ -4,8 +4,10 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_TIME_H
-#define MAXUTILS_TIME_H
+#ifndef maxutils_Time_h
+#define maxutils_Time_h
+
+#include <boost/operators.hpp>
 
 #include <iostream>
 #include <time.h>
@@ -13,122 +15,116 @@
 
 namespace maxutils
 {
-	/**
-	 * Time Class
-	 * This class is a time representation with all the possible operators. It contains also a static method for sleeping.
-	 */
-	class Time
-	{
-	
-	friend Time operator+(Time t, double sec);
-	friend Time operator-(Time t, double sec);
+    //!  \brief time class 
+    //!
+    //! This class is based on the struct timespec data defined in time.h and
+    //! and its corresponding function.
+    //!
+    class Time
+        :   public boost::additive< Time > , 
+            public boost::equality_comparable< Time > , 
+            public boost::less_than_comparable< Time >
 
-	friend std::ostream& operator<< (std::ostream& o,
-									 const Time&   t
-									);
-
-	private:
-		struct timespec ts;
-		
-		static struct timespec toTimespec(double sec);
-	
-	public:
-		/**
-		 * Number of nano seconds in 1 seconds.
-		 */
-		static const long int NANOSEC_IN_SEC ;
-		/**
-		 * Number of microseconds in 1 seconds.
-		 */
-		static const long int MICROSEC_IN_SEC;
-		/**
-		 * Number of milliseconds in 1 seconds.
-		 */
-		static const long int MILLISEC_IN_SEC;
-		
-		/**
-		 * Constructor
-		 * Create and initialize to 0 a time value.
-		 */
-		Time();
-		/**
-		 * Copy Constructor.
-		 */
-		Time(const Time& _t);
-		/**
-		 * Equal Operator.
-		 */
-		Time operator= (const Time&   _t);
-		
-        /**
-		 * Equal Operator.
-		 */
-		Time operator= (const double  &_d);
-
+    {
+        friend bool operator==(const Time & lhs , const Time & rhs );
+        friend bool operator< (const Time & lhs , const Time & rhs );
+    
+        friend std::ostream& operator<< (
+                std::ostream& o,
+                const Time&   t );
+        public:
         
-        /**
-		 * Operator Plus
-		 */
-		Time operator+ (const Time&   _t);
-		/**
-		 * Operator Minus.
-		 */
-		Time operator- (const Time&   _t);
-		
-		/**
-		 * Operator +i=
-		 * @param d : a double value.
-		 */
-		Time operator+=(const double&  d);
-		/**
-		 * Operator +=
-		 * @param _t : a Time value.
-		 */
-		Time operator+=(const Time&   _t);
-		/**
-		 * Operator -=
-		 * @param d :  a Time value.
-		 */
-		Time operator-=(const double&  d);
-		/**
-		 * Operator -=
-		 * @param _t : a double value.
-		 */
-		Time operator-=(const Time&   _t);
-		
-		bool operator>=(const Time&   _t);
-		bool operator<=(const Time&   _t);
-		bool operator> (const Time&   _t);
-		bool operator< (const Time&   _t);
+            
+            
+            //! \brief Construcor 
+            //!
+            //! Initialise the time to 0 ( the Epoch time ).
+            //!
+            Time( void );
+            
+            //! \brief Copy Constructor.
+            //!
+            //! \param _t the time to copy.
+            //!
+            Time(const Time& t);
+            
+            //! \brief constructor from double.
+            //!
+            //! \param t the time in sec.
+            //!
+            Time( double d  );
+            
+            //! \brief assignement operator.
+            //!
+            //! \param t the time to copy.
+            //! \return reference to *this.
+            //!
+            Time & operator= (const Time&   t);
+            
+            
+            
+            //! \brief operator +=
+            //!
+            Time operator+= (const Time&   _t);
+            
+            //! \brief operator -=
+            //!
+            Time operator-= (const Time&   _t);
+            
+            
+            //! \brief update to the current time 
+            //!
+            //! This method uses ::clock_gettime(  ) 
+            //!
+            //! \return  reference to *this.
+            //!
+            Time & update( void );
 
-        bool operator==(const Time&   _t);
+            //! \brief current time.
+            //!
+            //! \return current time.
+            //!
+            static Time now( void );
+            
+            //! \brief sleep for the given number of seconds.
+            //!
+            //! This method uses ::clock_nanosleep( )
+            //!
+            //! \param sec the number of second to sleep.
+            //!
+            static void   sleep( double sec );
+            
+            //! \brief sleep until a given time.
+            //!
+            //! This method uses ::clock_nanosleep( )
+            //!
+            //! \param the time to sleep until in sec. If this time is before the
+            //!  current time the method return imediately.
+            //! 
+            static void   sleep_until( const Time  &t );
 
-        /**
-		 * Update to the current time.
-		 */
-		void   update();
+        private:
+            struct timespec _ts;
+            
+            //! \brief convert a double to a struct timespec.
+            //!
+            //! \param sec number of sec.
+            //! \return the equivalient timespec struct.
+            //!
+            static struct timespec toTimespec(double sec);
+            
+            //! \brief Number of nano seconds in 1 seconds.
+            static const long int NANOSEC_IN_SEC ;
+            
+            
+            //! \brief Number of microseconds in 1 seconds.
+            static const long int MICROSEC_IN_SEC;
+            
+            //! \brief Number of milliseconds in 1 seconds.
+            static const long int MILLISEC_IN_SEC;
 
-		/**
-		 * Return the current time.
-		 */
-		static Time   now();
-		/**
-		 * sleep
-		 * @param sec : The number of seconds it should sleep
-		 */
-		static void   sleep      (double sec);
-		/**
-		 * Sleep until a certaint time.
-		 * @param sec : the time in seconds.
-		 */
-		static void   sleepUntil (double sec);
-		/**
-		 * Sleep until a certain time.
-		 * @param t : a Time structure.
-		 */
-		static void   sleepUntil (Time   t  );
 
-	};
+    };
 }//namespace maxutils
 
 #endif
