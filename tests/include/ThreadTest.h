@@ -4,19 +4,19 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_THREAD_TEST_H
-#define MAXUTILS_THREAD_TEST_H
+#ifndef maxmm_ThreadTest_h
+#define maxmm_ThreadTest_h
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
 
-#include <maxutils/Thread.h>
+#include <maxmm/Thread.h>
 
 class ThreadTest : public CppUnit::TestFixture
 {
 private:
-    class TThread : public maxutils::Thread
+    class TThread : public maxmm::Thread
     {
     private:
         int m_iter;

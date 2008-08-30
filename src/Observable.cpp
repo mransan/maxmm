@@ -1,8 +1,8 @@
-#include <maxutils/Observable.h>
-#include <maxutils/Observer.h>
-#include <maxutils/Logger.h>
+#include <maxmm/Observable.h>
+#include <maxmm/Observer.h>
+#include <maxmm/Logger.h>
 
-using namespace maxutils;
+using namespace maxmm;
 Observable::Observable()
 {
 }

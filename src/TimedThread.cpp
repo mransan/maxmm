@@ -5,11 +5,11 @@
 /********************************/
 
 
-#include <maxutils/TimedThread.h>
-#include <maxutils/Logger.h>
-#include <maxutils/Time.h>
+#include <maxmm/TimedThread.h>
+#include <maxmm/Logger.h>
+#include <maxmm/Time.h>
 
-namespace maxutils
+namespace maxmm
 {
 
     TimedThread::TimedThread( double  period ) 

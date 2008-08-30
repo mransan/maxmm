@@ -4,26 +4,27 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_CONDITION_TEST_H
-#define MAXUTILS_CONDITION_TEST_H
+#ifndef maxmm_ConditionTest_h
+#define maxmm_ConditionTest_h
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
 
-#include <maxutils/Condition.h>
-#include <maxutils/Thread.h>
+#include <maxmm/Condition.h>
+#include <maxmm/Thread.h>
+
 class ConditionTest : public CppUnit::TestFixture
 {
 public:
 
-    class ThreadTest : public maxutils::Thread
+    class ThreadTest : public maxmm::Thread
     {
     private:
         int                  m_id;
-        maxutils::Condition &m_cd;
+        maxmm::Condition &m_cd;
     public:
-        ThreadTest(maxutils::Condition& _cd, int _id);
+        ThreadTest(maxmm::Condition& _cd, int _id);
         virtual void run();
         ~ThreadTest();
     };

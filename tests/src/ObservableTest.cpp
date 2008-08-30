@@ -4,7 +4,7 @@
 
 ObservableTest::ObserverTest::ObserverTest()
 :   m_iter(0),
-    maxutils::Observer()
+    maxmm::Observer()
 {
 }
 
@@ -24,7 +24,7 @@ int ObservableTest::ObserverTest::iter()
 
 void ObservableTest::testMain()
 {
-    maxutils::Observable  observable;
+    maxmm::Observable  observable;
     ObserverTest    ob1;
     ObserverTest    ob2;
 

@@ -4,8 +4,8 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxutils_Time_h
-#define maxutils_Time_h
+#ifndef maxmm_Time_h
+#define maxmm_Time_h
 
 #include <boost/operators.hpp>
 
@@ -13,7 +13,7 @@
 #include <time.h>
 
 
-namespace maxutils
+namespace maxmm
 {
     //!  \brief time class 
     //!
@@ -125,6 +125,6 @@ namespace maxutils
 
 
     };
-}//namespace maxutils
+}//namespace maxmm
 
 #endif

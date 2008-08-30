@@ -1,10 +1,10 @@
 #include "TimeTest.h"
-#include <maxutils/Logger.h>
-#include <maxutils/Time.h>
+#include <maxmm/Logger.h>
+#include <maxmm/Time.h>
 
 #include <cppunit/TestAssert.h>
 
-using namespace maxutils;
+using namespace maxmm;
 
 void TimeTest::testEquality()
 {

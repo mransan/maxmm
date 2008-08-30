@@ -4,13 +4,13 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_TESTCOMMON_H
-#define MAXUTILS_TESTCOMMON_H
+#ifndef maxmm_TestCommon_h
+#define maxmm_TestCommon_h
 
-namespace maxutils
+namespace maxmm
 {
     void initLogger();
-}//namespace maxutils
+}//namespace maxmm
 
 
 #endif

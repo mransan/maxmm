@@ -4,12 +4,12 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxutils_TimedThread_h
-#define maxutils_TimedThread_h
+#ifndef maxmm_TimedThread_h
+#define maxmm_TimedThread_h
 
-#include <maxutils/Thread.h>
+#include <maxmm/Thread.h>
 
-namespace maxutils
+namespace maxmm
 {
 
 
@@ -47,7 +47,7 @@ namespace maxutils
     };
 
 
-}//namespace maxutils
+}//namespace maxmm
 
 
 

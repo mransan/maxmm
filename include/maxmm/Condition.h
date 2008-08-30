@@ -4,13 +4,13 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_CONDITION_H
-#define MAXUTILS_CONDITION_H
+#ifndef maxmm_Condition_h
+#define maxmm_Condition_h
 
-#include <maxutils/Mutex.h>
+#include <maxmm/Mutex.h>
 #include <boost/utility.hpp>
 
-namespace maxutils
+namespace maxmm
 {
 	//! \brief encapsulate Condition for thread synchronization.
     //!

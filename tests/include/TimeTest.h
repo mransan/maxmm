@@ -4,13 +4,13 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_TESTTIME_H
-#define MAXUTILS_TESTTIME_H
+#ifndef maxmm_TestTime_h
+#define maxmm_TestTime_h
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
-#include <maxutils/all.h>
+#include <maxmm/all.h>
 
 class TimeTest : public CppUnit::TestFixture
 {

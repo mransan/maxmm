@@ -1,10 +1,10 @@
-#include <MTWrapperTest.h>
+#include <LockFreeWrapperTest.h>
 #include <algorithm>  // for std::for_each
 #include <cstddef>    // for std::size_t
 
 
 
-namespace maxutils
+namespace maxmm
 {
     namespace test
     {

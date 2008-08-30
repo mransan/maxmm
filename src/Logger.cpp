@@ -1,8 +1,8 @@
-#include <maxutils/Logger.h>
+#include <maxmm/Logger.h>
 #include <iomanip>
 #include <iostream>
 
-using namespace maxutils;
+using namespace maxmm;
 
 Logger::LevelConfig Logger::debugConfig(Logger::Debug);     
 Logger::LevelConfig Logger::infoConfig(Logger::Info);       

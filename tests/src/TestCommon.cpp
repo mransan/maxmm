@@ -5,11 +5,11 @@
 /********************************/
 
 #include <TestCommon.h>
-#include <maxutils/all.h>
+#include <maxmm/all.h>
 
-using namespace maxutils;
+using namespace maxmm;
 
-void maxutils::initLogger()
+void maxmm::initLogger()
 {
     Logger::init();
     Logger::insertLogFile            ("test.log");

@@ -4,9 +4,9 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxutils/LockFreeWrapper.h>
+#include <maxmm/LockFreeWrapper.h>
 
-namespace maxutils
+namespace maxmm
 {
     //
     // STATIC VARIABLES

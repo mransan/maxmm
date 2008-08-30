@@ -4,14 +4,14 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxutils/Thread.h>
-#include <maxutils/Logger.h>
+#include <maxmm/Thread.h>
+#include <maxmm/Logger.h>
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
 
-namespace maxutils
+namespace maxmm
 {
     Thread::~Thread( void )
     {

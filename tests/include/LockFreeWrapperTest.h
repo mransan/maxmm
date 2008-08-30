@@ -4,8 +4,8 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_MTWRAPPER_TEST_H
-#define MAXUTILS_MTWRAPPER_TEST_H
+#ifndef maxmm_LockFreeWrapperTest_h
+#define maxmm_LockFreeWrapperTest_h
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
@@ -16,10 +16,10 @@
 #include <boost/bind.hpp>
 #include <boost/crc.hpp>
 
-#include <maxutils/LockFreeWrapper.h>
-#include <maxutils/TimedThread.h>
+#include <maxmm/LockFreeWrapper.h>
+#include <maxmm/TimedThread.h>
 
-namespace maxutils
+namespace maxmm
 {
     namespace test
     {
@@ -103,7 +103,7 @@ namespace maxutils
             //! Its main loop is composed of a reading block and randomly a
             //! writing block.
             //! 
-            class TestThread : public maxutils::TimedThread
+            class TestThread : public maxmm::TimedThread
             {
                 public:
                     //! \brief Constructor. 
@@ -146,7 +146,7 @@ namespace maxutils
                     
                     //! \brief update the global data with the given pointer.
                     //! 
-                    //! As stated in maxutils::LockFreeWrapper::update the
+                    //! As stated in maxmm::LockFreeWrapper::update the
                     //! ownership is transfered and the client must not delete
                     //! this ptr.
                     //!

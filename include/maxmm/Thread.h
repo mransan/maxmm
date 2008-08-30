@@ -4,17 +4,17 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_THREAD_H
-#define MAXUTILS_THREAD_H
+#ifndef maxmm_Thread_h
+#define maxmm_Thread_h
 
 #include <memory>
 
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
 
-#include <maxutils/Mutex.h>
+#include <maxmm/Mutex.h>
 
-namespace maxutils
+namespace maxmm
 {
     //! \brief thread abstraction class. 
     //!

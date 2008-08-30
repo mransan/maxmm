@@ -4,21 +4,21 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_OBSERVABLE_TEST_H
-#define MAXUTILS_OBSERVABLE_TEST_H
+#ifndef maxmm_ObservableTest_h
+#define maxmm_ObservableTest_h
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
 
-#include <maxutils/Observable.h>
-#include <maxutils/Observer.h>
+#include <maxmm/Observable.h>
+#include <maxmm/Observer.h>
 
 class ObservableTest : public CppUnit::TestFixture
 {
 private:
 public:
-    class ObserverTest : public maxutils::Observer
+    class ObserverTest : public maxmm::Observer
     {
     private:
         int m_iter;

@@ -4,15 +4,15 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef __maxutils_LockFreeWrapper_h__
-#define __maxutils_LockFreeWrapper_h__
+#ifndef __maxmm_LockFreeWrapper_h__
+#define __maxmm_LockFreeWrapper_h__
 
-#include <maxutils/Logger.h>
+#include <maxmm/Logger.h>
 #include <boost/utility.hpp>
 #include <list>
 #include <cassert>
 
-namespace maxutils
+namespace maxmm
 {
     
     
@@ -292,7 +292,7 @@ namespace maxutils
             }   
         };
    
-}//namespace maxutils
+}//namespace maxmm
 
 
 #endif

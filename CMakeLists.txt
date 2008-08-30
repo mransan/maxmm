@@ -1,40 +1,40 @@
-PROJECT(maxutils)
+PROJECT( maxmm )
 
 cmake_minimum_required( VERSION 2.6 )
 
 INCLUDE(FindBoost)
 
 
-SET(INCLUDE_FILES   ./include/maxutils/Condition.h
-				    ./include/maxutils/Mutex.h
-				    ./include/maxutils/Time.h
-   				    ./include/maxutils/Thread.h
-				    ./include/maxutils/TimedThread.h
-				    ./include/maxutils/MTWrapper.h
-				    ./include/maxutils/Logger.h
-				    ./include/maxutils/Observer.h
-				    ./include/maxutils/Observable.h
-                    ./include/maxutils/all.h
+SET(INCLUDE_FILES   ./include/maxmm/Condition.h
+				    ./include/maxmm/Mutex.h
+				    ./include/maxmm/Time.h
+   				    ./include/maxmm/Thread.h
+				    ./include/maxmm/TimedThread.h
+				    ./include/maxmm/MTWrapper.h
+				    ./include/maxmm/Logger.h
+				    ./include/maxmm/Observer.h
+				    ./include/maxmm/Observable.h
+                    ./include/maxmm/all.h
 )
 
 add_definitions (${CMAKE_CXX_FLAGS_DEBUG})
 INCLUDE_DIRECTORIES (include)
 INCLUDE_DIRECTORIES (${Boost_INCLUDE_DIR})
 aux_source_directory (./src SRC)
-add_library          (maxutils SHARED ${SRC})
+add_library          (maxmm SHARED ${SRC})
 
 add_subdirectory     (tests EXCLUDE_FROM_ALL)
 
-CONFIGURE_FILE(${maxutils_SOURCE_DIR}/maxutils.pc.cmake 
-			   ${maxutils_BINARY_DIR}/maxutils.pc @ONLY)
+CONFIGURE_FILE(${maxmm_SOURCE_DIR}/maxmm.pc.cmake 
+			   ${maxmm_BINARY_DIR}/maxmm.pc @ONLY)
 
-INSTALL(TARGETS maxutils
+INSTALL(TARGETS maxmm
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static)
 
 INSTALL(FILES       ${INCLUDE_FILES}
-		DESTINATION ${CMAKE_INSTALL_PREFIX}/include/maxutils/)
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/include/maxmm/)
 
-INSTALL(FILES       ${maxutils_SOURCE_DIR}/maxutils.pc 
+INSTALL(FILES       ${maxmm_SOURCE_DIR}/maxmm.pc 
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)

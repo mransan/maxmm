@@ -4,10 +4,10 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxutils/Condition.h>
+#include <maxmm/Condition.h>
 
 
-namespace maxutils
+namespace maxmm
 {
 
     Condition::Condition( ScopeLock& lock )
@@ -18,7 +18,7 @@ namespace maxutils
     
     void Condition::wait( void )
     {
-    	_condition.wait(* ( _lock.lock_p ) );
+    	_condition.wait(* ( _lock._boost_lock ) );
     }
     
     void Condition::broadcast( void )

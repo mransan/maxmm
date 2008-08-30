@@ -1,10 +1,10 @@
 #include "ThreadTest.h"
-#include <maxutils/Time.h>
-#include <maxutils/Thread.h>
-#include <maxutils/Logger.h>
+#include <maxmm/Time.h>
+#include <maxmm/Thread.h>
+#include <maxmm/Logger.h>
 #include <cppunit/TestAssert.h>
 
-using namespace maxutils;
+using namespace maxmm;
 
 ThreadTest::TThread::TThread()
 :m_iter(0)

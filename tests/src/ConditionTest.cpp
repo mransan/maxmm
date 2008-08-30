@@ -1,10 +1,10 @@
 #include "ConditionTest.h"
-#include <maxutils/Logger.h>
-#include <maxutils/Time.h>
+#include <maxmm/Logger.h>
+#include <maxmm/Time.h>
 
 #include <cppunit/TestAssert.h>
 
-using namespace maxutils;
+using namespace maxmm;
 
 
 ConditionTest::ThreadTest::ThreadTest(Condition &_cd, int _id)

@@ -4,10 +4,10 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxutils/Time.h>
+#include <maxmm/Time.h>
 #include <cmath>
 
-namespace maxutils
+namespace maxmm
 {
     const long int Time::NANOSEC_IN_SEC  = 1000000000;
     const long int Time::MICROSEC_IN_SEC = 1000000;

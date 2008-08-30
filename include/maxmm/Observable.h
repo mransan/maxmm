@@ -4,14 +4,14 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_OBSERVABLE_H
-#define MAXUTILS_OBSERVABLE_H
+#ifndef maxmm_Observable_h
+#define maxmm_Observable_h
 
 #include <set>
 
 class ObservableTest;
 
-namespace maxutils
+namespace maxmm
 {
     class Observer;
     

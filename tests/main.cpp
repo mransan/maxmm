@@ -1,9 +1,9 @@
 #include <iostream>
-#include <maxutils/all.h>
+#include <maxmm/all.h>
 
 #include <TimeTest.h>
 #include <ConditionTest.h>
-#include <MTWrapperTest.h>
+#include <LockFreeWrapperTest.h>
 #include <ThreadTest.h>
 #include <TestCommon.h>
 #include <ObservableTest.h>
@@ -13,7 +13,7 @@
 #include <cppunit/TestRunner.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-using namespace maxutils;
+using namespace maxmm;
 
 int main()
 {
@@ -34,7 +34,7 @@ int main()
     runner.addTest(ConditionTest::getSuite()) ;
     runner.addTest(ThreadTest::getSuite()) ;
     runner.addTest(ObservableTest::getSuite()) ;
-    runner.addTest(maxutils::test::LockFreeWrapperTest::getSuite()) ;
+    runner.addTest(maxmm::test::LockFreeWrapperTest::getSuite()) ;
 
     bool ret = !runner.run(); 
     Logger::close();

@@ -4,11 +4,11 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef MAXUTILS_OBSERVER_H
-#define MAXUTILS_OBSERVER_H
+#ifndef maxmm_Observer_h
+#define maxmm_Observer_h
 
 
-namespace maxutils
+namespace maxmm
 {
     class Observable;
 

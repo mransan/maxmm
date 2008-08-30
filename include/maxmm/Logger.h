@@ -1,5 +1,5 @@
-#ifndef MAXUTILS_LOGGER_H
-#define MAXUTILS_LOGGER_H
+#ifndef maxmm_Logger_h
+#define maxmm_Logger_h
 
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/concepts.hpp>
@@ -11,15 +11,15 @@
 #include <fstream>
 #include <map>
 
-#include <maxutils/Mutex.h>
+#include <maxmm/Mutex.h>
 
-#define LOG_DEBUG   ::maxutils::Logger::debugConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::debugStream()
-#define LOG_INFO    ::maxutils::Logger::infoConfig.setup   (__FILE__ , __LINE__); ::maxutils::Logger::infoStream()
-#define LOG_WARNING ::maxutils::Logger::warningConfig.setup(__FILE__ , __LINE__); ::maxutils::Logger::warningStream()
-#define LOG_ERROR   ::maxutils::Logger::errorConfig.setup  (__FILE__ , __LINE__); ::maxutils::Logger::errorStream()
+#define LOG_DEBUG   ::maxmm::Logger::debugConfig.setup  (__FILE__ , __LINE__); ::maxmm::Logger::debugStream()
+#define LOG_INFO    ::maxmm::Logger::infoConfig.setup   (__FILE__ , __LINE__); ::maxmm::Logger::infoStream()
+#define LOG_WARNING ::maxmm::Logger::warningConfig.setup(__FILE__ , __LINE__); ::maxmm::Logger::warningStream()
+#define LOG_ERROR   ::maxmm::Logger::errorConfig.setup  (__FILE__ , __LINE__); ::maxmm::Logger::errorStream()
 
 
-namespace maxutils
+namespace maxmm
 {    
     class Logger
     {
