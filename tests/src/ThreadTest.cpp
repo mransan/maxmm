@@ -1,60 +1,73 @@
 #include "ThreadTest.h"
 #include <maxmm/Time.h>
 #include <maxmm/Thread.h>
-#include <maxmm/Logger.h>
 #include <cppunit/TestAssert.h>
 
-using namespace maxmm;
-
-ThreadTest::TThread::TThread()
-:m_iter(0)
+namespace maxmm
 {
+    namespace test
+    {
 
-}
-
-ThreadTest::TThread::TThread(int i)
-:m_iter(i)
-{
-}
-
-ThreadTest::TThread::~TThread()
-{
-
-}
-
-int ThreadTest::TThread::getInt()
-{
-    return m_iter;
-}
-
-void ThreadTest::TThread::run()
-{
-    m_iter ++;
-}
-void ThreadTest::testThread()
-{
-    LOG_INFO << std::endl;
-    LOG_INFO << "==== test thread ====" << std::endl;
-
-    TThread tt(23);
-    tt.start();
-    Time::sleep(3);
-    tt.should_stop();
-    tt.join();
-    
-    int result = tt.getInt();
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("thread result", 24, result);
-}
+        //
+        // Nested Class TThread.
+        // --------------------
+        //
+        
+        ThreadTest::TThread::TThread(int i)
+        : _iter( i )
+        {
+            // No - Op
+        }
+        
+        ThreadTest::TThread::~TThread( void )
+        {
+            // No - Op
+        }
+        
+        int ThreadTest::TThread::get_iter( void )
+        {
+            return _iter;
+        }
+        
+        void ThreadTest::TThread::run( void )
+        {
+            ++_iter;
+        }
 
 
-CppUnit::TestSuite* ThreadTest::getSuite()
-{
-    CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
-    
-    suite->addTest( new CppUnit::TestCaller<ThreadTest>( "testSignal", 
-                                                      &ThreadTest::testThread 
-                                                   ) 
-                );
-    return suite;
+        //
+        // Test Suite.
+        // ---------- 
+        //
+
+        void ThreadTest::test_thread_run( void )
+        {
+            TThread tt(23);
+            tt.start();
+            tt.join();
+            
+            CPPUNIT_ASSERT_EQUAL_MESSAGE("thread result", 24, tt.get_iter( ) );
+        }
+        
+       
+        void ThreadTest::setUp( void )
+        {
+            // No - Op.
+        }
+
+        void ThreadTest::tearDown( void )
+        {
+            // No - Op.
+        }
+
+        CppUnit::TestSuite* ThreadTest::getSuite()
+        {
+            CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
+            
+            suite->addTest( new CppUnit::TestCaller<ThreadTest>( 
+                        "testSignal", 
+                        &ThreadTest::test_thread_run ) );
+            return suite;
+        }
+    }
 }

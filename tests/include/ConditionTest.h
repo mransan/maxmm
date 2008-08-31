@@ -14,32 +14,39 @@
 #include <maxmm/Condition.h>
 #include <maxmm/Thread.h>
 
-class ConditionTest : public CppUnit::TestFixture
+namespace maxmm
 {
-public:
+    namespace test
+    {
 
-    class ThreadTest : public maxmm::Thread
-    {
-    private:
-        int                  m_id;
-        maxmm::Condition &m_cd;
-    public:
-        ThreadTest(maxmm::Condition& _cd, int _id);
-        virtual void run();
-        ~ThreadTest();
-    };
-
-    ConditionTest()
-    {
-    }
-    ~ConditionTest()
-    {
-    }
-    void setUp()
-    {}
-    void tearDown()
-    {}
-    void testSignal();
-    static CppUnit::TestSuite* getSuite();
-};
+        class ConditionTest : public CppUnit::TestFixture
+        {
+        public:
+        
+            class ThreadTest : public maxmm::Thread
+            {
+            private:
+                int                  m_id;
+                maxmm::Condition &m_cd;
+            public:
+                ThreadTest(maxmm::Condition& _cd, int _id);
+                virtual void run();
+                ~ThreadTest();
+            };
+        
+            ConditionTest()
+            {
+            }
+            ~ConditionTest()
+            {
+            }
+            void setUp()
+            {}
+            void tearDown()
+            {}
+            void testSignal();
+            static CppUnit::TestSuite* getSuite();
+        };
+    }   
+}
 #endif

@@ -10,21 +10,25 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
-#include <maxmm/all.h>
 
-class TimeTest : public CppUnit::TestFixture
+namespace maxmm
 {
-
-public:
-    void setUp()
-    {}
-    void tearDown()
-    {}
-    void testEquality();
-    void testSign();
-    static CppUnit::TestSuite* getSuite();
-};
-
+    namespace test
+    {
+        class TimeTest : public CppUnit::TestFixture
+        {
+        
+        public:
+            void setUp()
+            {}
+            void tearDown()
+            {}
+            void testEquality();
+            void testSign();
+            static CppUnit::TestSuite* getSuite();
+        };
+    }
+}
 
 
 #endif

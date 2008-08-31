@@ -1,4 +1,5 @@
 #include <LockFreeWrapperTest.h>
+
 #include <algorithm>  // for std::for_each
 #include <cstddef>    // for std::size_t
 
@@ -8,38 +9,51 @@ namespace maxmm
 {
     namespace test
     {
-        LockFreeWrapperTest::Data::TLockFreeValue global_data( 3 ) ;
-            
+        //
+        // Data class
+        // ---------- 
+        //
+        
+        LockFreeWrapperTest::Data::TLockFreeValue global_data( 1 ) ;
         const std::size_t LockFreeWrapperTest::Data::SIZE( 100 );
 
         LockFreeWrapperTest::Data::Data( void )
         {
-            _block.reserve( SIZE );
+            _block = new TItem[ SIZE ];
+            for( int i=0 ; i<SIZE ; i++)
+            {
+                _block[i] = 0;
+            }
+
             TCheckSumGenerator crc;
-            crc = std::for_each(  _block.begin( ),
-                                  _block.end( ),
+            crc = std::for_each(  _block,
+                                  _block + SIZE ,
                                   crc
                                );
-           _checksum = crc( );
+
+            _checksum = crc( );
         }
         
         LockFreeWrapperTest::Data::Data(const Data &d)
-        : _block( d._block ) ,
-          _checksum( d._checksum )
+        : _checksum( d._checksum )
         {
-            // No - Op.
+            _block = new TItem[ SIZE ];
+            for(int i=0 ; i<SIZE ; i++ )
+            {
+                _block[i] = d._block[i];
+            }
         }
         
         LockFreeWrapperTest::Data::~Data( void )
         {
-            // No - Op.
+            delete [] _block;
         }
         
         bool LockFreeWrapperTest::Data::consistent( void )
         {
              TCheckSumGenerator crc;
-             crc = std::for_each(  _block.begin( ),
-                                   _block.end( ),
+             crc = std::for_each(  _block,
+                                   _block + SIZE,
                                    crc
                                 ) ;
             if( _checksum != crc( ) )
@@ -55,31 +69,18 @@ namespace maxmm
         
         void LockFreeWrapperTest::Data::reset( void )
         {
-            boost::mt19937 nb_generator(
-                    static_cast<long unsigned int>( ::clock( ) ) );
-            boost::uniform_int < TItem > distribution(0 , 255);
-            boost::variate_generator
-                        <boost::mt19937,
-                         boost::uniform_int< TItem>
-                        >   var_generator(
-                                nb_generator , 
-                                distribution ); 
-
-            for( TItemVec::iterator
-                    itr  = _block.begin( ) ; 
-                    itr != _block.end( ) ;
-                    ++itr )
-            {
-                *itr = var_generator( ) ; 
-            }
+            maxmm::random::Uniform< TItem >  rd_generator( 0 , 255 );
             
+            for(int i=0 ; i<SIZE ; i++ )
+            {
+                _block[ i ] = rd_generator( );
+            }
             TCheckSumGenerator crc;
-            crc = std::for_each(  _block.begin( ),
-                                  _block.end( ),
+            crc = std::for_each(  _block,
+                                  _block + SIZE,
                                   crc
                              ) ;
             _checksum = crc();
-            crc.reset();
         }
         
         //
@@ -91,7 +92,8 @@ namespace maxmm
         : _id    ( id ), 
           _failed( false ),
           _global( global_data ) ,
-          TimedThread(0.1)
+          _rd_generator( 0 , 10 ) ,
+          Thread( )
         {
         
         }
@@ -117,42 +119,35 @@ namespace maxmm
             return _failed;
         }
         
-        void LockFreeWrapperTest::TestThread::loop( void )
+        void LockFreeWrapperTest::TestThread::run( void )
         {
-            boost::mt19937 nb_generator(
-                    static_cast<long unsigned int>( ::clock( ) ) );
-            boost::uniform_int < uint8_t > distribution(0 , 255);
-            boost::variate_generator
-                        <boost::mt19937,
-                         boost::uniform_int< uint8_t >
-                        >   var_generator(
-                                nb_generator , 
-                                distribution ); 
-
-            _period = static_cast<double>( var_generator( )%40 + 10)/1000.0;
-            LOG_DEBUG   << "(th : " 
-                        << _id 
-                        <<  ") reseting loop period to : " << _period << std::endl;
+            
+            while( this->should_stop ( ) == false )
+            {
+                bool write_global = ( _rd_generator( ) > 2 ) ? true : false ;
            
-            //Reading block 
-            {
-                Data::TLockFreePtr ptr ( _global );
-                if( ptr->consistent( ) == false )
-                {
-                    _failed = true;
-                }
-            }   
-        
-            //writing block
-            if (_period > 0.0025)
-            {
-                Data *new_data;
+                //Reading block 
                 {
                     Data::TLockFreePtr ptr ( _global );
-                    new_data = new Data( *ptr );
+                    
+                    if( ptr->consistent( ) == false )
+                    {
+                        _failed = true;
+                    }
                 }   
-                new_data->reset( );
-                this->update_global( new_data );
+        
+                //writing block
+                if ( write_global )
+                {
+                    Data *new_data;
+                    {
+                        Data::TLockFreePtr ptr ( _global );
+                        new_data = new Data( *ptr );
+                    }   
+                    new_data->reset( );
+                    std::cout << "reseting shared data " << new_data->_checksum << std::endl;
+                    this->update_global( new_data );
+                }
             }
         }
         

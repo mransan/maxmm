@@ -6,7 +6,6 @@
 
 
 #include <maxmm/TimedThread.h>
-#include <maxmm/Logger.h>
 #include <maxmm/Time.h>
 
 namespace maxmm
@@ -35,12 +34,18 @@ namespace maxmm
             current = Time::now( );
             if( current >= until )
             {
-                LOG_WARNING << "thread cannot keep up with period of " 
-                            << _period
-                            << " sec"
-                            << std::endl;
+                // TODO
+                // Add error recording to evaluate how much the thread was
+                // actually behind the schedule.
+                //
+                // Add also an enum for the different behavior. ( return
+                // immediately or keep on going ) 
+                //
             }
-            Time::sleep_until( until );
+            else
+            {
+                Time::sleep_until( until );
+            }
             until  += _period;
             current = Time::now();
         }

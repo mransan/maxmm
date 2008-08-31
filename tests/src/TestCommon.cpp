@@ -5,23 +5,10 @@
 /********************************/
 
 #include <TestCommon.h>
-#include <maxmm/all.h>
-
-using namespace maxmm;
-
-void maxmm::initLogger()
+namespace maxmm
 {
-    Logger::init();
-    Logger::insertLogFile            ("test.log");
-    
-    Logger::debugConfig.insertStream ("test.log");
-    
-    Logger::infoConfig.insertStream  ("cout");
-    Logger::infoConfig.insertStream  ("test.log");
-    
-    Logger::warningConfig.insertStream("cout");
-    Logger::warningConfig.insertStream("test.log");
-    
-    Logger::errorConfig.insertStream("cerr");
-    Logger::errorConfig.insertStream("test.log");
+    namespace test
+    {
+
+    }
 }

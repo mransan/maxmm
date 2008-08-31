@@ -72,7 +72,7 @@ namespace maxmm
         
         //! \brief pure virtual method that contains the code to be threaded.
         //!
-        virtual void run() = 0;
+        virtual void run( void ) = 0;
 
     };
 

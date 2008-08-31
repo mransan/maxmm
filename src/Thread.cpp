@@ -5,7 +5,6 @@
 /********************************/
 
 #include <maxmm/Thread.h>
-#include <maxmm/Logger.h>
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>

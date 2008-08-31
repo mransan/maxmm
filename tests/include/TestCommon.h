@@ -9,7 +9,10 @@
 
 namespace maxmm
 {
-    void initLogger();
+    namespace test
+    {
+        void initLogger();
+    }
 }//namespace maxmm
 
 

@@ -14,7 +14,7 @@ namespace maxmm
     //
 
     HzPtrRec* HzPtrRec::_head   = 0;
-    int         HzPtrRec::_length = 0;
+    volatile uint32_t HzPtrRec::_length = 0;
 
     //
     // METHODS
@@ -64,11 +64,10 @@ namespace maxmm
         HzPtrRec *p = _head;
         for( ; p ; p=p->_next)
         {
-            if (p->_active 
+            if ( ( p->_active ) 
                  || 
-                !__sync_bool_compare_and_swap(&p->_active, 0, 1))
+                 ( apr_atomic_cas32( &p->_active , 1 , 0 ) != 1 ) )
             {
-            
                 continue;
             }
             else
@@ -77,31 +76,39 @@ namespace maxmm
             }
         }
     
-        int oldLength;
+        uint32_t oldLength;
         do
         {
             oldLength = _length;
         }
-        while(!__sync_bool_compare_and_swap(&_length, oldLength, oldLength +1));
-        
+        while( oldLength != apr_atomic_cas32( &_length , (oldLength +1 ) , oldLength ) );
+       
         p  = new HzPtrRec();
         p->_active     = 1;
         p->_hazard_ptr = 0;
         
         HzPtrRec *oldHead ;
+        
         do
         {
             oldHead   = _head;   
-            p->_next = oldHead; 
+            p->_next = oldHead;
         }
-        while(!__sync_bool_compare_and_swap(&_head, oldHead, p));
+        while(oldHead != apr_atomic_casptr((volatile void **)&_head, p,  oldHead));
+
+        
         return p;
     }
     
     void HzPtrRec::release(HzPtrRec *p)
     {
         p->_hazard_ptr = 0;
-        while(!__sync_bool_compare_and_swap(&p->_active, 1, 0));
+        //
+        // before: 
+        // while(!__sync_bool_compare_and_swap(&p->_active, 1, 0));
+        //
+        assert( apr_atomic_cas32(&p->_active, 0 , 1) != 0 );
+
     }
     
     

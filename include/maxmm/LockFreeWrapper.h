@@ -7,9 +7,11 @@
 #ifndef __maxmm_LockFreeWrapper_h__
 #define __maxmm_LockFreeWrapper_h__
 
-#include <maxmm/Logger.h>
 #include <boost/utility.hpp>
+#include <apr_atomic.h>
+
 #include <list>
+#include <vector>
 #include <cassert>
 
 namespace maxmm
@@ -29,7 +31,7 @@ namespace maxmm
     {
         //! \brief indicate that hazard pointer is in use.
         //!
-        int                 _active;
+        volatile uint32_t           _active;
 
         //! \brief constructor.
         //!
@@ -49,7 +51,7 @@ namespace maxmm
         
         //! \brief total length of the list.
         //!
-        static int          _length;
+        static volatile uint32_t      _length;
        
     public:
 
@@ -168,16 +170,12 @@ namespace maxmm
                 {
                     old_ptr   = _ptr;   
                 }
-                while( ! __sync_bool_compare_and_swap( &_ptr, old_ptr, new_ptr ) );
+                while( old_ptr != apr_atomic_casptr( ( volatile void** )( &_ptr ) , new_ptr, old_ptr ) );
 
                 retired_list.push_back( old_ptr );
                 
                 if( retired_list.size( ) > _limit )
                 {
-                    LOG_INFO    << "retired list as reach limit size: "
-                                << _limit
-                                << std::endl;
-                    
                     LockFreeWrapper< T >::remove_retired( retired_list );
                 }
             }
@@ -238,59 +236,59 @@ namespace maxmm
                     }
                 }
             }       
-        };
+    };
         
-        //! \brief resource management for obtaining a read-only pointer of the
-        //!  lock-free object.
-        //! 
-        //! This class take care of acquiring the record and releasing it on
-        //! destruction.
-        //! 
-        template< typename T >
-        class LockFreePtr
-        {
-        
-            private:
-                //! \brief record to keep the object from being deallocated.
-                //!
-                HzPtrRec *_record;
-                
-                //! \brief underlying ptr.
-                //!
-                T* _ptr;
-            public:
-                //! \brief constructor
-                //! 
-                //! Acquire the record as well as the pointer to the object.
-                //!
-                //! \param[in]  data the lock free object.
-                //! \param[out] read-only pointer.
-                //!
-                LockFreePtr( LockFreeWrapper< T > &data )
-                {
-                    _record = HzPtrRec::acquire();
-                    _ptr = data.get_read_ptr( _record );
-                }
+    //! \brief resource management for obtaining a read-only pointer of the
+    //!  lock-free object.
+    //! 
+    //! This class take care of acquiring the record and releasing it on
+    //! destruction.
+    //! 
+    template< typename T >
+    class LockFreePtr
+    {
+    
+        private:
+            //! \brief record to keep the object from being deallocated.
+            //!
+            HzPtrRec *_record;
+            
+            //! \brief underlying ptr.
+            //!
+            T* _ptr;
+        public:
+            //! \brief constructor
+            //! 
+            //! Acquire the record as well as the pointer to the object.
+            //!
+            //! \param[in]  data the lock free object.
+            //! \param[out] read-only pointer.
+            //!
+            LockFreePtr( LockFreeWrapper< T > &data )
+            {
+                _record = HzPtrRec::acquire();
+                _ptr = data.get_read_ptr( _record );
+            }
 
-                T* operator->( void ) 
-                {
-                    assert( _ptr );
-                    return _ptr;
-                }
-                
-                T& operator*( void ) 
-                {
-                    assert( _ptr );
-                    return *_ptr;
-                }
-               
-                //! \brief release the lock
-                //!
-                ~LockFreePtr()
-                {
-                    HzPtrRec::release(_record);
-            }   
-        };
+            T* operator->( void ) 
+            {
+                assert( _ptr );
+                return _ptr;
+            }
+            
+            T& operator*( void ) 
+            {
+                assert( _ptr );
+                return *_ptr;
+            }
+           
+            //! \brief release the lock
+            //!
+            ~LockFreePtr()
+            {
+                HzPtrRec::release(_record);
+        }   
+    };
    
 }//namespace maxmm
 

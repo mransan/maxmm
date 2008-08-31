@@ -8,7 +8,7 @@
 #define maxmm_TimedThread_h
 
 #include <maxmm/Thread.h>
-
+#include <maxmm/Time.h> 
 namespace maxmm
 {
 
@@ -29,12 +29,13 @@ namespace maxmm
         //!
         ~TimedThread( void );
         
-        //! \brief implement the run method.
-        //!
-        virtual void run(); 
     
     protected:
         
+        //! \brief implement the run method.
+        //!
+        virtual void run( void ); 
+       
         //! \brief user defined method which will be executed every specified
         //! period.
         //!
@@ -42,7 +43,7 @@ namespace maxmm
 
         //! \brief period in sec of the thread execution method.
         //!
-        double        _period;
+        Time        _period;
 
     };
 

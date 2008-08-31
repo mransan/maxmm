@@ -11,13 +11,13 @@
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
 
-#include <boost/random.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/crc.hpp>
 
 #include <maxmm/LockFreeWrapper.h>
 #include <maxmm/TimedThread.h>
+#include <maxmm/Random.h>
 
 namespace maxmm
 {
@@ -44,11 +44,11 @@ namespace maxmm
                     // Typedef
                     // ------
                     //
-                    typedef   boost::uint8_t        TItem;
+                    typedef   uint8_t        TItem;
                     typedef          
-                        boost::crc_optimal< 8, 
-                                            0x21, 
-                                            0xFF, 
+                        boost::crc_optimal< 16, 
+                                            0x1021, 
+                                            0xFFFF, 
                                             0, 
                                             false, 
                                             false > TCheckSumGenerator; 
@@ -87,10 +87,11 @@ namespace maxmm
                     //!
                     bool consistent( void );
                 
+                    uint16_t          _checksum;
+                
+                    TItem            *_block;
                 private:
                     
-                    TItemVec         _block;
-                    TItem            _checksum;
                     
                     static const std::size_t SIZE;
             };
@@ -103,7 +104,7 @@ namespace maxmm
             //! Its main loop is composed of a reading block and randomly a
             //! writing block.
             //! 
-            class TestThread : public maxmm::TimedThread
+            class TestThread : public maxmm::Thread
             {
                 public:
                     //! \brief Constructor. 
@@ -116,7 +117,7 @@ namespace maxmm
                     
                     //! \brief main loop of the thread.
                     //!
-                    virtual void loop( void );
+                    virtual void run( void );
                     
                     //! \brief indicate if the thread has failed.
                     //!
@@ -144,6 +145,10 @@ namespace maxmm
                                 ::TRetiredList  _data_retired_list;
                     
                     
+                    //! \brief random number generator to randomly decide to
+                    //! write to the global data structure.
+                    maxmm::random::Uniform< uint8_t > _rd_generator;
+
                     //! \brief update the global data with the given pointer.
                     //! 
                     //! As stated in maxmm::LockFreeWrapper::update the

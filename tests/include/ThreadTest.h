@@ -13,34 +13,50 @@
 
 #include <maxmm/Thread.h>
 
-class ThreadTest : public CppUnit::TestFixture
+namespace maxmm
 {
-private:
-    class TThread : public maxmm::Thread
+    namespace test
     {
-    private:
-        int m_iter;
 
-    
-    public:
-        TThread();
-        TThread(int i);
-        ~TThread();
-        virtual void run();
-        int getInt();
-    };
+        
+        //! \brief this test suite the good behavior of the maxmm::Thread class.
+        //! 
+        //! The current only test makes sure that the run method was correctly
+        //! executed.
+        //!
+        class ThreadTest : public CppUnit::TestFixture
+        {
+            public:
+                void setUp( void );
+                void tearDown( void );
+                void test_thread_run( void );
+                
+                static CppUnit::TestSuite* getSuite();
+            private:
+                
+                //! \brief very simple thread implementation for the purpose of the
+                //!  test
+                //!
+                //! This thread has a single member variable that gets incremented on
+                //! the run function. An accessor method return this member variable so
+                //! that the client can verify that it was correctly implemented.
+                //!
+                class TThread : public maxmm::Thread
+                {
+                    public:
+                        TThread(int i);
+                        ~TThread( void );
+                        virtual void run( void );
+                        int get_iter( void );
+                    private:
+                        int _iter;
 
-public:
-    void setUp()
-    {
+                };
+
+        
+        };
     }
-    void tearDown()
-    {
-    }
-    void testThread();
-    static CppUnit::TestSuite* getSuite();
-};
-
+}
 
 
 
