@@ -44,13 +44,13 @@ namespace maxmm
             
             //! \brief Copy Constructor.
             //!
-            //! \param _t the time to copy.
+            //! \param t the time to copy.
             //!
             Time(const Time& t);
             
             //! \brief constructor from double.
             //!
-            //! \param t the time in sec.
+            //! \param d the time in sec.
             //!
             Time( double d  );
             
@@ -98,7 +98,7 @@ namespace maxmm
             //!
             //! This method uses ::clock_nanosleep( )
             //!
-            //! \param the time to sleep until in sec. If this time is before the
+            //! \param t the time to sleep until in sec. If this time is before the
             //!  current time the method return imediately.
             //! 
             static void   sleep_until( const Time  &t );

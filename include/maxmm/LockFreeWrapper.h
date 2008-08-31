@@ -203,7 +203,7 @@ namespace maxmm
             //! \brief perform retired list cleanup. This method deallocate
             //!  object that are no longer in used.
             //!
-            //! \param retired list to cleanup.
+            //! \param retired_list the retired list to cleanup.
             //! 
             static void remove_retired( TRetiredList &retired_list )
             {
@@ -262,7 +262,6 @@ namespace maxmm
             //! Acquire the record as well as the pointer to the object.
             //!
             //! \param[in]  data the lock free object.
-            //! \param[out] read-only pointer.
             //!
             LockFreePtr( LockFreeWrapper< T > &data )
             {

@@ -99,7 +99,7 @@ namespace maxmm
             CPPUNIT_ASSERT_EQUAL( 0 , tt1_iter );
         }
         
-        CppUnit::TestSuite* ConditionTest::getSuite()
+        CppUnit::TestSuite* ConditionTest::getSuite( void )
         {
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             

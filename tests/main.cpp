@@ -4,6 +4,8 @@
 #include <ConditionTest.h>
 #include <LockFreeWrapperTest.h>
 #include <ThreadTest.h>
+#include <RandomUniformTest.h>
+
 #include <TestCommon.h>
 
 #include <cppunit/TestResult.h>
@@ -12,7 +14,7 @@
 #include <cppunit/ui/text/TestRunner.h>
 
 
-int main()
+int main( int argc , char ** argv)
 {
     CppUnit::TestResult         result;
     CppUnit::TextUi::TestRunner runner;
@@ -21,7 +23,17 @@ int main()
     runner.addTest(maxmm::test::ConditionTest::getSuite()) ;
     runner.addTest(maxmm::test::ThreadTest::getSuite()) ;
     runner.addTest(maxmm::test::LockFreeWrapperTest::getSuite()) ;
+    runner.addTest(maxmm::test::RandomUniformTest::getSuite()) ;
 
-    bool ret = !runner.run(); 
+    bool ret = false ;
+
+    if( argc == 2 )
+    {
+        ret = !runner.run( argv[1] ) ;
+    }
+    else
+    {
+        ret = !runner.run(); 
+    }
     return ret;
 }
