@@ -19,13 +19,11 @@ namespace maxmm
         {
         
         public:
-            void setUp()
-            {}
-            void tearDown()
-            {}
-            void testEquality();
-            void testSign();
-            static CppUnit::TestSuite* getSuite();
+            void setUp( void );
+            void tearDown( void );
+            void test_equality( void );
+            void test_sign( void );
+            static CppUnit::TestSuite* getSuite( void );
         };
     }
 }

@@ -191,15 +191,16 @@ namespace maxmm
             typedef std::vector<TestThread *> ThreadVec;
             typedef ThreadVec::iterator       ThreadVecItr;
         
-            LockFreeWrapperTest();
-            ~LockFreeWrapperTest();
-            void setUp();
-            void tearDown();
-            void testWrapper();
+            LockFreeWrapperTest( void );
+            ~LockFreeWrapperTest( void );
+            void setUp( void );
+            void tearDown( void );
+            
+            void test_lock_free( void );
             static CppUnit::TestSuite* getSuite();
         
         private:
-            ThreadVec m_threads;
+            ThreadVec _threads;
         };
     }
 }

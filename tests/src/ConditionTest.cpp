@@ -3,51 +3,100 @@
 
 #include <cppunit/TestAssert.h>
 
-using namespace maxmm;
 namespace maxmm
 {
     namespace test
     {
 
-        ConditionTest::ThreadTest::ThreadTest(Condition &_cd, int _id)
-        :m_cd(_cd), m_id(_id)
+        ConditionTest::ThreadTest::ThreadTest( Condition & condition, int id ) 
+        :_condition( condition ), _id( id ) , _iter( 0 )
         {
         
         }
-        ConditionTest::ThreadTest::~ThreadTest()
+        ConditionTest::ThreadTest::~ThreadTest( void )
         {
         }
         
-        void ConditionTest::ThreadTest::run ()
+        int ConditionTest::ThreadTest::iter( void )
         {
-        
-            if(m_id == 1)
+            //
+            // TODO this should clearly be protected.
+            //
+
+            return _iter;
+        }
+        void ConditionTest::ThreadTest::run( void )
+        {
+            if( _id == 1 )
             {
-                Time::sleep(2);
-                m_cd.broadcast();
+                Time::sleep( 2 );
+                _condition.broadcast( );
             }
             else
             {
-                m_cd.wait();
+                _condition.wait( );
+                ++_iter;
             }
         }
-        
-        void ConditionTest::testSignal()
+       
+        //
+        // Test Suite.
+        // ----------
+        //
+
+        ConditionTest::ConditionTest( void )
+        {
+            // No - Op.
+        }
+    
+        ConditionTest::~ConditionTest( void )
+        {
+            // No - Op.
+        }
+
+        void ConditionTest::setUp( void )
+        {
+            // No - Op.
+        }
+
+        void ConditionTest::tearDown( void )
+        {
+            // No - Op.
+        }
+
+        void ConditionTest::test_signaling( void )
         {
             Mutex      mutex;
             ScopeLock  sl(mutex);
             Condition  condition(sl);
         
-            ThreadTest tt1(condition, 1);
-            ThreadTest tt2(condition, 2);
+            //
+            // We need to use delete since if the Condition class does not work
+            // then the thread 2 will never finish. The join( ) call on this
+            // thread would be blocking. By deleting the thread we insure that
+            // the test suite does not block.
+            //
+            
+            ThreadTest *tt1 = new ThreadTest(condition, 1);
+            ThreadTest *tt2 = new ThreadTest(condition, 2);
         
-            tt1.start( );
-            tt2.start( );
+            tt1->start( );
+            tt2->start( );
+            
+            //
+            // TODO do not use ::sleep but a templated loop with the predicate. 
+            //
+            
+            ::sleep( 3 );
+                
+            int tt1_iter = tt1->iter( );
+            int tt2_iter = tt2->iter( );
+
+            delete tt1 ;
+            delete tt2 ;
         
-            Time::sleep( 5 );
-        
-            tt1.join( );
-            tt2.join( );
+            CPPUNIT_ASSERT_EQUAL( 1 , tt2_iter );
+            CPPUNIT_ASSERT_EQUAL( 0 , tt1_iter );
         }
         
         CppUnit::TestSuite* ConditionTest::getSuite()
@@ -55,7 +104,7 @@ namespace maxmm
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             
             suite->addTest( new CppUnit::TestCaller<ConditionTest>( "test_signaling", 
-                                                              &ConditionTest::testSignal 
+                                                              &ConditionTest::test_signaling 
                                                            ) 
                         );
             return suite;

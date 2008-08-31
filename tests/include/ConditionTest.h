@@ -21,31 +21,32 @@ namespace maxmm
 
         class ConditionTest : public CppUnit::TestFixture
         {
-        public:
-        
-            class ThreadTest : public maxmm::Thread
-            {
-            private:
-                int                  m_id;
-                maxmm::Condition &m_cd;
             public:
-                ThreadTest(maxmm::Condition& _cd, int _id);
-                virtual void run();
-                ~ThreadTest();
-            };
-        
-            ConditionTest()
-            {
-            }
-            ~ConditionTest()
-            {
-            }
-            void setUp()
-            {}
-            void tearDown()
-            {}
-            void testSignal();
-            static CppUnit::TestSuite* getSuite();
+            
+                //! \brief Thread class to test signaling between 2 threads.
+                //!
+                class ThreadTest : public maxmm::Thread
+                {
+                    public:
+                        ThreadTest(maxmm::Condition& condition, int id);
+                        ~ThreadTest( void );
+                        virtual void run( void );
+                        
+                        int iter( void );
+                    private:
+                        int                _id;
+                        maxmm::Condition & _condition;
+                        int                _iter;
+                };
+            
+                ConditionTest( void );
+                ~ConditionTest( void );
+                void setUp( void );
+                void tearDown( void );
+                
+                void test_signaling( void );
+                
+                static CppUnit::TestSuite* getSuite( void );
         };
     }   
 }

@@ -145,7 +145,6 @@ namespace maxmm
                         new_data = new Data( *ptr );
                     }   
                     new_data->reset( );
-                    std::cout << "reseting shared data " << new_data->_checksum << std::endl;
                     this->update_global( new_data );
                 }
             }
@@ -175,40 +174,40 @@ namespace maxmm
             }   
             for(int i=0 ; i<30 ; i++)
             {
-                m_threads.push_back( new TestThread( i ) );
+                _threads.push_back( new TestThread( i ) );
             }
-            
-            std::for_each(
-                    m_threads.begin(), 
-                    m_threads.end(), 
-                    boost::bind(
-                        &LockFreeWrapperTest::TestThread::start , 
-                        _1 ) ) ;
-
         }
+        
         void LockFreeWrapperTest::tearDown( void )
         {
             std::for_each(
-                    m_threads.begin(), 
-                    m_threads.end(), 
+                    _threads.begin(), 
+                    _threads.end(), 
                     boost::bind(
                         &LockFreeWrapperTest::TestThread::should_stop ,
                         _1 , 
                         true ) );
             std::for_each(
-                    m_threads.begin( ), 
-                    m_threads.end( ), 
+                    _threads.begin( ), 
+                    _threads.end( ), 
                     boost::bind( 
                         &LockFreeWrapperTest::TestThread::join ,
                         _1 ) );
             ThreadDeleter td;
-            td = std::for_each(m_threads.begin(), m_threads.end(), td);
-            m_threads.clear();
+            td = std::for_each(_threads.begin(), _threads.end(), td);
+            _threads.clear();
             CPPUNIT_ASSERT_MESSAGE("checksum failed" , td.failed()==false);
         }
         
-        void LockFreeWrapperTest::testWrapper( void )
+        void LockFreeWrapperTest::test_lock_free( void )
         {
+            std::for_each(
+                    _threads.begin(), 
+                    _threads.end(), 
+                    boost::bind(
+                        &LockFreeWrapperTest::TestThread::start , 
+                        _1 ) ) ;
+
             ::sleep( 30 );
         }
         
@@ -217,8 +216,8 @@ namespace maxmm
             
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             
-            suite->addTest( new CppUnit::TestCaller<LockFreeWrapperTest>( "testWrapper", 
-                                                              &LockFreeWrapperTest::testWrapper 
+            suite->addTest( new CppUnit::TestCaller<LockFreeWrapperTest>( "test_lock_free", 
+                                                              &LockFreeWrapperTest::test_lock_free 
                                                            ) 
                         );
             return suite;

@@ -8,7 +8,17 @@ namespace maxmm
     namespace test
     {
 
-        void TimeTest::testEquality()
+        void TimeTest::setUp( void )
+        {
+            // No - Op.
+        }
+
+        void TimeTest::tearDown( void )
+        {
+            // No - Op.
+        }
+
+        void TimeTest::test_equality( void )
         {
             Time t1;
             Time t2;
@@ -26,7 +36,7 @@ namespace maxmm
             CPPUNIT_ASSERT_MESSAGE("test equality test 3", t2 == t1);
         
         }
-        void TimeTest::testSign()
+        void TimeTest::test_sign( void )
         {
             Time t1 = Time::now();
             sleep(1);
@@ -58,12 +68,12 @@ namespace maxmm
             
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             
-            suite->addTest( new CppUnit::TestCaller<TimeTest>( "testEquality", 
-                                                              &TimeTest::testEquality 
+            suite->addTest( new CppUnit::TestCaller<TimeTest>( "test_equality", 
+                                                              &TimeTest::test_equality
                                                            ) 
                         );
-            suite->addTest( new CppUnit::TestCaller<TimeTest>( "testSign", 
-                                                             &TimeTest::testSign
+            suite->addTest( new CppUnit::TestCaller<TimeTest>( "test_sign", 
+                                                             &TimeTest::test_sign
                                                            ) 
                         );
             return suite;
