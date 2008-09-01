@@ -19,7 +19,7 @@ include_directories   (./include     )
 aux_source_directory  (./src TEST_SRC)
 add_library           (maxmmTest SHARED ${TEST_SRC})
 
-set(BOOST_LIB     boost_thread boost_filesystem )
+set(BOOST_LIB     boost_thread boost_system )
 set(LINK_LIBS     ${BOOST_LIB} ${cppunit_LIBRARIES} ${apr_LIBRARIES} dl maxmm maxmmTest)
 
 add_executable        (test main.cpp)

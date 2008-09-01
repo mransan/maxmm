@@ -7,8 +7,10 @@
 #ifndef maxmm_Condition_h
 #define maxmm_Condition_h
 
-#include <maxmm/Mutex.h>
+#include <boost/thread/condition.hpp>
 #include <boost/utility.hpp>
+
+#include <maxmm/Mutex.h>
 
 namespace maxmm
 {
