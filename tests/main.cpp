@@ -6,6 +6,7 @@
 #include <ThreadTest.h>
 #include <RandomUniformTest.h>
 #include <BoostAsioUnixSocketTest.h>
+#include <StdContainerTest.h>
 
 #include <TestCommon.h>
 
@@ -26,6 +27,8 @@ int main( int argc , char ** argv)
     runner.addTest(maxmm::test::LockFreeWrapperTest::getSuite()) ;
     runner.addTest(maxmm::test::RandomUniformTest::getSuite()) ;
     runner.addTest(maxmm::test::BoostAsioUnixSocketTest::getSuite( ) );
+    runner.addTest(maxmm::test::StdContainerTest::getSuite( ) );
+
     bool ret = false ;
 
     if( argc == 2 )

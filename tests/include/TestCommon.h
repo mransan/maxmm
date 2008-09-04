@@ -9,6 +9,11 @@
 
 #include <sys/types.h> 
 #include <signal.h>
+
+#include <boost/bind.hpp>
+#include <algorithm>
+#include <functional>
+
 namespace maxmm
 {
     namespace test
@@ -27,6 +32,23 @@ namespace maxmm
             private:
                 ::pid_t _pid;
         };
+        
+        template< typename CONTAINER >
+                static bool do_not_contain( 
+                        const CONTAINER & c , 
+                        typename CONTAINER::value_type v  )
+        {
+            typename CONTAINER::difference_type 
+                ret = std::count_if(
+                            c.begin( ) , 
+                            c.end( ) , 
+                            boost::bind(
+                                std::not_equal_to< typename CONTAINER::value_type >( ) ,
+                                _1 ,  
+                                v )  );
+            return ( ret == typename CONTAINER::difference_type( 0 ) );
+        }
+       
     }
 }//namespace maxmm
 

@@ -6,7 +6,7 @@
 
 #include <maxmm/Time.h>
 #include <cmath>
-
+#include <iomanip>
 namespace maxmm
 {
     const long int Time::NANOSEC_IN_SEC  = 1000000000;
@@ -60,7 +60,7 @@ namespace maxmm
         _ts.tv_sec  -= t._ts.tv_sec ;
         _ts.tv_nsec -= t._ts.tv_nsec;
 
-        if( _ts.tv_nsec <= Time::NANOSEC_IN_SEC )
+        if( _ts.tv_nsec <= 0  )
         {
             _ts.tv_nsec += Time::NANOSEC_IN_SEC;
             --_ts.tv_sec ;
@@ -149,9 +149,9 @@ namespace maxmm
     
     std::ostream& operator<< (std::ostream& o, const Time& t)
     {
-        return o << "time(sec:" << t._ts.tv_sec 
-                 << " , nsec:"  << t._ts.tv_nsec 
-                 << ")";
+        return o << "time ( sec:" << t._ts.tv_sec 
+                 << " , nsec:"  << std::setw( 9 )  << std::setfill('0') << t._ts.tv_nsec 
+                 << " )";
     }
 
 }
