@@ -11,6 +11,10 @@
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestCaller.h>
 
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+
+#include <boost/enable_shared_from_this.hpp> 
 
 namespace maxmm
 {
@@ -31,8 +35,65 @@ namespace maxmm
         class BoostAsioUnixSocketTest : public CppUnit::TestFixture
         {
             public:
-            
+                //! \brief this class allows asyncronous read.
+                //!
+                class RecvHandle
+                {
+                    public:
+                        //! \brief Constructor
+                        //!
+                        //! The constructor performs a first blocking read on the
+                        //! socket, send back the data to the client and finally
+                        //! register the on_receive method for asynchronous read.
+                        //!
+                        //! \param socket the socket to read and echo the
+                        //!  received data.
+                        RecvHandle( 
+                                boost::asio::local::stream_protocol::socket & 
+                                    socket  , 
+                                boost::asio::local::stream_protocol::acceptor & 
+                                    acceptor);
+                        
+                        //! \brief accept handle. 
+                        //!
+                        //! call back method for when a client connect to the
+                        //! endpoint.
+                        //!
+                        void on_accept( const boost::system::error_code & ec );
+                        
+                        //! \brief receive handle/call back functions. This
+                        //! method will be call whenever data is read from the
+                        //! socket.
+                        //!
+                        //! This method must be follow the expected signature(
+                        //! boost::functions2< void , const error_code , size_t
+                        //! ).
+                        //!
+                        //! \param ec the error code of the read operation.
+                        //! \param len the number of bytes read.
+                        //!
+                        void on_receive( 
+                                const boost::system::error_code & ec , 
+                                size_t len );
+                       
+                    private:
+                        //! \brief the socket to read and echo.
+                        //!
+                        boost::asio::local::stream_protocol::socket &_socket;
+
+                        boost::asio::local::stream_protocol::acceptor &_acceptor;
+                        
+                        //! \brief read buffer.
+                        //!
+                        boost::array< char , 1024 >                   _buffer;
+                };           
+                
+                //! \brief test setup.
+                //!
                 void setUp( void );
+                
+                //! \brief test tear down.
+                //!
                 void tearDown( void );
 
                 //! \brief this test focuses on the use of the
@@ -54,6 +115,11 @@ namespace maxmm
                 void test_transfer_file( void );
                 
                 
+                //! \brief similar test as test_transfer_connected but the
+                //! child( echo server ) uses asynchronous read mode.
+                //!
+                void test_transfer_connected_as(  void );
+               
                 static CppUnit::TestSuite* getSuite( void );
         
         };
