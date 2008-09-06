@@ -210,7 +210,7 @@ namespace maxmm
 
         void BoostAsioUnixSocketTest::RecvHandle::on_receive ( 
                 const boost::system::error_code & ec , 
-                std::size_t len )
+                size_t len )
         {
             std::ostringstream ss;
             ss.write( _buffer.data( ) , len );

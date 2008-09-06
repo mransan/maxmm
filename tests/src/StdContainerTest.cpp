@@ -79,13 +79,12 @@ namespace maxmm
         {
             
             std::cout << std::endl;
-            static std::size_t N = 1000000;
+            static std::size_t N = 10000000;
            
 
             std::map< maxmm::Time , std::string > benchmark;
-            //
-            // allocate n elements in the std::vector constructor using the
-            // default constructor of the type.
+            // 
+            // Constructor + reserve + resize.
             //
             {
                 maxmm::Time start = maxmm::Time::now( );
@@ -101,10 +100,22 @@ namespace maxmm
                         std::size_t( N ) , 
                         vec.size( ) );
             }
-            //
-            // create the vector and allocate memory space for n elements.
-            // This WILL NOT create the N object.
-            //
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::vector< int >  vec( N , 2 );
+                maxmm::Time end = maxmm::Time::now( );
+
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "constructor( size , T )" ) );
+
+                CPPUNIT_ASSERT_EQUAL( 
+                        std::size_t( N ) , 
+                        vec.size( ) );
+            }
+           
             {
                 maxmm::Time start = maxmm::Time::now( );
                 std::vector< int > vec;
@@ -120,11 +131,6 @@ namespace maxmm
                         vec.size( ) );
             }
             
-            //
-            // create the vec and then resize it to N. This WILL allocate and
-            // default construct N element.
-            //
-            //
             {
                 maxmm::Time start = maxmm::Time::now( );
                 std::vector< int > vec;
@@ -139,15 +145,17 @@ namespace maxmm
                         std::size_t( N ) , 
                         vec.size( ) );
             }
+            
+            
+            //
+            // std::generate_n ( + reserve / back_inserter ).
+            //
             {
                 maxmm::Time start = maxmm::Time::now( );
                 std::vector< int > vec;
                 vec.reserve( N );
-                IntGenerator gen( -1 );
-                
-
                 std::generate_n( 
-                        std::back_inserter( vec ) , 
+                        vec.begin( ) , 
                         N , 
                         boost::lambda::bind(
                             boost::lambda::constructor< int >( ) , 
@@ -160,17 +168,49 @@ namespace maxmm
                 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
             }
-           
-            //
-            // This is example demonstrate the use of a number generator 
-            // to generate the vector
-            //
-            // std::generate_n & std::back_inserter
-            //
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::vector< int > vec;
+                std::generate_n( 
+                        std::back_inserter( vec ) , 
+                        N , 
+                        boost::lambda::bind(
+                            boost::lambda::constructor< int >( ) , 
+                            2 ) ) ;
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "constructor( ) + back_inserter + generate_n ( lambda )" ) );
+                
+                CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
+            }
+          
             {
                 maxmm::Time start = maxmm::Time::now( );
                 std::vector< int > vec;
                 vec.reserve( N );
+                IntGenerator gen( -1 );
+                std::generate_n( 
+                        vec.begin( ) , 
+                        N , 
+                        gen );
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "constructor( ) + reserve + generate_n ( functor )" ) );
+
+                for( int i=0 ; i < N ; ++i )
+                {
+                    CPPUNIT_ASSERT_EQUAL( i , vec[ i ] );
+                }
+            }
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::vector< int > vec;
                 IntGenerator gen( -1 );
                 std::generate_n( 
                         std::back_inserter( vec ) , 
@@ -180,21 +220,22 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + reserve + generate_n ( random )" ) );
+                            "constructor( ) + back_inserter + generate_n ( functor )" ) );
 
                 for( int i=0 ; i < N ; ++i )
                 {
                     CPPUNIT_ASSERT_EQUAL( i , vec[ i ] );
                 }
             }
+           
+            //
+            // std::fill_n
+            //
             
-            //
-            // This example creates a vector with N default constructed value.
-            // It then uses the std::fill_n( ) method to assign the desired one.
-            //
             {
                 maxmm::Time start = maxmm::Time::now( );
-                std::vector< int > vec( N );
+                std::vector< int > vec;
+                vec.reserve( N );
                 std::fill_n(
                         vec.begin( ) , 
                         N, 
@@ -203,19 +244,14 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( size ) + fill_n " ) );
+                            "constructor( ) + reserve + fill_n " ) );
 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
             }
             
-            //
-            // Same as previous but use the back inserter instead.
-            // This method is twice as slow as the previous one.
-            //
             {
                 maxmm::Time start = maxmm::Time::now( );
                 std::vector< int > vec;
-                vec.reserve( N );
                 std::fill_n(
                         std::back_inserter( vec ) , 
                         N, 
@@ -224,34 +260,11 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor(  ) + reserve + back_inserter" ) );
+                            "constructor( ) + back_inserter + fill_n " ) );
 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
             }
           
-            //
-            // This create a vector and allocate memory for N elements.
-            // This N elements are then later inserted using the generate_n
-            // method. This method demonstrate the use of boost::lambda to use
-            // this method for non-default-constructed classes.
-            // 
-            // std::generate &std::back_inserter & boost::lambda
-            //
-            {
-                std::vector< IntConstruct > vec;
-                vec.reserve( N );
-                std::generate_n( 
-                        std::back_inserter( vec ) , 
-                        N , 
-                        boost::lambda::bind(
-                            boost::lambda::constructor< IntConstruct >( ) , 
-                            2 ) ) ;
-                //
-                // Make sure that there is no value different than 2.
-                //
-                IntConstruct ref ( 2 );
-                CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , ref ) );
-            }
     
             for( std::map< maxmm::Time , std::string >::iterator 
                     itr  = benchmark.begin( ) ; 

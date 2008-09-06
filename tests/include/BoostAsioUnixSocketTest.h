@@ -48,6 +48,8 @@ namespace maxmm
                         //!
                         //! \param socket the socket to read and echo the
                         //!  received data.
+                        //! \param acceptor the aceptor.
+                        //!
                         RecvHandle( 
                                 boost::asio::local::stream_protocol::socket & 
                                     socket  , 
