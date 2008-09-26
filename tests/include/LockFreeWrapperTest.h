@@ -14,11 +14,18 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/crc.hpp>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+
 
 #include <maxmm/LockFreeWrapper.h>
-#include <maxmm/TimedThread.h>
+#include <maxmm/Thread.h>
+#include <maxmm/ThreadController.h>
 #include <maxmm/Random.h>
 
+#include <iomanip>
+#include <algorithm>
 namespace maxmm
 {
     namespace test
@@ -104,20 +111,22 @@ namespace maxmm
             //! Its main loop is composed of a reading block and randomly a
             //! writing block.
             //! 
-            class TestThread : public maxmm::Thread
+            class ThreadDeleter;
+            
+            class TestThread 
+                : public maxmm::Thread< NoWaitController >
             {
+                friend class ThreadDeleter;
+
                 public:
                     //! \brief Constructor. 
                     //!
-                    TestThread( int _id );
+                    TestThread( int _id , Data::TLockFreeValue & global_data );
                     
                     //! \brief Destructor.
                     //!
                     ~TestThread( void );
                     
-                    //! \brief main loop of the thread.
-                    //!
-                    virtual void run( void );
                     
                     //! \brief indicate if the thread has failed.
                     //!
@@ -125,7 +134,15 @@ namespace maxmm
                     //!
                     bool failed( void );
 
-                private: 
+                protected: 
+                     
+                    //! \brief main loop of the thread.
+                    //!
+                    void loop( void );
+
+                    void init( void ) { }
+                    void clean( void ) { }
+                   
                     //! \brief unique ID of the thread.
                     //!
                     int                         _id;
@@ -149,35 +166,30 @@ namespace maxmm
                     //! write to the global data structure.
                     maxmm::random::Uniform< uint8_t > _rd_generator;
 
-                    //! \brief update the global data with the given pointer.
-                    //! 
-                    //! As stated in maxmm::LockFreeWrapper::update the
-                    //! ownership is transfered and the client must not delete
-                    //! this ptr.
-                    //!
-                    void update_global( Data * ptr ); 
+                    std::vector< double > _read_times;
+                    std::vector< double > _write_times;
             };
              
             class ThreadDeleter
             {
             public:
-                ThreadDeleter( void )
-                :_failed(false)
-                {
-                }
-                void operator()(TestThread *t)
-                {
-                    if( t->failed( ) )
-                    {
-                        _failed = true;
-                    }
-                    delete t;
-                }
-                bool failed( void )
-                {
-                    return _failed;
-                }
+                ThreadDeleter( void );
+                void add_to_write_set( const double & d );
+                void add_to_read_set( const double & d );
+                void operator()(TestThread *t);
+                
+                bool failed( void );
+                double read_avg( void ) ;
+                double write_avg( void );
             private:
+                typedef boost::accumulators::accumulator_set<
+                    double , 
+                    boost::accumulators::stats< 
+                        boost::accumulators::tag::mean > > TTimeSet;
+
+                TTimeSet  _read_timeset;
+                TTimeSet  _write_timeset;
+
                 bool _failed;
             
             };
@@ -201,6 +213,8 @@ namespace maxmm
         
         private:
             ThreadVec _threads;
+
+            Data::TLockFreeValue _shared_data ;
         };
     }
 }

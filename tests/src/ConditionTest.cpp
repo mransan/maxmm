@@ -9,12 +9,16 @@ namespace maxmm
     {
 
         ConditionTest::ThreadTest::ThreadTest( Condition & condition, int id ) 
-        :_condition( condition ), _id( id ) , _iter( 0 )
+        :   _condition( condition ), 
+            _id( id ) , 
+            _iter( 0 ), 
+            Thread<OnceController>( OnceController( ) )
         {
         
         }
         ConditionTest::ThreadTest::~ThreadTest( void )
         {
+        
         }
         
         int ConditionTest::ThreadTest::iter( void )
@@ -22,11 +26,11 @@ namespace maxmm
             //
             // TODO this should clearly be protected.
             //
-
             return _iter;
         }
-        void ConditionTest::ThreadTest::run( void )
+        void ConditionTest::ThreadTest::loop( void )
         {
+            std::cout << "condition loop " << _id << std::endl;
             if( _id == 1 )
             {
                 Time::sleep( 2 );
@@ -103,10 +107,10 @@ namespace maxmm
         {
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             
-            suite->addTest( new CppUnit::TestCaller<ConditionTest>( "test_signaling", 
-                                                              &ConditionTest::test_signaling 
-                                                           ) 
-                        );
+            suite->addTest( 
+                new CppUnit::TestCaller<ConditionTest>( 
+                    "ConditionTest::test_signaling", 
+                    &ConditionTest::test_signaling ) );
             return suite;
         }
     }

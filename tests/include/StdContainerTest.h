@@ -56,6 +56,8 @@ namespace maxmm
                 //! \li time ( sec:0 , nsec:309918750 ) : constructor( ) + back_inserter + generate_n ( lambda )
                 //!
                 void test_vector_creation( void );
+                void test_list_creation( void );
+
                 static CppUnit::TestSuite* getSuite( void );
 
             private:

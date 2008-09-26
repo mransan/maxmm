@@ -14,7 +14,8 @@ namespace maxmm
         //
         
         ThreadTest::TThread::TThread(int i)
-        : _iter( i )
+        :   _iter( i ),
+            Thread<OnceController>( OnceController( ) )
         {
             // No - Op
         }
@@ -29,7 +30,7 @@ namespace maxmm
             return _iter;
         }
         
-        void ThreadTest::TThread::run( void )
+        void ThreadTest::TThread::loop( void )
         {
             ++_iter;
         }

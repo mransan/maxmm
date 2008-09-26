@@ -68,14 +68,15 @@ namespace maxmm
             
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             
-            suite->addTest( new CppUnit::TestCaller<TimeTest>( "test_equality", 
-                                                              &TimeTest::test_equality
-                                                           ) 
-                        );
-            suite->addTest( new CppUnit::TestCaller<TimeTest>( "test_sign", 
-                                                             &TimeTest::test_sign
-                                                           ) 
-                        );
+            suite->addTest( 
+                new CppUnit::TestCaller<TimeTest>( 
+                    "TimeTest::test_equality", 
+                    &TimeTest::test_equality ) );
+            
+            suite->addTest( 
+                new CppUnit::TestCaller<TimeTest>( 
+                    "TimeTest::test_sign", 
+                    &TimeTest::test_sign) );
             return suite;
         }
     }

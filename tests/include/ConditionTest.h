@@ -13,7 +13,7 @@
 
 #include <maxmm/Condition.h>
 #include <maxmm/Thread.h>
-
+#include <maxmm/ThreadController.h>
 namespace maxmm
 {
     namespace test
@@ -25,18 +25,24 @@ namespace maxmm
             
                 //! \brief Thread class to test signaling between 2 threads.
                 //!
-                class ThreadTest : public maxmm::Thread
+                class ThreadTest 
+                    : public maxmm::Thread<maxmm::OnceController>
                 {
                     public:
                         ThreadTest(maxmm::Condition& condition, int id);
                         ~ThreadTest( void );
-                        virtual void run( void );
                         
                         int iter( void );
-                    private:
+
+                    protected:
+                        virtual void loop( void );
+                        virtual void init( void ){ };
+                        virtual void clean( void ){ };
+                        
                         int                _id;
                         maxmm::Condition & _condition;
                         int                _iter;
+                       
                 };
             
                 ConditionTest( void );

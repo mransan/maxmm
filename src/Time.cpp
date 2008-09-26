@@ -108,21 +108,24 @@ namespace maxmm
         ::clock_gettime(CLOCK_REALTIME , &_ts);
         return *this;
     }
-    
+   
+    double Time::to_double( void ) const 
+    {
+        return ( _ts.tv_sec + (  _ts.tv_nsec / ( double )NANOSEC_IN_SEC ) ) ;
+    }
+
     Time Time::now()
     {
         Time t;
         return t.update();
     }
     
-    void Time::sleep(double sec)
+    void Time::sleep( Time t)
     {
-        Time tToSleep( sec );
-    
         ::clock_nanosleep(
                 CLOCK_REALTIME ,
                 0              ,
-                &tToSleep._ts  ,
+                &t._ts  ,
                 NULL);
     }
     

@@ -12,6 +12,7 @@
 #include <cppunit/TestCaller.h>
 
 #include <maxmm/Thread.h>
+#include <maxmm/ThreadController.h>
 
 namespace maxmm
 {
@@ -41,14 +42,18 @@ namespace maxmm
                 //! the run function. An accessor method return this member variable so
                 //! that the client can verify that it was correctly implemented.
                 //!
-                class TThread : public maxmm::Thread
+                class TThread 
+                    : public maxmm::Thread<maxmm::OnceController>
                 {
                     public:
                         TThread(int i);
                         ~TThread( void );
-                        virtual void run( void );
                         int get_iter( void );
-                    private:
+                    protected:
+                        void loop( void );
+                        void init( void ) { }
+                        void clean( void ) { }
+                        
                         int _iter;
 
                 };

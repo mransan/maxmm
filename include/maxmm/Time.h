@@ -80,6 +80,8 @@ namespace maxmm
             //!
             Time & update( void );
 
+            double to_double( void )  const ;
+
             //! \brief current time.
             //!
             //! \return current time.
@@ -92,7 +94,7 @@ namespace maxmm
             //!
             //! \param sec the number of second to sleep.
             //!
-            static void   sleep( double sec );
+            static void   sleep( Time t );
             
             //! \brief sleep until a given time.
             //!

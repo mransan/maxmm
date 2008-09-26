@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 #include <algorithm>
 #include <functional>
 
@@ -94,7 +95,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( size )" ) );
+                            "std::vector | constructor( size )" ) );
 
                 CPPUNIT_ASSERT_EQUAL( 
                         std::size_t( N ) , 
@@ -109,7 +110,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( size , T )" ) );
+                            "std::vector | constructor( size , T )" ) );
 
                 CPPUNIT_ASSERT_EQUAL( 
                         std::size_t( N ) , 
@@ -124,7 +125,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + reserve" ) );
+                            "std::vector | constructor( ) + reserve" ) );
                
                 CPPUNIT_ASSERT_EQUAL( 
                         std::size_t( 0 ) , 
@@ -139,7 +140,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + resize" ) );
+                            "std::vector | constructor( ) + resize" ) );
               
                 CPPUNIT_ASSERT_EQUAL( 
                         std::size_t( N ) , 
@@ -164,7 +165,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + reserve + generate_n ( lambda )" ) );
+                            "std::vector | constructor( ) + reserve + generate_n ( lambda )" ) );
                 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
             }
@@ -182,7 +183,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + back_inserter + generate_n ( lambda )" ) );
+                            "std::vector | constructor( ) + back_inserter + generate_n ( lambda )" ) );
                 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
             }
@@ -200,7 +201,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + reserve + generate_n ( functor )" ) );
+                            "std::vector | constructor( ) + reserve + generate_n ( functor )" ) );
 
                 for( int i=0 ; i < N ; ++i )
                 {
@@ -220,7 +221,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + back_inserter + generate_n ( functor )" ) );
+                            "std::vector | constructor( ) + back_inserter + generate_n ( functor )" ) );
 
                 for( int i=0 ; i < N ; ++i )
                 {
@@ -244,7 +245,7 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + reserve + fill_n " ) );
+                            "std::vector | constructor( ) + reserve + fill_n " ) );
 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
             }
@@ -260,9 +261,201 @@ namespace maxmm
                 benchmark.insert(
                         std::make_pair(
                             end - start , 
-                            "constructor( ) + back_inserter + fill_n " ) );
+                            "std::vector | constructor( ) + back_inserter + fill_n " ) );
 
                 CPPUNIT_ASSERT( maxmm::test::do_not_contain( vec , 2 ) );
+            }
+          
+    
+            for( std::map< maxmm::Time , std::string >::iterator 
+                    itr  = benchmark.begin( ) ; 
+                    itr != benchmark.end( );
+                    ++itr )
+            {
+                std::cout << itr->first <<  " : " << itr->second << std::endl;
+            }
+        }
+        void StdContainerTest::test_list_creation( void )
+        {
+            
+            std::cout << std::endl;
+            static std::size_t N = 10000000;
+           
+
+            std::map< maxmm::Time , std::string > benchmark;
+            // 
+            // Constructor + reserve + resize.
+            //
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int >  list( N );
+                maxmm::Time end = maxmm::Time::now( );
+
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( size )" ) );
+
+                CPPUNIT_ASSERT_EQUAL( 
+                        std::size_t( N ) , 
+                        list.size( ) );
+            }
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int >  list( N , 2 );
+                maxmm::Time end = maxmm::Time::now( );
+
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( size , T )" ) );
+
+                CPPUNIT_ASSERT_EQUAL( 
+                        std::size_t( N ) , 
+                        list.size( ) );
+            }
+           
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                list.resize( N );
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + resize" ) );
+              
+                CPPUNIT_ASSERT_EQUAL( 
+                        std::size_t( N ) , 
+                        list.size( ) );
+            }
+            
+            
+            //
+            // std::generate_n ( + reserve / back_inserter ).
+            //
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                list.resize( N );
+                std::generate_n( 
+                        list.begin( ) , 
+                        N , 
+                        boost::lambda::bind(
+                            boost::lambda::constructor< int >( ) , 
+                            2 ) ) ;
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + reserve + generate_n ( lambda )" ) );
+                
+                CPPUNIT_ASSERT( maxmm::test::do_not_contain( list , 2 ) );
+            }
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                std::generate_n( 
+                        std::back_inserter( list ) , 
+                        N , 
+                        boost::lambda::bind(
+                            boost::lambda::constructor< int >( ) , 
+                            2 ) ) ;
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + back_inserter + generate_n ( lambda )" ) );
+                
+                CPPUNIT_ASSERT( maxmm::test::do_not_contain( list , 2 ) );
+            }
+          
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                list.resize( N );
+                IntGenerator gen( -1 );
+                std::generate_n( 
+                        list.begin( ) , 
+                        N , 
+                        gen );
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + resize + generate_n ( functor )" ) );
+
+                int  i=0 ;
+                for( std::list< int >::iterator 
+                        itr  = list.begin( ) ; 
+                        itr != list.end( ) ; 
+                        ++itr , ++i ) 
+                {
+                    CPPUNIT_ASSERT_EQUAL( i , *itr );
+                }
+            }
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                IntGenerator gen( -1 );
+                std::generate_n( 
+                        std::back_inserter( list ) , 
+                        N , 
+                        gen );
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + back_inserter + generate_n ( functor )" ) );
+
+                int i=0;
+                for( std::list< int >::iterator 
+                        itr  = list.begin( ) ; 
+                        itr != list.end( )  ; 
+                        ++itr , ++i )
+                {
+                    CPPUNIT_ASSERT_EQUAL( i , *itr );
+                }
+            }
+           
+            //
+            // std::fill_n
+            //
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                list.resize( N );
+                std::fill_n(
+                        list.begin( ) , 
+                        N, 
+                        2 );
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + reserve + fill_n " ) );
+
+                CPPUNIT_ASSERT( maxmm::test::do_not_contain( list , 2 ) );
+            }
+            
+            {
+                maxmm::Time start = maxmm::Time::now( );
+                std::list< int > list;
+                std::fill_n(
+                        std::back_inserter( list ) , 
+                        N, 
+                        2 );
+                maxmm::Time end = maxmm::Time::now( );
+                benchmark.insert(
+                        std::make_pair(
+                            end - start , 
+                            "std::list | constructor( ) + back_inserter + fill_n " ) );
+
+                CPPUNIT_ASSERT( maxmm::test::do_not_contain( list , 2 ) );
             }
           
     
@@ -283,6 +476,11 @@ namespace maxmm
                         "StdContainerTest::test_vector_creation", 
                         &StdContainerTest::test_vector_creation ) 
                         );
+            suite->addTest( new CppUnit::TestCaller<StdContainerTest>( 
+                        "StdContainerTest::test_list_creation", 
+                        &StdContainerTest::test_list_creation ) 
+                        );
+
             return suite ;
         }
     }
