@@ -14,6 +14,7 @@
 #include <maxmm/Condition.h>
 #include <maxmm/Thread.h>
 #include <maxmm/ThreadController.h>
+
 namespace maxmm
 {
     namespace test

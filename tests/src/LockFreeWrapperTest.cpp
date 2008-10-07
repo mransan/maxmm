@@ -12,150 +12,6 @@ namespace maxmm
 {
     namespace test
     {
-        //
-        // Data class
-        // ---------- 
-        //
-        
-        const std::size_t LockFreeWrapperTest::Data::SIZE( 100 );
-
-        LockFreeWrapperTest::Data::Data( void )
-        {
-            _block = new TItem[ SIZE ];
-            for( int i=0 ; i<SIZE ; i++)
-            {
-                _block[i] = 0;
-            }
-
-            TCheckSumGenerator crc;
-            crc = std::for_each(  _block,
-                                  _block + SIZE ,
-                                  crc
-                               );
-
-            _checksum = crc( );
-        }
-        
-        LockFreeWrapperTest::Data::Data(const Data &d)
-        : _checksum( d._checksum )
-        {
-            _block = new TItem[ SIZE ];
-            for(int i=0 ; i<SIZE ; i++ )
-            {
-                _block[i] = d._block[i];
-            }
-        }
-        
-        LockFreeWrapperTest::Data::~Data( void )
-        {
-            delete [] _block;
-        }
-        
-        bool LockFreeWrapperTest::Data::consistent( void )
-        {
-             TCheckSumGenerator crc;
-             crc = std::for_each(  _block,
-                                   _block + SIZE,
-                                   crc
-                                ) ;
-            if( _checksum != crc( ) )
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        
-        
-        void LockFreeWrapperTest::Data::reset( void )
-        {
-            maxmm::random::Uniform< TItem >  rd_generator( 0 , 255 );
-            
-            for(int i=0 ; i<SIZE ; i++ )
-            {
-                _block[ i ] = rd_generator( );
-            }
-            TCheckSumGenerator crc;
-            crc = std::for_each(  _block,
-                                  _block + SIZE,
-                                  crc
-                             ) ;
-            _checksum = crc();
-        }
-        
-        //
-        // TestThread
-        // ----------
-        //
-        
-        LockFreeWrapperTest::TestThread::TestThread( int id , Data::TLockFreeValue & global_data)
-        : _id    ( id ), 
-          _failed( false ),
-          _global( global_data ) ,
-          _rd_generator( 0 , 10 ) ,
-          Thread< NoWaitController >( NoWaitController( ) )
-        {
-        
-        }
-        LockFreeWrapperTest::TestThread::~TestThread( void )
-        {
-            for (LockFreeWrapper< Data >::TRetiredListItr 
-                  itr  = _data_retired_list.begin();
-                  itr != _data_retired_list.end();
-                  itr ++
-              )
-            {
-                delete *itr;
-            }
-        }
-
-        bool LockFreeWrapperTest::TestThread::failed( void )
-        {
-            return _failed;
-        }
-        
-        void LockFreeWrapperTest::TestThread::loop( void )
-        {
-            bool write_global = ( _rd_generator( ) > 2 ) ? true : false ;
-           
-            
-            maxmm::ScopeTimer timer;
-            {
-                maxmm::ScopeTimer::Ressource res = timer.ressource( );
-                //Reading block 
-                {
-                    Data::TLockFreePtr ptr ( _global );
-                    
-                    if( ptr->consistent( ) == false )
-                    {
-                        _failed = true;
-                    }
-                }   
-        
-                //writing block
-                if ( write_global )
-                {
-                    Data *new_data;
-                    {
-                        Data::TLockFreePtr ptr ( _global );
-                        new_data = new Data( *ptr );
-                    }   
-                    new_data->reset( );
-                    _global.update( new_data , _data_retired_list );
-                }
-            }
-
-            if( write_global )
-            {
-                _write_times.push_back( timer.elapsed( ).to_double( ) );
-            }
-            else
-            {
-                _read_times.push_back( timer.elapsed( ).to_double( ) );
-            }
-        }
         
         //
         // Thread Deleter.
@@ -176,7 +32,7 @@ namespace maxmm
             _read_timeset( d );
         }
 
-        void LockFreeWrapperTest::ThreadDeleter::operator( ) (TestThread *t )
+        void LockFreeWrapperTest::ThreadDeleter::operator( )( LockFreeTestThread *t )
         {
             if( t->failed( ) )
             {
@@ -184,12 +40,12 @@ namespace maxmm
             }
 
             std::for_each(
-                    t->_read_times.begin( ) , 
-                    t->_read_times.end( ) ,
+                    t->read_times( ).begin( ) , 
+                    t->read_times( ).end( ) ,
                     boost::bind( & ThreadDeleter::add_to_read_set , this , _1 ) );
             std::for_each(
-                    t->_write_times.begin( ) , 
-                    t->_write_times.end( ) , 
+                    t->write_times( ).begin( ) , 
+                    t->write_times( ).end( ) , 
                     boost::bind( & ThreadDeleter::add_to_write_set , this , _1 ) );
             delete t;
         }
@@ -226,54 +82,118 @@ namespace maxmm
         
         void LockFreeWrapperTest::setUp( void )
         {
-            //Reading block 
-            {
-                Data::TLockFreePtr ptr ( _shared_data );
-                ptr->reset();
-            }   
-            for(int i=0 ; i<30 ; i++)
-            {
-                _threads.push_back( new TestThread( i , _shared_data) );
-            }
         }
         
         void LockFreeWrapperTest::tearDown( void )
         {
-            std::for_each(
-                    _threads.begin(), 
-                    _threads.end(), 
-                    boost::bind(
-                        &LockFreeWrapperTest::TestThread::stop ,
-                        _1 ) );
-            std::for_each(
-                    _threads.begin( ), 
-                    _threads.end( ), 
-                    boost::bind( 
-                        &LockFreeWrapperTest::TestThread::join ,
-                        _1 ) );
-            
-            std::cout << std::endl;
-            ThreadDeleter td;
-            td = std::for_each(_threads.begin(), _threads.end(), td);
-            _threads.clear();
-            CPPUNIT_ASSERT_MESSAGE("checksum failed" , td.failed()==false);
-        
-            std::cout << "read  avg : " << td.read_avg( )  << std::endl;
-            std::cout << "write avg : " << td.write_avg( ) << std::endl;
         }
         
         void LockFreeWrapperTest::test_lock_free( void )
         {
+            // reading block 
+            {
+                Data::TLockFreePtr ptr ( _shared_data );
+                ptr->reset();
+            }   
+            
+            // create the threads... initialise them with a shared data.
+            for(int i=0 ; i<30 ; i++)
+            {
+                _threads.push_back( new LockFreeThread( i , _shared_data) );
+            }
+
+            // start the thread.
             std::for_each(
                     _threads.begin(), 
                     _threads.end(), 
                     boost::bind(
-                        &LockFreeWrapperTest::TestThread::start , 
+                        &LockFreeTestThread::start , 
                         _1 ) ) ;
 
             ::sleep( 30 );
+            
+            // stop the threads.
+            std::for_each(
+                    _threads.begin(), 
+                    _threads.end(), 
+                    boost::bind(
+                        &LockFreeTestThread::stop ,
+                        _1 ) );
+            
+            // join the thread.
+            std::for_each(
+                    _threads.begin( ), 
+                    _threads.end( ), 
+                    boost::bind( 
+                        &LockFreeTestThread::join ,
+                        _1 ) );
+            
+            std::cout << std::endl;
+            
+            // delete memory and collect statisticall info from threads.
+            ThreadDeleter td;
+            td = std::for_each(_threads.begin(), _threads.end(), td);
+            _threads.clear();
+
+            CPPUNIT_ASSERT_MESSAGE("checksum failed" , td.failed()==false);
+        
+            std::cout << "read  avg : " << td.read_avg( )  << std::endl;
+            std::cout << "write avg : " << td.write_avg( ) << std::endl;
+
         }
         
+        
+        void LockFreeWrapperTest::test_lock_mutex( void )
+        {
+            
+            _shared_data_protected.reset( );
+            
+            // create the threads... initialise them with a shared data.
+            for(int i=0 ; i<30 ; i++)
+            {
+                _threads.push_back( new MutexThread( i , _shared_data_protected) );
+            }
+
+            // start the thread.
+            std::for_each(
+                    _threads.begin(), 
+                    _threads.end(), 
+                    boost::bind(
+                        &LockFreeTestThread::start , 
+                        _1 ) ) ;
+
+            ::sleep( 30 );
+            
+            // stop the threads.
+            std::for_each(
+                    _threads.begin(), 
+                    _threads.end(), 
+                    boost::bind(
+                        &LockFreeTestThread::stop ,
+                        _1 ) );
+            
+            // join the thread.
+            std::for_each(
+                    _threads.begin( ), 
+                    _threads.end( ), 
+                    boost::bind( 
+                        &LockFreeTestThread::join ,
+                        _1 ) );
+            
+            std::cout << std::endl;
+            
+            // delete memory and collect statisticall info from threads.
+            ThreadDeleter td;
+            td = std::for_each(_threads.begin(), _threads.end(), td);
+            _threads.clear();
+
+            CPPUNIT_ASSERT_MESSAGE("checksum failed" , td.failed()==false);
+        
+            std::cout << "read  avg : " << td.read_avg( )  << std::endl;
+            std::cout << "write avg : " << td.write_avg( ) << std::endl;
+
+        }
+       
         CppUnit::TestSuite* LockFreeWrapperTest::getSuite( void )
         {
             
@@ -283,6 +203,12 @@ namespace maxmm
                 new CppUnit::TestCaller<LockFreeWrapperTest>( 
                     "LockFreeWrapperTest::test_lock_free", 
                     &LockFreeWrapperTest::test_lock_free ) );
+             
+            suite->addTest( 
+                new CppUnit::TestCaller<LockFreeWrapperTest>( 
+                    "LockFreeWrapperTest::test_lock_mutex", 
+                    &LockFreeWrapperTest::test_lock_mutex ) );
+           
             return suite;
         }
     }
