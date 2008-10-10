@@ -66,7 +66,7 @@ namespace maxmm
         {
             if ( ( p->_active ) 
                  || 
-                 ( apr_atomic_cas32( &p->_active , 1 , 0 ) != 1 ) )
+                 ( apr_atomic_cas32( &p->_active , 1 , 0 ) != 0 ) )
             {
                 continue;
             }

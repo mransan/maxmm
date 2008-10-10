@@ -72,7 +72,8 @@ namespace maxmm
             
             void test_lock_free( void );
             void test_lock_mutex( void );
-
+            
+            bool test_lock( void );
             static CppUnit::TestSuite* getSuite();
         
         private:
@@ -80,7 +81,8 @@ namespace maxmm
 
             Data::TLockFreeValue _shared_data ;
             Data                 _shared_data_protected ;
-
+            
+            static const uint32_t TEST_DURATION;
         };
     }
 }

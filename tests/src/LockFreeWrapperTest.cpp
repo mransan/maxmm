@@ -70,8 +70,9 @@ namespace maxmm
         // ----------
         //
         
+        const uint32_t LockFreeWrapperTest::TEST_DURATION = 30;
         LockFreeWrapperTest::LockFreeWrapperTest( void )
-        : _shared_data( 1 )
+        : _shared_data( 10 )
         {
         
         }
@@ -87,21 +88,10 @@ namespace maxmm
         void LockFreeWrapperTest::tearDown( void )
         {
         }
+    
         
-        void LockFreeWrapperTest::test_lock_free( void )
+        bool LockFreeWrapperTest::test_lock( void )
         {
-            // reading block 
-            {
-                Data::TLockFreePtr ptr ( _shared_data );
-                ptr->reset();
-            }   
-            
-            // create the threads... initialise them with a shared data.
-            for(int i=0 ; i<30 ; i++)
-            {
-                _threads.push_back( new LockFreeThread( i , _shared_data) );
-            }
-
             // start the thread.
             std::for_each(
                     _threads.begin(), 
@@ -110,7 +100,7 @@ namespace maxmm
                         &LockFreeTestThread::start , 
                         _1 ) ) ;
 
-            ::sleep( 30 );
+            ::sleep( TEST_DURATION );
             
             // stop the threads.
             std::for_each(
@@ -135,11 +125,29 @@ namespace maxmm
             td = std::for_each(_threads.begin(), _threads.end(), td);
             _threads.clear();
 
-            CPPUNIT_ASSERT_MESSAGE("checksum failed" , td.failed()==false);
         
             std::cout << "read  avg : " << td.read_avg( )  << std::endl;
             std::cout << "write avg : " << td.write_avg( ) << std::endl;
+            
+            return !td.failed( );
+        }
 
+        void LockFreeWrapperTest::test_lock_free( void )
+        {
+            // reading block 
+            {
+                Data::TLockFreeReaderPtr ptr ( _shared_data );
+                ptr->reset();
+            }   
+            
+            CPPUNIT_ASSERT( _threads.empty( ) );
+            // create the threads... initialise them with a shared data.
+            for(int i=0 ; i<30 ; i++)
+            {
+                _threads.push_back( new LockFreeThread( i , _shared_data) );
+            }
+            
+            CPPUNIT_ASSERT( this->test_lock( ) );
         }
         
         
@@ -148,50 +156,15 @@ namespace maxmm
             
             _shared_data_protected.reset( );
             
+            CPPUNIT_ASSERT( _threads.empty( ) );
+           
             // create the threads... initialise them with a shared data.
             for(int i=0 ; i<30 ; i++)
             {
                 _threads.push_back( new MutexThread( i , _shared_data_protected) );
             }
-
-            // start the thread.
-            std::for_each(
-                    _threads.begin(), 
-                    _threads.end(), 
-                    boost::bind(
-                        &LockFreeTestThread::start , 
-                        _1 ) ) ;
-
-            ::sleep( 30 );
             
-            // stop the threads.
-            std::for_each(
-                    _threads.begin(), 
-                    _threads.end(), 
-                    boost::bind(
-                        &LockFreeTestThread::stop ,
-                        _1 ) );
-            
-            // join the thread.
-            std::for_each(
-                    _threads.begin( ), 
-                    _threads.end( ), 
-                    boost::bind( 
-                        &LockFreeTestThread::join ,
-                        _1 ) );
-            
-            std::cout << std::endl;
-            
-            // delete memory and collect statisticall info from threads.
-            ThreadDeleter td;
-            td = std::for_each(_threads.begin(), _threads.end(), td);
-            _threads.clear();
-
-            CPPUNIT_ASSERT_MESSAGE("checksum failed" , td.failed()==false);
-        
-            std::cout << "read  avg : " << td.read_avg( )  << std::endl;
-            std::cout << "write avg : " << td.write_avg( ) << std::endl;
-
+            CPPUNIT_ASSERT( this->test_lock( ) );
         }
        
         CppUnit::TestSuite* LockFreeWrapperTest::getSuite( void )

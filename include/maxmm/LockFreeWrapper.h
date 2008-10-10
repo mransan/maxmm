@@ -245,7 +245,7 @@ namespace maxmm
     //! destruction.
     //! 
     template< typename T >
-    class LockFreePtr
+    class LockFreeReaderPtr
     {
     
         private:
@@ -263,7 +263,7 @@ namespace maxmm
             //!
             //! \param[in]  data the lock free object.
             //!
-            LockFreePtr( LockFreeWrapper< T > &data )
+            LockFreeReaderPtr( LockFreeWrapper< T > &data )
             {
                 _record = HzPtrRec::acquire();
                 _ptr = data.get_read_ptr( _record );
@@ -283,10 +283,76 @@ namespace maxmm
            
             //! \brief release the lock
             //!
-            ~LockFreePtr()
+            ~LockFreeReaderPtr()
             {
                 HzPtrRec::release(_record);
         }   
+    };
+
+
+    //! \brief resource management class for obtaining a read/write pointer on a
+    //! lock free object.
+    //! 
+    //! The shared lock free object will be updated upon destruction of this
+    //! pointer.( ie when it goes out of scope. )
+    //!
+    template< typename T >
+    class LockFreeWriterPtr
+    {
+        public:
+
+            //! \brief Constructor.
+            //!
+            //! The constructor aquire a read pointer and take a copy of it.
+            //! Next operations are executed on this newly allocated object.
+            //!
+            //! \param data the shared object.
+            //! \param retired_list the thread-local
+            //!
+            LockFreeWriterPtr(
+                LockFreeWrapper< T > &data, 
+                typename LockFreeWrapper< T >::TRetiredList &retired_list )
+            :   _data( data ) , 
+                _retired_list( retired_list ),
+                _new_ptr( 0 )
+            {
+                
+                LockFreeReaderPtr< T > ptr( _data );
+                _new_ptr = new T(  *ptr );
+            }
+
+            T* operator->( void )
+            {
+                return _new_ptr;
+            }
+
+            T& operator*( void )
+            {
+                assert( _new_ptr );
+                return *_new_ptr;
+            }   
+
+            //! \brief update the global shared data.
+            //!
+            ~LockFreeWriterPtr( void )
+            {
+                _data.update( _new_ptr , _retired_list );
+            }
+
+        private:
+            
+            //! \brief reference to the shared data.
+            //!
+            LockFreeWrapper< T > &_data;
+            
+            //! \brief reference to the thread list of retired data object.
+            //!
+            typename LockFreeWrapper< T >::TRetiredList &_retired_list;
+            
+            //! \brief internal copy of the shared object.
+            //!
+            T* _new_ptr;
+    
     };
    
 }//namespace maxmm

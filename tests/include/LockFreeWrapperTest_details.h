@@ -43,8 +43,9 @@ namespace maxmm
                     typedef std::vector< TItem >    TItemVec;
                     
                     typedef LockFreeWrapper< Data >    TLockFreeValue;
-                    typedef LockFreePtr< Data >        TLockFreePtr;
-                   
+                    typedef LockFreeReaderPtr< Data >  TLockFreeReaderPtr;
+                    typedef LockFreeWriterPtr< Data >  TLockFreeWriterPtr;
+                  
                     //
                     // Methods.
                     // -------
@@ -126,10 +127,11 @@ namespace maxmm
                 //! \brief random number generator to randomly decide to
                 //! write to the global data structure.
                 maxmm::random::Uniform< uint8_t > _rd_generator;
-
+                
                 std::vector< double > _read_times;
                 std::vector< double > _write_times;
      
+                static const uint8_t WRITE_THRESHOLD; 
         };
         
 
@@ -156,6 +158,8 @@ namespace maxmm
 
         };
 
+        //! \brief test thread for mutex like synchronization
+        //!
         class MutexThread : public LockFreeTestThread
         {
             public :

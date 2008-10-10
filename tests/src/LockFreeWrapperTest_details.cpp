@@ -18,7 +18,7 @@ namespace maxmm
         // ---------- 
         //
         
-        const std::size_t Data::SIZE( 100 );
+        const std::size_t Data::SIZE( 25 );
 
         Data::Data( void )
         {
@@ -102,6 +102,8 @@ namespace maxmm
         // ---
         //
         
+        const uint8_t LockFreeTestThread::WRITE_THRESHOLD = 8; 
+
         LockFreeTestThread::LockFreeTestThread( int id )
         :   Thread< NoWaitController >( NoWaitController( ) ),
             _id( id ) ,
@@ -167,14 +169,15 @@ namespace maxmm
         
         void LockFreeThread::loop( void )
         {
-            bool write_global = ( _rd_generator( ) > 2 ) ? true : false ;
+            bool write_global = 
+                ( _rd_generator( ) > WRITE_THRESHOLD ) ? true : false ;
            
             maxmm::ScopeTimer timer;
             {
                 maxmm::ScopeTimer::Ressource res = timer.ressource( );
                 //Reading block 
                 {
-                    Data::TLockFreePtr ptr ( _shared_data );
+                    Data::TLockFreeReaderPtr ptr ( _shared_data );
                     
                     if( ptr->consistent( ) == false )
                     {
@@ -185,13 +188,8 @@ namespace maxmm
                 //writing block
                 if ( write_global )
                 {
-                    Data *new_data;
-                    {
-                        Data::TLockFreePtr ptr ( _shared_data );
-                        new_data = new Data( *ptr );
-                    }   
-                    new_data->reset( );
-                    _shared_data.update( new_data , _data_retired_list );
+                    Data::TLockFreeWriterPtr ptr ( _shared_data , _data_retired_list );
+                    ptr->reset( );
                 }
             }
 
@@ -224,7 +222,8 @@ namespace maxmm
 
         void MutexThread::loop( void )
         {
-            bool write_global = ( _rd_generator( ) > 2 ) ? true : false ;
+            bool write_global = 
+                ( _rd_generator( ) > WRITE_THRESHOLD ) ? true : false ;
            
             maxmm::ScopeTimer timer;
             {
