@@ -269,13 +269,13 @@ namespace maxmm
                 _ptr = data.get_read_ptr( _record );
             }
 
-            T* operator->( void ) 
+            const T* operator->( void ) const 
             {
                 assert( _ptr );
                 return _ptr;
             }
             
-            T& operator*( void ) 
+            const T& operator*( void ) const 
             {
                 assert( _ptr );
                 return *_ptr;
@@ -321,7 +321,7 @@ namespace maxmm
                 _new_ptr = new T(  *ptr );
             }
 
-            T* operator->( void )
+            T* operator->( void ) 
             {
                 return _new_ptr;
             }

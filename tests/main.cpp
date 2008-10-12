@@ -8,6 +8,7 @@
 #include <BoostAsioUnixSocketTest.h>
 #include <StdContainerTest.h>
 #include <ThreadControllerTest.h>
+#include <CastTest.h>
 
 #include <TestCommon.h>
 
@@ -19,6 +20,7 @@
 
 int main( int argc , char ** argv)
 {
+    
     CppUnit::TestResult         result;
     CppUnit::TextUi::TestRunner runner;
 
@@ -30,6 +32,7 @@ int main( int argc , char ** argv)
     runner.addTest(maxmm::test::BoostAsioUnixSocketTest::getSuite( ) );
     runner.addTest(maxmm::test::StdContainerTest::getSuite( ) );
     runner.addTest(maxmm::test::ThreadControllerTest::getSuite( ) );
+    runner.addTest(maxmm::test::CastTest::getSuite( ) );
 
     bool ret = false ;
 

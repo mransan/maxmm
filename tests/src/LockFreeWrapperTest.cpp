@@ -134,12 +134,6 @@ namespace maxmm
 
         void LockFreeWrapperTest::test_lock_free( void )
         {
-            // reading block 
-            {
-                Data::TLockFreeReaderPtr ptr ( _shared_data );
-                ptr->reset();
-            }   
-            
             CPPUNIT_ASSERT( _threads.empty( ) );
             // create the threads... initialise them with a shared data.
             for(int i=0 ; i<30 ; i++)
@@ -153,9 +147,6 @@ namespace maxmm
         
         void LockFreeWrapperTest::test_lock_mutex( void )
         {
-            
-            _shared_data_protected.reset( );
-            
             CPPUNIT_ASSERT( _threads.empty( ) );
            
             // create the threads... initialise them with a shared data.
