@@ -26,7 +26,9 @@ namespace maxmm
                 void tearDown( void );
 
                 void test_static_cast( void );
-                
+                void test_reinterpret_cast( void );
+                void test_primitive_type_cast( void );
+                void test_const_cast( void );
                 static CppUnit::TestSuite* getSuite( void );
 
             private:

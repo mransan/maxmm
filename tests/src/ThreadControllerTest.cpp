@@ -61,6 +61,32 @@ namespace maxmm
             return;     
         }
 
+        void ThreadControllerTest::composite_controller_test( void )
+        {
+            {
+                CompositeController<
+                    OnceController , 
+                    NoWaitController > controller( 
+                         ( OnceController( )  ), 
+                         ( NoWaitController( ) ) );
+
+                CPPUNIT_ASSERT_EQUAL( true ,  controller.execute( ) );
+                CPPUNIT_ASSERT_EQUAL( false , controller.execute( ) );
+            }
+            
+            {
+                CompositeController<
+                    OnceController , 
+                    NoWaitController , 
+                    std::logical_or< bool > > controller( 
+                        static_cast< OnceController >( OnceController( ) ) , 
+                        static_cast< NoWaitController >( NoWaitController( ) ) );
+                
+                CPPUNIT_ASSERT_EQUAL( true , controller.execute( ) );
+                CPPUNIT_ASSERT_EQUAL( true , controller.execute( ) );
+            }
+        }
+
         CppUnit::TestSuite* ThreadControllerTest::getSuite( void )
         {
             
@@ -74,7 +100,12 @@ namespace maxmm
                 new CppUnit::TestCaller<ThreadControllerTest>( 
                     "ThreadControllerTest::once_controller_test", 
                     &ThreadControllerTest::once_controller_test ) );
-           
+            
+            suite->addTest( 
+                new CppUnit::TestCaller<ThreadControllerTest>( 
+                    "ThreadControllerTest::composite_controller_test", 
+                    &ThreadControllerTest::composite_controller_test ) );
+          
             return suite;
         }
 

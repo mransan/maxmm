@@ -4,14 +4,11 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxmm_Time_h
-#define maxmm_Time_h
+#ifndef maxmm_TimeTT_h
+#define maxmm_TimeTT_h
 
 #include <boost/operators.hpp>
-
-#include <iostream>
 #include <time.h>
-
 
 namespace maxmm
 {
@@ -92,7 +89,7 @@ namespace maxmm
             //!
             //! This method uses ::clock_nanosleep( )
             //!
-            //! \param sec the number of second to sleep.
+            //! \param t Time to sleep.
             //!
             static void   sleep( Time t );
             

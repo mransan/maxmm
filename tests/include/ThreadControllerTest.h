@@ -25,6 +25,8 @@ namespace maxmm
                 
                 void timed_controller_test( void );
                 void once_controller_test( void );
+                void composite_controller_test( void );
+
                 static CppUnit::TestSuite* getSuite( void );
         };
     }
