@@ -8,7 +8,7 @@
 #define __maxmm_Random_h__
 
 #include <boost/random.hpp>
-#include <time.h>
+#include <maxmm/Time.h>
 
 namespace maxmm
 {
@@ -20,7 +20,7 @@ namespace maxmm
             public:
 
                 Uniform( T lower_bound , T upper_bound )
-                : _nb_generator( static_cast< unsigned int >( ::clock( ) ) ) , 
+                : _nb_generator( static_cast< unsigned int >( Time::nano( ) ) ) , 
                   _distribution( lower_bound , upper_bound ) , 
                   _var_generator( _nb_generator , _distribution )
                 {
@@ -53,13 +53,8 @@ namespace maxmm
                             <boost::mt19937,
                              boost::uniform_int< T >
                             >    _var_generator; 
-
         };
-
-
-
     }
-
 }
 
 

@@ -8,6 +8,8 @@
 #define maxmm_ThreadController_h
 
 #include <maxmm/Time.h>
+#include <maxmm/Condition.h>
+
 #include <functional>
 
 namespace maxmm
@@ -72,6 +74,35 @@ namespace maxmm
         private:
             Time _period;
             Time _next;
+    };
+
+    class ConditionController
+    {
+        public:
+            ConditionController( Condition &condition )
+            :    _condition( condition ),
+                _continue( false )
+            {
+                 
+            }
+            
+            ConditionController( const ConditionController& controller )
+            :   _condition( controller._condition ),
+                _continue( controller._continue )
+            {}
+            bool execute( void )
+            {
+                if( _continue == true )
+                {
+                    return true;
+                }
+                _condition.wait( );
+                return true;
+            }
+        private:
+           Condition &_condition;
+           bool _continue;
+    
     };
    
 

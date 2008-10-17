@@ -9,6 +9,13 @@ namespace maxmm
 {
     namespace test
     {
-
+        uint64_t fibonacci( uint8_t value )
+        {
+            if( ( value == 0 ) || ( value  == 1 ) )
+            {
+                return static_cast< uint64_t >( value );
+            }
+            return fibonacci( value - 1 ) + fibonacci( value - 2);
+        }
     }
 }

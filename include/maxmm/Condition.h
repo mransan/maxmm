@@ -41,6 +41,8 @@ namespace maxmm
         //! \brief raise the condition to every thread waiting.
         //!
         void broadcast( void );
+
+        void notify_one( void ) ;
 		
 		//! \brief return  the lock that the condition is bind to.
         //!

@@ -9,6 +9,38 @@
 
 #include <maxmm/ThreadController.h>
 #include <maxmm/ScopeTimer.h>
+#include <maxmm/Thread.h>
+
+namespace 
+{
+    class CThread : public maxmm::Thread< maxmm::ConditionController >
+    {
+        public:
+            CThread( maxmm::Condition & condition )
+            :   maxmm::Thread< maxmm::ConditionController >( 
+                    maxmm::ConditionController( condition ) ) ,
+                _iter( 0 )
+            { } 
+            virtual ~CThread( void )
+            { }
+            
+            void loop( void )
+            {
+                ++_iter ;
+            }
+            void init( void )
+            { }
+            void clean(  void )
+            { }
+            uint32_t iter( void )
+            {
+                return _iter;
+            }
+        private:
+            uint32_t _iter ;
+    };
+
+}
 
 namespace maxmm
 {
@@ -86,6 +118,39 @@ namespace maxmm
                 CPPUNIT_ASSERT_EQUAL( true , controller.execute( ) );
             }
         }
+    
+        void ThreadControllerTest::condition_controller_test( void )
+        {
+            Mutex mutex;
+            {
+                ScopeLock lock( mutex );
+                Condition condition( lock );
+                
+                CThread thread( condition );
+
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 0 ) , thread.iter( ) );
+
+                thread.start( );
+
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 0 ) , thread.iter( ) );
+
+                condition.broadcast( );
+                
+                Time::sleep( 0.2 );
+
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , thread.iter( ) );
+                CPPUNIT_ASSERT_EQUAL( false , thread.should_stop( ) );
+
+                thread.stop( );
+                
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , thread.iter( ) );
+                CPPUNIT_ASSERT_EQUAL( true , thread.should_stop( ) );
+                
+                condition.broadcast( );
+
+                thread.join( );
+            }
+        }
 
         CppUnit::TestSuite* ThreadControllerTest::getSuite( void )
         {
@@ -105,7 +170,12 @@ namespace maxmm
                 new CppUnit::TestCaller<ThreadControllerTest>( 
                     "ThreadControllerTest::composite_controller_test", 
                     &ThreadControllerTest::composite_controller_test ) );
-          
+             
+            suite->addTest( 
+                new CppUnit::TestCaller<ThreadControllerTest>( 
+                    "ThreadControllerTest::condition_controller_test", 
+                    &ThreadControllerTest::condition_controller_test ) );
+         
             return suite;
         }
 

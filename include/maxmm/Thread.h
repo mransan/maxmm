@@ -13,15 +13,22 @@
 #include <boost/utility.hpp>
 #include <boost/bind.hpp>
 
+#include <apr_atomic.h>
+
 #include <maxmm/Mutex.h>
 
 namespace maxmm
 {
-    
+    //! \brief Interface ( pure abstract class ) to allow polymorphism usage of
+    //! threads.
+    //!
     class IThread
     {
     public:
         IThread( void ){ }
+        
+        //! \brief need to be virtual to allow polymorphism.
+        //!
         virtual ~IThread( void ){ }
         virtual bool start( void ) = 0;
         virtual void stop( void ) = 0;
@@ -84,14 +91,11 @@ namespace maxmm
         private:
             void run( void );
             
-            
+            bool loop_check( void );
+
             //! \brief indicate that the thread should stop.
             //!
-            bool _should_stop;
-            
-            //! \brief mutex to protec the _should_stop variable.
-            //!
-            mutable Mutex _should_stop_mtx;
+            volatile uint32_t _should_stop;
             
             //! \brief pointer to the underlying boost thread.
             //!
@@ -112,7 +116,7 @@ namespace maxmm
     template< class Controller >
     Thread<Controller>::Thread( const Controller &controller )
     :   _boost_thrd( 0 ),  
-        _should_stop( false ),
+        _should_stop( 0 ),
         _controller( controller )
     {
         // No - Op.
@@ -140,15 +144,13 @@ namespace maxmm
     template< class Controller >
     bool Thread<Controller>::should_stop( void ) const 
     {
-    	ScopeLock lock( _should_stop_mtx );
-    	return _should_stop;
+        return ( _should_stop == 0 ) ? false : true ;
     }
     
     template< class Controller >
     void Thread<Controller>::stop( void )
     {
-    	ScopeLock lock( _should_stop_mtx );
-        _should_stop = true;
+        assert( apr_atomic_cas32( &_should_stop , 1 , 0 ) == 0 );
     }
     
     template< class Controller > 
@@ -156,15 +158,39 @@ namespace maxmm
     {
     	_boost_thrd->join();
     }
+    
+    template< class Controller >
+    bool Thread<Controller>::loop_check( void )
+    {
+        if( _should_stop != 0 )
+        {
+            return false;
+        }
+        
+        if( _controller.execute( ) == false )
+        {
+            return false;
+        }
+        
+        if( _should_stop != 0 )
+        {
+            return false;
+        }
+        
+        return true;
+    }
 
     template< class Controller >
     void Thread<Controller>::run( void )
     {
+        if( _should_stop != 0 )
+        {
+            return ;
+        }
+        
         this->init( );
         
-        while( 
-               ( this->should_stop( ) == false ) && 
-               ( _controller.execute( ) ) )
+        while( this->loop_check( ) )
         {
             this->loop( );
         }

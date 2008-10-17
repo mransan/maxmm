@@ -7,6 +7,8 @@
 #include <maxmm/Time.h>
 #include <cmath>
 #include <iomanip>
+#include <iostream>
+
 namespace maxmm
 {
     const long int Time::NANOSEC_IN_SEC  = 1000000000;
@@ -156,5 +158,10 @@ namespace maxmm
                  << " , nsec:"  << std::setw( 9 )  << std::setfill('0') << t._ts.tv_nsec 
                  << " )";
     }
-
+    
+    uint32_t Time::nano( void )
+    {
+        Time t = Time::now( );
+        return t._ts.tv_nsec;
+    }
 }

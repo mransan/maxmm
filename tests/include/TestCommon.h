@@ -33,6 +33,10 @@ namespace maxmm
                 ::pid_t _pid;
         };
         
+        
+        uint64_t fibonacci( uint8_t value );
+        
+        
         template< typename CONTAINER >
                 static bool do_not_contain( 
                         const CONTAINER & c , 

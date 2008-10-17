@@ -39,7 +39,7 @@ namespace maxmm
             //! \brief destructor.
             //!
             ~Mutex( void );
-	    };
+	};
 	    
     //! \brief Resource management class for lock acquisition.
     //!

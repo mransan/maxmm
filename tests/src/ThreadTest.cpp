@@ -66,7 +66,7 @@ namespace maxmm
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
             
             suite->addTest( new CppUnit::TestCaller<ThreadTest>( 
-                        "testSignal", 
+                        "ThreadTest::test_thread_run", 
                         &ThreadTest::test_thread_run ) );
             return suite;
         }

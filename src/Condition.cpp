@@ -26,6 +26,10 @@ namespace maxmm
     	_condition.notify_all( );
     }
     
+    void Condition::notify_one( void )
+    {
+        _condition.notify_one( );
+    }
     ScopeLock& Condition::scope_lock( void )
     {
     	return _lock;

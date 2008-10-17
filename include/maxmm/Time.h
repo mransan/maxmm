@@ -101,7 +101,8 @@ namespace maxmm
             //!  current time the method return imediately.
             //! 
             static void   sleep_until( const Time  &t );
-
+            
+            static uint32_t nano( void );
         private:
             struct timespec _ts;
             
