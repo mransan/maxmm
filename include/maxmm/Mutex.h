@@ -24,6 +24,7 @@ namespace maxmm
         // This class need access to the underlying boost::mutex
         //
         friend class ScopeLock;
+        friend class Condition;
 	
 	    private:
             //! \brief underlying primitive.

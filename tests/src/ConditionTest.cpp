@@ -71,8 +71,7 @@ namespace maxmm
         void ConditionTest::test_signaling( void )
         {
             Mutex      mutex;
-            ScopeLock  sl(mutex);
-            Condition  condition(sl);
+            Condition  condition(mutex);
         
             //
             // We need to use delete since if the Condition class does not work

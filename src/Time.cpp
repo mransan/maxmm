@@ -156,7 +156,7 @@ namespace maxmm
     {
         return o << "time ( sec:" << t._ts.tv_sec 
                  << " , nsec:"  << std::setw( 9 )  << std::setfill('0') << t._ts.tv_nsec 
-                 << " )";
+                 << " )" << std::setfill(' ');
     }
     
     uint32_t Time::nano( void )

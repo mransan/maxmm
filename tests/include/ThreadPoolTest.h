@@ -25,11 +25,11 @@ namespace maxmm
                 void tearDown( void ) { }
 
                 void test_single_thread( void );
-            
+                void test_multi_thread( void );
+
                 static CppUnit::TestSuite* getSuite( void );
             private:
-    
-        
+
         };
     
     }

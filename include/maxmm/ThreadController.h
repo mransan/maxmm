@@ -81,7 +81,7 @@ namespace maxmm
         public:
             ConditionController( Condition &condition )
             :    _condition( condition ),
-                _continue( false )
+                _continue( true )
             {
                  
             }
@@ -94,10 +94,15 @@ namespace maxmm
             {
                 if( _continue == true )
                 {
+                    _continue = false;
                     return true;
                 }
                 _condition.wait( );
                 return true;
+            }
+            void no_wait( void )
+            {
+                _continue = true;
             }
         private:
            Condition &_condition;

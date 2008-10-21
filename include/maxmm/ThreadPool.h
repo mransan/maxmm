@@ -48,6 +48,8 @@ namespace maxmm
             void stop( void );
 
             void start( void );
+
+            std::vector< uint64_t > execution_stats( void ) const ;
         private:
             class Thread : public maxmm::Thread< ConditionController >
             { 
@@ -57,18 +59,21 @@ namespace maxmm
                     virtual void loop( void );
                     virtual void init( void );
                     virtual void clean( void );
-
+                    
+                    uint64_t nb_works( void ) const ;
                 private:
                     ThreadPool &_thread_pool;
+                    uint64_t _work_counter;
             };
 
             std::vector< ThreadPool::Thread* > _threads;
             Mutex _mutex;
-            ScopeLock _lock;
             Condition _condition;
 
             Mutex _works_mtx;
-            std::list< IWork* > _works; 
+            std::list< IWork* > _works;
+
+            bool _stoped;
     };
 }
 

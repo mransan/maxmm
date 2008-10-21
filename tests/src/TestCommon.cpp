@@ -5,6 +5,8 @@
 /********************************/
 
 #include <TestCommon.h>
+#include <maxmm/Timer.h>
+#include <iostream>
 namespace maxmm
 {
     namespace test
@@ -17,5 +19,23 @@ namespace maxmm
             }
             return fibonacci( value - 1 ) + fibonacci( value - 2);
         }
+        
+        bool exec_until( boost::function0< bool > predicate , Time t )
+        {
+            bool success = predicate( );
+            if( success == true ){ return true; }
+            Timer timer;
+            while( ( timer.elapsed( ) ) < t )
+            {
+                success = predicate( );
+                if( success == true )
+                {
+                    return true;
+                }
+                Time::sleep( 0.01 );
+            }
+            return false;
+        }
+       
     }
 }

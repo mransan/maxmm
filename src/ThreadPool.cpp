@@ -13,7 +13,7 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/construct.hpp>
 
-
+#include <assert.h>
 namespace maxmm
 {
     
@@ -22,28 +22,31 @@ namespace maxmm
         ThreadPool& thread_pool)
     :   maxmm::Thread< maxmm::ConditionController>(
             maxmm::ConditionController( condition ) ) ,
-        _thread_pool( thread_pool )
-    { 
-        
-    
-    }
+        _thread_pool( thread_pool ),
+        _work_counter( 0 )
+    { }
 
     ThreadPool::Thread::~Thread( void )
-    { 
-    }
+    { }
 
 
     void ThreadPool::Thread::loop( void )
     { 
         IWork *work = _thread_pool.get_next_work( );
-        while( 0 != work )
+        if( 0 != work )
         {
             work->execute( );
+            ++_work_counter;
             delete work;
-            work = _thread_pool.get_next_work( );
+            _controller.no_wait( );
         }
     }
-
+    
+    uint64_t ThreadPool::Thread::nb_works( void ) const
+    {
+        return _work_counter;
+    }
+    
     void ThreadPool::Thread::init( void )
     { }
 
@@ -57,8 +60,8 @@ namespace maxmm
     
     ThreadPool::ThreadPool( int nb_threads )
     :   _mutex( ) ,
-        _lock( _mutex ) ,
-        _condition( _lock )
+        _condition( _mutex ),
+        _stoped( true )
     { 
         std::generate_n(
             std::back_inserter( _threads ),
@@ -72,6 +75,11 @@ namespace maxmm
 
     ThreadPool::~ThreadPool( void )
     {
+        if( false == _stoped )
+        {
+            this->stop( );
+        }
+        
         std::for_each(
             _threads.begin( ), 
             _threads.end( ), 
@@ -91,8 +99,10 @@ namespace maxmm
 
     bool ThreadPool::append_work( IWork *work )
     { 
-        ScopeLock lock( _works_mtx );
-        _works.push_back( work );
+        {
+            ScopeLock lock( _works_mtx );
+            _works.push_back( work );
+        }
         _condition.notify_one( );
         return true;
     }
@@ -117,6 +127,7 @@ namespace maxmm
             boost::bind(
                 &Thread::start ,
                 _1 ) );
+        _stoped = false;
         _condition.broadcast( );
     }
 
@@ -135,6 +146,27 @@ namespace maxmm
             boost::bind(
                 &Thread::join ,
                 _1 ) );
+
+         _stoped = true;
     }
+
+    std::vector< uint64_t > ThreadPool::execution_stats( void ) const 
+    {
+        assert( _stoped == true );
+        std::vector< uint64_t > stats( _threads.size( ) );
+        uint32_t ithread = 0;
+        for( std::vector< ThreadPool::Thread* >::const_iterator
+            it  = _threads.begin( ) ; 
+            it != _threads.end( );
+            ++it )
+        {
+            stats[ithread] = (*it)->nb_works( );
+            ++ithread;
+        }
+
+        return stats;
+    }
+    
+
 }
 

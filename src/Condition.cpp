@@ -10,15 +10,17 @@
 namespace maxmm
 {
 
-    Condition::Condition( ScopeLock& lock )
-    :_lock( lock )
+    Condition::Condition( Mutex& mutex )
+    :_mutex( mutex )
     {
         // No - Op.
     }
     
     void Condition::wait( void )
     {
-    	_condition.wait(* ( _lock._boost_lock ) );
+        boost::mutex::scoped_lock lock( _mutex._boost_mtx );
+        std::cout << "wait" << std::endl;
+        _condition.wait( lock );
     }
     
     void Condition::broadcast( void )
@@ -30,9 +32,9 @@ namespace maxmm
     {
         _condition.notify_one( );
     }
-    ScopeLock& Condition::scope_lock( void )
+    Mutex& Condition::mutex( void )
     {
-    	return _lock;
+    	return _mutex;
     }
     Condition::~Condition( void )
     {

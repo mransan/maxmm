@@ -10,9 +10,12 @@
 #include <sys/types.h> 
 #include <signal.h>
 
+#include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <algorithm>
 #include <functional>
+
+#include <maxmm/Time.h>
 
 namespace maxmm
 {
@@ -52,7 +55,9 @@ namespace maxmm
                                 v )  );
             return ( ret == typename CONTAINER::difference_type( 0 ) );
         }
-       
+        
+
+        bool exec_until( boost::function0< bool > predicate , Time t );
     }
 }//namespace maxmm
 

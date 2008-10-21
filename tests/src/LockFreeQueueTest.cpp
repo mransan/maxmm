@@ -18,6 +18,7 @@
 #include <queue>
 #include <vector>
 #include <list>
+#include <iomanip>
 
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -26,12 +27,18 @@
 
 namespace 
 {
+    
+    
+    static const uint32_t NB_TOTAL_OPERATIONS = 1000000;
+    static const uint8_t  NB_THREADS = 2;
+
     class ThreadBase : public maxmm::Thread< maxmm::NoWaitController >
     {
         public:
             ThreadBase( void )
             :   maxmm::Thread< maxmm::NoWaitController >( maxmm::NoWaitController( ) ),
-                _nb_generator( 1  , 15 )
+                _nb_generator( 10  , 13 ),
+                _value( 0 )
             { }
 
             virtual ~ThreadBase( void )
@@ -39,12 +46,11 @@ namespace
             
             void do_work( void )
             {
-                maxmm::Time::sleep( _nb_generator( ) / 100000.0 );
+                static_cast< void >( maxmm::test::fibonacci( _nb_generator( ) ) );
             }
         protected:
             maxmm::random::Uniform< uint8_t > _nb_generator;
-            
-            static const int NB_INSERT = 100000;
+            int _value;        
     };
     
     
@@ -54,7 +60,7 @@ namespace
             LockFreeThread( maxmm::LockFreeQueue< int > &shared_queue )
             :   ThreadBase( ),
                 _shared_queue( shared_queue ),
-                _iter( 0 ) 
+                _iter( NB_TOTAL_OPERATIONS / NB_THREADS ) 
             { }
             
             virtual ~LockFreeThread( void ) 
@@ -65,9 +71,11 @@ namespace
             { }
             void loop( void ) 
             {
-                _shared_queue.push_mt( ++_iter );
+                _shared_queue.push_mt( --_iter );
                 this->do_work( );
-                if( _iter == NB_INSERT )
+                _shared_queue.pop_mt( _value );
+                this->do_work( );
+                if( _iter == 0 )
                 {
                     this->stop( );
                 }
@@ -84,7 +92,7 @@ namespace
             :   ThreadBase( ),
                 _shared_queue( shared_queue ),
                 _shared_mtx( shared_mtx ),
-                _iter( 0 )
+                _iter( NB_TOTAL_OPERATIONS / NB_THREADS )
             {
              
             }
@@ -99,10 +107,16 @@ namespace
             {
                 {
                     maxmm::ScopeLock lock( _shared_mtx );
-                    _shared_queue.push_back( ++_iter );
+                    _shared_queue.push_back( --_iter );
                 }
                 this->do_work( );
-                if( _iter == NB_INSERT )
+                {
+                    maxmm::ScopeLock lock( _shared_mtx );
+                    _value = _shared_queue.front( );
+                    _shared_queue.pop_front( );
+                }
+                this->do_work( );
+                if( _iter == 0 )
                 {
                     this->stop( );
                 }
@@ -120,7 +134,7 @@ namespace
             :   ThreadBase( ),
                 _shared_queue( shared_queue ),
                 _shared_mtx( shared_mtx ),
-                _iter( 0 )
+                _iter( NB_TOTAL_OPERATIONS / NB_THREADS )
             { }
             
             virtual ~LockNoLockThread( void ) 
@@ -133,10 +147,16 @@ namespace
             {
                 {
                     maxmm::ScopeLock lock( _shared_mtx );
-                    _shared_queue.push_st( ++_iter );
+                    _shared_queue.push_st( --_iter );
                 }
                 this->do_work( );
-                if( _iter == NB_INSERT )
+                {
+                    maxmm::ScopeLock lock( _shared_mtx );
+                    _shared_queue.pop_st( _value );
+                }
+                this->do_work( );
+
+                if( _iter == 0 )
                 {
                     this->stop( );
                 }
@@ -252,12 +272,9 @@ namespace maxmm
         
         void LockFreeQueueTest::test_mt_perf( void )
         {
-            
-            {
-                std::list<int> list;
-                list.insert(list.begin( ) , 15000000 , 0 );
-            }
+            const uint8_t WIDTH = 40;
 
+            std::cout << std::endl;
             ScopeTimer timer;
             {
                 std::list< int > queue;
@@ -265,7 +282,7 @@ namespace maxmm
                 std::vector< IThread * > threads;
                 std::generate_n(
                     std::back_inserter( threads ) , 
-                    15 , 
+                    NB_THREADS , 
                     boost::lambda::bind(
                         boost::lambda::new_ptr< MutexThread >( ) , 
                         boost::ref( queue ) , 
@@ -292,7 +309,10 @@ namespace maxmm
                     boost::lambda::bind(
                         boost::lambda::delete_ptr( ) ,
                         boost::lambda::_1 ) );
-                std::cout << "Mutex Thread duration : " << timer.elapsed( ) << std::endl;
+                std::cout   << std::setw( WIDTH ) 
+                            << "Mutex Thread duration:" 
+                            << timer.elapsed( ) 
+                            << std::endl;
             }
             {
                 maxmm::LockFreeQueue< int > queue;
@@ -300,7 +320,7 @@ namespace maxmm
                 std::vector< IThread * > threads;
                 std::generate_n(
                     std::back_inserter( threads ) , 
-                    15 , 
+                    NB_THREADS, 
                     boost::lambda::bind(
                         boost::lambda::new_ptr< LockNoLockThread >( ) , 
                         boost::ref( queue ) , 
@@ -327,14 +347,17 @@ namespace maxmm
                     boost::lambda::bind(
                         boost::lambda::delete_ptr( ) ,
                         boost::lambda::_1 ) );
-                std::cout << "Lock Free No Lock Thread duration : " << timer.elapsed( ) << std::endl;
+                std::cout   << std::setw( WIDTH ) 
+                            << "Lock Free No Lock Thread duration:" 
+                            << timer.elapsed( ) 
+                            << std::endl;
             }
             {
                 LockFreeQueue< int > queue;
                 std::vector< IThread * > threads;
                 std::generate_n(
                     std::back_inserter( threads ) , 
-                    15 , 
+                    NB_THREADS , 
                     boost::lambda::bind(
                         boost::lambda::new_ptr< LockFreeThread >( ) , 
                         boost::ref(queue) ) );
@@ -361,7 +384,10 @@ namespace maxmm
                     boost::lambda::bind(
                         boost::lambda::delete_ptr( ) ,
                         boost::lambda::_1 ) );
-                std::cout << "LockFreeThread duration : " << timer.elapsed( ) << std::endl;
+                std::cout   << std::setw( WIDTH ) 
+                            << "LockFreeThread duration:" 
+                            << timer.elapsed( ) 
+                            << std::endl;
             }
         }
         CppUnit::TestSuite* LockFreeQueueTest::getSuite( void )

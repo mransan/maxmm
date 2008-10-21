@@ -20,14 +20,14 @@ namespace maxmm
 	{
 	private:
 		boost::condition _condition;
-		ScopeLock&       _lock;
+		Mutex&       _mutex;
 
 	public:
 		//! \brief constructor.
         //!
         //! \param lock the lock that the condition should work with.
         //!
-		Condition( ScopeLock& lock );
+		Condition( Mutex& mutex );
 		
         
 		//! \brief destructor.
@@ -48,7 +48,7 @@ namespace maxmm
         //!
         //! \return the lock that the condition is bind to.
         //!
-        ScopeLock& scope_lock( void );
+        Mutex& mutex( void );
 	};
 
 }//namespace utils

@@ -123,8 +123,7 @@ namespace maxmm
         {
             Mutex mutex;
             {
-                ScopeLock lock( mutex );
-                Condition condition( lock );
+                Condition condition( mutex );
                 
                 CThread thread( condition );
 

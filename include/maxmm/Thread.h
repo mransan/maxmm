@@ -87,7 +87,11 @@ namespace maxmm
 
             virtual void clean( void ) = 0;
         
-        
+        protected:            
+            //! \brief control the timing of the thread.
+            //!
+            Controller _controller;
+       
         private:
             void run( void );
             
@@ -101,9 +105,6 @@ namespace maxmm
             //!
             std::auto_ptr<boost::thread> _boost_thrd;
    
-            //! \brief control the timing of the thread.
-            //!
-            Controller _controller;
     };
 
     
@@ -162,7 +163,7 @@ namespace maxmm
     template< class Controller >
     bool Thread<Controller>::loop_check( void )
     {
-        if( _should_stop != 0 )
+        if( this->should_stop( ) )
         {
             return false;
         }
@@ -172,7 +173,7 @@ namespace maxmm
             return false;
         }
         
-        if( _should_stop != 0 )
+        if(  this->should_stop( ) )
         {
             return false;
         }
@@ -183,7 +184,7 @@ namespace maxmm
     template< class Controller >
     void Thread<Controller>::run( void )
     {
-        if( _should_stop != 0 )
+        if( this->should_stop( ) )
         {
             return ;
         }
