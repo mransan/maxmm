@@ -113,6 +113,7 @@ namespace maxmm
             //!
             static struct timespec toTimespec(double sec);
             
+        public:
             //! \brief Number of nano seconds in 1 seconds.
             static const long int NANOSEC_IN_SEC ;
             

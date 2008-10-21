@@ -9,6 +9,72 @@
 #include <iomanip>
 #include <iostream>
 
+#if defined(__APPLE_CC__)
+#include <sys/time.h>
+#include <errno.h>
+namespace
+{
+    typedef uint8_t clockid_t;
+    
+    const uint8_t CLOCK_REALTIME=1;
+    
+    int clock_gettime( clockid_t dummy, struct timespec* ts )
+    {
+        int ret = -1;
+
+        if ( dummy != CLOCK_REALTIME )
+        {
+            errno = EINVAL;
+        }
+        else
+        {
+            struct timeval tv;
+            ::gettimeofday( &tv, 0 );
+            ts->tv_sec = tv.tv_sec;
+            ts->tv_nsec = tv.tv_usec * 1000;
+            ret = 0;
+        }
+
+        return ret;
+    }
+    
+    const int TIMER_ABSTIME = 1;
+    
+    int clock_nanosleep( 
+        clockid_t clock , 
+        int flags , 
+        const struct timespec *rqtp,
+        struct timespec *rmtp)
+    {
+        struct timespec ts;
+        
+        
+        switch( flags )
+        {
+            case TIMER_ABSTIME:
+                ::clock_gettime( CLOCK_REALTIME , &ts );
+                ts.tv_sec -= rqtp->tv_sec;
+                ts.tv_nsec -= rqtp->tv_nsec;
+                if( ts.tv_nsec < 0 )
+                {
+                    --ts.tv_sec;
+                    ts.tv_nsec += maxmm::Time::NANOSEC_IN_SEC;
+                }
+            case 0:
+                ts = *rqtp;
+                break;
+            default:
+                errno = EINVAL;
+                return -1 ;
+        }
+        
+        return ::nanosleep( &ts , rmtp );
+    }
+}
+
+#endif
+
+
 namespace maxmm
 {
     const long int Time::NANOSEC_IN_SEC  = 1000000000;
@@ -62,7 +128,7 @@ namespace maxmm
         _ts.tv_sec  -= t._ts.tv_sec ;
         _ts.tv_nsec -= t._ts.tv_nsec;
 
-        if( _ts.tv_nsec <= 0  )
+        if( _ts.tv_nsec < 0  )
         {
             _ts.tv_nsec += Time::NANOSEC_IN_SEC;
             --_ts.tv_sec ;
@@ -145,7 +211,7 @@ namespace maxmm
     {
         struct timespec ts;
     
-        ts.tv_sec  = static_cast<__time_t>(floor(sec));
+        ts.tv_sec  = static_cast<time_t>(floor(sec));
         sec       -= ts.tv_sec;
         ts.tv_nsec = static_cast<long int>(sec*Time::NANOSEC_IN_SEC);
     

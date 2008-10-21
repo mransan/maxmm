@@ -5,6 +5,7 @@ cmake_minimum_required( VERSION 2.6 )
 include(FindBoost)
 include(FindPkgConfig)
 
+FIND_PACKAGE( Boost 1.36 COMPONENTS thread system )
 
 #
 # Compiler flag.
@@ -37,6 +38,7 @@ set(INCLUDE_FILES   ./include/maxmm/Condition.h
 include_directories  ( include )
 aux_source_directory ( ./src SRC )
 add_library          ( maxmm SHARED ${SRC} )
+target_link_libraries ( maxmm ${apr_LIBRARIES} ${Boost_LIBRARIES} )
 
 
 #
