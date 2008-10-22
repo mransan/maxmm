@@ -131,18 +131,17 @@ namespace maxmm
 
                 thread.start( );
 
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 0 ) , thread.iter( ) );
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , thread.iter( ) );
 
                 condition.broadcast( );
                 
                 Time::sleep( 0.2 );
-
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , thread.iter( ) );
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , thread.iter( ) );
                 CPPUNIT_ASSERT_EQUAL( false , thread.should_stop( ) );
 
                 thread.stop( );
                 
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , thread.iter( ) );
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , thread.iter( ) );
                 CPPUNIT_ASSERT_EQUAL( true , thread.should_stop( ) );
                 
                 condition.broadcast( );

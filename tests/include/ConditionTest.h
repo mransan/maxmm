@@ -52,7 +52,7 @@ namespace maxmm
                 void tearDown( void );
                 
                 void test_signaling( void );
-                
+                void test_scope( void );          
                 static CppUnit::TestSuite* getSuite( void );
         };
     }   

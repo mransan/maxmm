@@ -45,6 +45,7 @@ target_link_libraries ( maxmm ${apr_LIBRARIES} ${Boost_LIBRARIES} )
 # project hierarchy ... only one subdir.
 #
 add_subdirectory     (tests EXCLUDE_FROM_ALL)
+add_subdirectory     (example)
 
 
 #

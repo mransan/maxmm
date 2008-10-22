@@ -19,7 +19,6 @@ namespace maxmm
     void Condition::wait( void )
     {
         boost::mutex::scoped_lock lock( _mutex._boost_mtx );
-        std::cout << "wait" << std::endl;
         _condition.wait( lock );
     }
     

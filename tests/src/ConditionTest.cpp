@@ -102,6 +102,30 @@ namespace maxmm
             CPPUNIT_ASSERT_EQUAL( 0 , tt1_iter );
         }
         
+        void ConditionTest::test_scope( void )
+        { 
+            Mutex mtx;
+            std::auto_ptr< boost::thread > thread( 0 );
+            {
+                Condition condition( mtx );
+                thread.reset( new boost::thread(
+                    boost::bind(
+                        &Condition::wait, 
+                        &condition ) ) );
+                // You must broadcast before detroying the condition
+                // Otherwise the condition destructor will fail while trying to
+                // destroy the mutex.
+                // 
+                // In pthread this is due to a failing call to :
+                // pthread_mutex_destroy( )
+                // see
+                // http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_init.html
+                // for more info.
+                condition.broadcast( );
+                Time::sleep( 0.3 );
+            }
+        }
+        
         CppUnit::TestSuite* ConditionTest::getSuite( void )
         {
             CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
@@ -110,6 +134,11 @@ namespace maxmm
                 new CppUnit::TestCaller<ConditionTest>( 
                     "ConditionTest::test_signaling", 
                     &ConditionTest::test_signaling ) );
+            suite->addTest(
+                new CppUnit::TestCaller<ConditionTest>(
+                    "ConditionTest::test_scope",
+                    &ConditionTest::test_scope ) );
+
             return suite;
         }
     }
