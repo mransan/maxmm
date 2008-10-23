@@ -4,8 +4,8 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxmm_test_CastTest_h
-#define maxmm_test_CastTest_h
+#ifndef maxmm_test_TypeTest_h
+#define maxmm_test_TypeTest_h
 
 
 #include <cppunit/TestFixture.h>
@@ -16,11 +16,11 @@ namespace maxmm
 {
     namespace test
     {
-        class CastTest : CppUnit::TestFixture 
+        class TypeTest : CppUnit::TestFixture 
         {
             public:
-                CastTest( void );
-                ~CastTest( void );
+                TypeTest( void );
+                ~TypeTest( void );
            
                 void setUp( void );
                 void tearDown( void );
@@ -29,6 +29,15 @@ namespace maxmm
                 void test_reinterpret_cast( void );
                 void test_primitive_type_cast( void );
                 void test_const_cast( void );
+                void test_const_ptr( void );
+                
+                //! \brief test function pointer syntax for both C and C++
+                //!
+                //! example were done using the following tutorial
+                //! http://www.newty.de/fpt/index.html
+                //!
+                void test_function_ptr( void );
+
                 static CppUnit::TestSuite* getSuite( void );
 
             private:

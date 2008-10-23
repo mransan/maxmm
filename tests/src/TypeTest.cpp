@@ -1,4 +1,33 @@
-#include <CastTest.h>
+#include <TypeTest.h>
+
+namespace
+{
+    int plus( int a , int b )
+    {
+        return a + b;
+    }
+
+    class FunctionPtrTest
+    {
+        public:
+            int plus_member_nonconst( int a , int b )
+            {
+                return a + b;
+            }
+
+            int plus_member_const( int a , int b ) const 
+            {
+                return a + b;
+            }
+
+            static int plus_static( int a , int b )
+            {
+                return a + b;
+            }
+    };
+}
+
+
 
 namespace maxmm
 {
@@ -58,27 +87,27 @@ namespace maxmm
             };
         }
 
-        CastTest::CastTest( void )
+        TypeTest::TypeTest( void )
         {
         
         }
     
-        CastTest::~CastTest( void )
+        TypeTest::~TypeTest( void )
         {
 
         }
         
-        void CastTest::setUp( void )
+        void TypeTest::setUp( void )
         {
         
         }
 
-        void CastTest::tearDown( void )
+        void TypeTest::tearDown( void )
         {
             
         }
         
-        void CastTest::test_primitive_type_cast( void )
+        void TypeTest::test_primitive_type_cast( void )
         {
             {
                 uint16_t from( 10 );
@@ -106,7 +135,7 @@ namespace maxmm
             }
         }
         
-        void CastTest::test_reinterpret_cast( void )
+        void TypeTest::test_reinterpret_cast( void )
         {
             
             {
@@ -123,10 +152,21 @@ namespace maxmm
                 CPPUNIT_ASSERT_EQUAL( uint16_t( 1 ) , to->_i1 );
                 CPPUNIT_ASSERT_EQUAL( uint16_t( 0 ) , to->_i2 );
             }
+            //
+            // You can use reference and interpret cast.
+            //
+            {
+                S2 from( 1 , 2 );
+                S1 &to = reinterpret_cast< S1& >( from );
+                
+                CPPUNIT_ASSERT_EQUAL( uint16_t( 1 ) , to._i1 );
+                CPPUNIT_ASSERT_EQUAL( uint16_t( 0 ) , to._i2 );
+            }
+
             
 
         }
-        void CastTest::test_static_cast( void )
+        void TypeTest::test_static_cast( void )
         {
             
             //
@@ -206,7 +246,7 @@ namespace maxmm
             }
         }
 
-        void CastTest::test_const_cast( void )
+        void TypeTest::test_const_cast( void )
         {
             {
                 S1 s1( 1 , 2 );
@@ -232,31 +272,141 @@ namespace maxmm
                 const SBase &s_base_cref = s_derived;
                 
                 SDerived &s_cast = 
-                    const_cast< SDerived& >(
-                        static_cast< const SDerived& >( s_base_cref ) );
+                    static_cast< SDerived& >(
+                        const_cast<  SBase& >( s_base_cref ) );
             }
 
         }
+    
+        void TypeTest::test_const_ptr( void )
+        {
+            char original[] = "max is a moron";
+            char second[] = "max is still a moron";
 
-        CppUnit::TestSuite *CastTest::getSuite( void )
+            const char * cptr = original;
+            const char * const cStcptr = original; 
+            char * const ptrc = original;
+
+            //
+            // array content modification. 
+            // --------------------------
+            // ( const prevous to * is relevant ).
+            //
+            
+            // possible
+            // --------
+            ptrc[0] = 'b';
+
+            // NOT possible
+            // -----------
+            // cptr[0] = 'b';
+            // cStcptr[0] = 'c';
+            
+
+            //
+            // Pointer modification.
+            // ---------------------
+            // ( const after the * is relevant ).
+            //
+
+            // possible
+            // -------
+            cptr = second;
+
+            // NOT possible
+            // -----------
+            // ptrc = second;
+            // cStcptr = second;
+        }
+        
+
+        void TypeTest::test_function_ptr( void )
+        {
+            //
+            // Generic C syntax declaration of a function pointer is 
+            // return_type ( *function_name )( param1_type , param2_type )
+            //
+            {
+                int(* function_ptr)(int , int) = &plus;
+                CPPUNIT_ASSERT_EQUAL( int( 3 ) , function_ptr( 1 , 2 ) );        
+            }
+            
+            //
+            // C++ function pointer to a non const member function of a class.
+            //
+            {
+                int (FunctionPtrTest::*nonconst_member_function)( int , int )
+                    = &FunctionPtrTest::plus_member_nonconst;
+                FunctionPtrTest  function_class;
+                FunctionPtrTest* function_class_ptr = &function_class;
+
+                CPPUNIT_ASSERT_EQUAL( 
+                    int( 3 ) , 
+                    (function_class.*nonconst_member_function)( 1 , 2 ) );
+                CPPUNIT_ASSERT_EQUAL(
+                    int( 3 ) , 
+                    (function_class_ptr->*nonconst_member_function)( 1 , 2 ) );
+            }
+            
+            //
+            // C++ function pointer to const member function of a class.
+            // 
+            {
+                int( FunctionPtrTest::*const_member_function)( int , int ) const
+                    = &FunctionPtrTest::plus_member_const;
+                
+                FunctionPtrTest function_class;
+                FunctionPtrTest *function_class_ptr;
+
+                CPPUNIT_ASSERT_EQUAL(
+                    int( 3 ), 
+                    ( function_class.*const_member_function)( 1 , 2 ) );
+                
+                CPPUNIT_ASSERT_EQUAL(
+                    int( 3 ),
+                    ( function_class_ptr->*const_member_function)( 1 , 2 ) ); 
+            }
+
+            //
+            // static method in C++ are the same as C function pointer.
+            //
+            {
+                int( *function_ptr )( int , int ) = &FunctionPtrTest::plus_static;
+
+                CPPUNIT_ASSERT_EQUAL(
+                    int( 3 ) , 
+                    ( function_ptr( 1 , 2 ) ) );
+            }
+        }
+
+        CppUnit::TestSuite *TypeTest::getSuite( void )
         {
              CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
              suite->addTest(
-                new CppUnit::TestCaller<CastTest>(
-                    "CastTest::test_primitive_type_cast",
-                    &CastTest::test_primitive_type_cast) );
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_primitive_type_cast",
+                    &TypeTest::test_primitive_type_cast) );
              suite->addTest(
-                new CppUnit::TestCaller<CastTest>(
-                    "CastTest::test_reinterpret_cast",
-                    &CastTest::test_reinterpret_cast ) );
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_reinterpret_cast",
+                    &TypeTest::test_reinterpret_cast ) );
              suite->addTest( 
-                new CppUnit::TestCaller<CastTest>( 
-                    "CastTest::test_static_cast", 
-                    &CastTest::test_static_cast ) );
+                new CppUnit::TestCaller<TypeTest>( 
+                    "TypeTest::test_static_cast", 
+                    &TypeTest::test_static_cast ) );
              suite->addTest(
-                new CppUnit::TestCaller<CastTest>(
-                    "CastTest::test_const_cast" ,
-                    &CastTest::test_const_cast ) );
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_const_cast" ,
+                    &TypeTest::test_const_cast ) );
+             suite->addTest(
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_const_ptr" ,
+                    &TypeTest::test_const_ptr ) );
+             suite->addTest(
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_function_ptr" ,
+                    &TypeTest::test_function_ptr ) );
+
             return suite; 
         }
     }

@@ -8,9 +8,11 @@
 #include <BoostAsioUnixSocketTest.h>
 #include <StdContainerTest.h>
 #include <ThreadControllerTest.h>
-#include <CastTest.h>
+#include <TypeTest.h>
 #include <ThreadPoolTest.h>
 #include <LockFreeQueueTest.h>
+#include <IomanipTest.h>
+#include <ExceptionTest.h>
 
 #include <TestCommon.h>
 
@@ -34,9 +36,12 @@ int main( int argc , char ** argv)
     runner.addTest(maxmm::test::BoostAsioUnixSocketTest::getSuite( ) );
     runner.addTest(maxmm::test::StdContainerTest::getSuite( ) );
     runner.addTest(maxmm::test::ThreadControllerTest::getSuite( ) );
-    runner.addTest(maxmm::test::CastTest::getSuite( ) );
+    runner.addTest(maxmm::test::TypeTest::getSuite( ) );
     runner.addTest(maxmm::test::ThreadPoolTest::getSuite( ));
     runner.addTest(maxmm::test::LockFreeQueueTest::getSuite( ));
+    runner.addTest(maxmm::test::IomanipTest::getSuite( ));
+    runner.addTest(maxmm::test::ExceptionTest::getSuite( ));
+
     bool ret = false ;
 
     if( argc == 2 )

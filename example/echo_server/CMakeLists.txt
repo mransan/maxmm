@@ -16,6 +16,6 @@ target_link_libraries (single_thread_server  ${LINK_LIBS})
 add_executable        (multi_process_server multi_process_server_main.cpp)
 target_link_libraries (multi_process_server  ${LINK_LIBS})
 
-add_executable        (simple_client simple_client.cpp)
+add_executable        (simple_client simple_client_main.cpp)
 target_link_libraries (simple_client  ${LINK_LIBS})
 
