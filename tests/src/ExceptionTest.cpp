@@ -55,11 +55,11 @@ namespace maxmm
                 { 
                     throw std::range_error("error");
                 }
-                catch( std::exception& )
+                catch( std::exception e )
                 {
                     i = 1;
                 }
-                catch( std::runtime_error&  )
+                catch( std::runtime_error e  )
                 {
                     i = 2;
                 }
@@ -106,6 +106,7 @@ namespace maxmm
                 CPPUNIT_ASSERT_EQUAL( int( 3 ) , i );
             }
         }
+        
         CppUnit::TestSuite *ExceptionTest::getSuite( void )
         {
              CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
@@ -116,6 +117,5 @@ namespace maxmm
            
              return suite; 
         }
-    
     }
 }

@@ -5,7 +5,7 @@
 /********************************/
 
 #include <SingleThreadEchoServer.h>
-#include <Connection.h>
+#include <ClientConnection.h>
 
 #include <boost/bind.hpp>
 
@@ -26,7 +26,7 @@ namespace maxmm
                 boost::asio::ip::tcp::socket *new_connection_socket )
             {
                 
-                Connection *connection = new Connection( new_connection_socket , *this );
+                ClientConnection *connection = new ClientConnection( new_connection_socket , *this );
                 this->add_connection( connection );
                 connection->start( );
                 this->run( );

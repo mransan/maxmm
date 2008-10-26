@@ -5,7 +5,7 @@
 /********************************/
 
 #include <EchoServer.h>
-#include <Connection.h>
+#include <ClientConnection.h>
 #include <boost/bind.hpp>
 
 namespace maxmm
@@ -51,13 +51,13 @@ namespace maxmm
                         new_connection_socket ) );
             }
 
-            void EchoServer::add_connection( Connection * connection )
+            void EchoServer::add_connection( ClientConnection * connection )
             {
                 maxmm::ScopeLock lock( _connections_mtx );
                 _connections.push_back( std::make_pair( connection , true ) );
             }
 
-            void EchoServer::remove_connection( const Connection * connection )
+            void EchoServer::remove_connection( const ClientConnection * connection )
             {
                 maxmm::ScopeLock lock( _connections_mtx );
                 for( TConnectionsItr 

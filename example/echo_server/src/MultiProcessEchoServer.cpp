@@ -5,7 +5,7 @@
 /********************************/
 
 #include <MultiProcessEchoServer.h>
-#include <Connection.h>
+#include <ClientConnection.h>
 
 #include <boost/bind.hpp>
 
@@ -25,14 +25,11 @@ namespace maxmm
                 const boost::system::error_code &error ,
                 boost::asio::ip::tcp::socket *new_connection_socket )
             {
-                
-                
                 pid_t pid = ::fork( );
                 if( pid == 0 )
                 {
-                    
-                    Connection *connection 
-                        = new Connection( new_connection_socket , *this );
+                    ClientConnection *connection 
+                        = new ClientConnection( new_connection_socket , *this );
                     this->add_connection( connection );
                     connection->start( );
                     std::cout << "connection accepted" << std::endl;

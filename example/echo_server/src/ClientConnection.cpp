@@ -4,7 +4,7 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <Connection.h>
+#include <ClientConnection.h>
 #include <EchoServer.h>
 
 #include <boost/bind.hpp>
@@ -14,9 +14,9 @@ namespace maxmm
     {
         namespace echo_server
         {
-            const uint32_t Connection::MAX_LENGTH = 1000;
+            const uint32_t ClientConnection::MAX_LENGTH = 1000;
             
-            Connection::Connection(
+            ClientConnection::ClientConnection(
                 boost::asio::ip::tcp::socket *socket , 
                 EchoServer &echo_server )
             :   _socket_ptr( socket ),
@@ -24,53 +24,60 @@ namespace maxmm
                 _data( new char[ MAX_LENGTH ] )
             { }
 
-            Connection::~Connection( void )
+            ClientConnection::~ClientConnection( void )
             { }
 
-            void Connection::start( void ) 
+            void ClientConnection::start( void ) 
             {
                 _socket_ptr->async_read_some(
                     boost::asio::buffer(
                         _data, 
                         MAX_LENGTH ) ,
                     boost::bind(
-                        &Connection::on_read,
+                        &ClientConnection::on_read,
                         this,
                         boost::asio::placeholders::error, 
                         boost::asio::placeholders::bytes_transferred ) );
             }
 
-            void Connection::on_read(
+            void ClientConnection::on_read(
                 const boost::system::error_code &error,
                 size_t bytes_transfered )
             {
                 if( !error )
                 {
-                    _data[ bytes_transfered ] = '\0';
-                    std::string str( _data );
+                    std::cout << "received : " << _data << std::endl;
+                    
+                    std::reverse(
+                        _data , 
+                        _data + bytes_transfered );
                     
                     _socket_ptr->async_write_some(
-                        boost::asio::buffer( str.c_str( ) , str.size( ) ), 
+                        boost::asio::buffer( _data , bytes_transfered ), 
                         boost::bind(
-                            &Connection::on_write,
+                            &ClientConnection::on_write,
                             this ,
                             boost::asio::placeholders::error ) );
+                    std::cout << "start writing" << std::endl;
                 }
                 else
                 {
+                    std::cout << "read disconnection" << std::endl;
                     _echo_server.remove_connection( this );
                 }
             }
 
-            void Connection::on_write(
+            void ClientConnection::on_write(
                 const boost::system::error_code &error )
             {
                 if( !error )
                 {
+                    std::cout << "data writen" << std::endl ;
                     this->start( );
                 }
                 else
                 {
+                    std::cout << "write disconnection" << std::endl;
                     _echo_server.remove_connection( this );
                 }
             }

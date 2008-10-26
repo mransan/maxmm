@@ -16,8 +16,12 @@ namespace maxmm
     {
         namespace echo_server
         {
-            class Connection;
+            class ClientConnection;
             
+            //! \brief Base class for all echo servers.
+            //!
+            //! provides functionality for managinf client connections.
+            //!
             class EchoServer
             {
                 public:
@@ -39,13 +43,13 @@ namespace maxmm
                     
                     //! \brief remove a connections.
                     //!
-                    void remove_connection( const Connection * connection );
+                    void remove_connection( const ClientConnection * connection );
                 protected:
                     
                     //! \brief add a connection to the list of managed
                     //! connections.
                     //!
-                    void add_connection( Connection * connection );
+                    void add_connection( ClientConnection * connection );
                     //! \brief de-allocate and remove unused connections.
                     //!
                     void clean_connections( void );
@@ -57,13 +61,22 @@ namespace maxmm
                         boost::asio::ip::tcp::socket *new_connection_socket ) = 0;
 
                     
+                    //! \brief reference to the reactor.
+                    //!
                     boost::asio::io_service &_io_service;
+                    
+                    //! \brief port to bound the acceptor.
+                    //!
                     uint32_t _port;
+                    
+                    //! \brief acceptor to receive connection.
+                    //!
                     boost::asio::ip::tcp::acceptor _acceptor;
                     
-                    
+                    //! \brief container for client connections.
+                    //!
                     typedef std::vector< 
-                        std::pair< Connection * , bool > > TConnections;
+                        std::pair< ClientConnection * , bool > > TConnections;
                     typedef TConnections::iterator TConnectionsItr;
                     
                     //! \brief list of managed connections.
@@ -72,7 +85,7 @@ namespace maxmm
 
                     //! \brief connections protection mutex.
                     //!
-                    Mutex _connections_mtx;
+                    mutable Mutex _connections_mtx;
             };
         }
     }

@@ -25,6 +25,96 @@ namespace
                 return a + b;
             }
     };
+
+    class Copy
+    {
+        public:
+            Copy( int i )
+            :   _i( i )
+            { }
+
+            Copy( const Copy& copy )
+            {
+                _i = copy._i;
+                --_i;
+            }
+
+            Copy& operator=( const Copy& copy )
+            {
+                _i = copy._i;
+                ++_i;
+            }
+
+            int _i;
+    };
+    
+    struct A
+    {
+        A( void )
+        {
+            std::cout << "A::A( ) "  ;
+            ++iter;
+        }
+
+        ~A( void )
+        {
+            std::cout << "A::~A( ) " ;
+        }
+
+        static uint32_t iter;
+    };
+    
+    uint32_t A::iter = 0;
+    struct B1 : public virtual A
+    {
+        B1( void )
+        { 
+            std::cout << "B1::B1( ) "  ;
+        }
+
+        ~B1( void )
+        {
+            std::cout << "B1::~B1( ) " ;
+        }
+    };
+    
+    struct B2 : public virtual A
+    {
+        B2( void )
+        { 
+            std::cout << "B2::B2( ) " ;
+        }
+
+        ~B2( void )
+        {
+            std::cout << "B2::~B2( ) ";
+        }
+    };
+    
+    struct B3 : public A
+    {
+        B3( void )
+        { 
+            std::cout << "B3::B3( ) " ;
+        }
+
+        ~B3( void )
+        {
+            std::cout << "B3::~B3( ) ";
+        }
+    };
+   
+    struct C : B3 , B2 ,  B1
+    {
+        C( void )
+        {
+            std::cout << "C::C( ) "  ;
+        }
+        ~C( void )
+        {
+            std::cout << "C::~C( ) " ;
+        }
+    };
 }
 
 
@@ -378,6 +468,19 @@ namespace maxmm
                     ( function_ptr( 1 , 2 ) ) );
             }
         }
+    
+        void TypeTest::test_assignment( void )
+        {
+            Copy copy = 1;
+            CPPUNIT_ASSERT_EQUAL( 1 , copy._i );
+        }
+        
+        void TypeTest::test_virtual_inheritance( void )
+        {
+            std::cout << std::endl;
+            C c;
+            std::cout << std::endl;
+        }
 
         CppUnit::TestSuite *TypeTest::getSuite( void )
         {
@@ -406,7 +509,16 @@ namespace maxmm
                 new CppUnit::TestCaller<TypeTest>(
                     "TypeTest::test_function_ptr" ,
                     &TypeTest::test_function_ptr ) );
+             suite->addTest(
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_assignment" ,
+                    &TypeTest::test_assignment ) );
+             suite->addTest(
+                new CppUnit::TestCaller<TypeTest>(
+                    "TypeTest::test_virtual_inheritance" ,
+                    &TypeTest::test_virtual_inheritance ) );
 
+            
             return suite; 
         }
     }
