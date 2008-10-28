@@ -8,6 +8,7 @@
 #define maxmm_example_echo_server_ClientConnection_h
 
 #include <boost/asio.hpp>
+#include <boost/utility.hpp>
 
 namespace maxmm
 {
@@ -23,7 +24,7 @@ namespace maxmm
             //! This class holds a socket object and handle reading client
             //! request and writing back.
             //!
-            class ClientConnection
+            class ClientConnection : boost::noncopyable
             {
                 public:
                     //! \brief Constructor.

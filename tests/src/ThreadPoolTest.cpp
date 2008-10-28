@@ -190,48 +190,48 @@ namespace maxmm
                     std::cout << boost::lambda::_1 << ' ' );
                 std::cout << std::endl;
             }
-//            {
-//                // vector of value that will set to 1 in the bool job.
-//                std::vector< uint32_t > bool_val( NB_WORKS );
-//
-//                // create the bool job.
-//                std::vector< BoolWork* > works;
-//                std::transform(
-//                    bool_val.begin( ) , 
-//                    bool_val.end( ),
-//                    std::back_inserter( works ),
-//                    boost::lambda::bind(
-//                        boost::lambda::new_ptr< BoolWork >( )  , 
-//                        boost::lambda::_1) );
-//                
-//                // create the pool.
-//                maxmm::ThreadPool pool( 5 );
-//           
-//                pool.start( );
-//                
-//                // append all the jobs.
-//                std::for_each(
-//                    works.begin( ) , 
-//                    works.end( ) , 
-//                    boost::bind(
-//                        &ThreadPool::append_work , 
-//                        &pool , 
-//                        _1 ) );
-//                CPPUNIT_ASSERT(
-//                    maxmm::test::exec_until( 
-//                        boost::bind( 
-//                            &verify_vector , 
-//                            boost::cref( bool_val ) ) , 
-//                        2 ) );
-//                pool.stop( );
-//                std::vector< uint64_t > stats = pool.execution_stats( );
-//                std::for_each(
-//                    stats.begin( ),  
-//                    stats.end( ),
-//                    std::cout << boost::lambda::_1 << ' ' );
-//                std::cout << std::endl;
-//               
-//            }
+            {
+                // vector of value that will set to 1 in the bool job.
+                std::vector< uint32_t > bool_val( NB_WORKS );
+
+                // create the bool job.
+                std::vector< BoolWork* > works;
+                std::transform(
+                    bool_val.begin( ) , 
+                    bool_val.end( ),
+                    std::back_inserter( works ),
+                    boost::lambda::bind(
+                        boost::lambda::new_ptr< BoolWork >( )  , 
+                        boost::lambda::_1) );
+                
+                // create the pool.
+                maxmm::ThreadPool pool( 5 );
+           
+                pool.start( );
+                
+                // append all the jobs.
+                std::for_each(
+                    works.begin( ) , 
+                    works.end( ) , 
+                    boost::bind(
+                        &ThreadPool::append_work , 
+                        &pool , 
+                        _1 ) );
+                CPPUNIT_ASSERT(
+                    maxmm::test::exec_until( 
+                        boost::bind( 
+                            &verify_vector , 
+                            boost::cref( bool_val ) ) , 
+                        2 ) );
+                pool.stop( );
+                std::vector< uint64_t > stats = pool.execution_stats( );
+                std::for_each(
+                    stats.begin( ),  
+                    stats.end( ),
+                    std::cout << boost::lambda::_1 << ' ' );
+                std::cout << std::endl;
+               
+            }
         }
 
         CppUnit::TestSuite* ThreadPoolTest::getSuite( void )

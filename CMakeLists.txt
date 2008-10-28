@@ -21,6 +21,12 @@ include_directories   (${apr_INCLUDE}      )
 link_directories      (${apr_LIBRARY_DIRS} )
 add_definitions       (${apr_CFLAGS}       )
 
+pkg_search_module(libxml++ libxml++-2.6)
+include_directories   (${libxml++_INCLUDE}      )
+link_directories      (${libxml++_LIBRARY_DIRS} )
+add_definitions       (${libxml++_CFLAGS}       )
+
+
 #
 # maxmm include , source and target library.
 #
@@ -38,7 +44,10 @@ set(INCLUDE_FILES   ./include/maxmm/Condition.h
 include_directories  ( include )
 aux_source_directory ( ./src SRC )
 add_library          ( maxmm SHARED ${SRC} )
-target_link_libraries ( maxmm ${apr_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries ( maxmm 
+                        ${apr_LIBRARIES} 
+                        ${Boost_LIBRARIES}
+                        ${libxml++_LIBRARIES} )
 
 
 #

@@ -4,8 +4,8 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxmm_test_ExceptionTest_h
-#define maxmm_test_ExceptionTest_h
+#ifndef maxmm_test_LibXmlTest_h
+#define maxmm_test_LibXmlTest_h
 
 
 #include <cppunit/TestFixture.h>
@@ -16,18 +16,16 @@ namespace maxmm
 {
     namespace test
     {
-        class ExceptionTest : CppUnit::TestFixture 
+        class LibXmlTest : CppUnit::TestFixture 
         {
             public:
-                ExceptionTest( void );
-                ~ExceptionTest( void );
+                LibXmlTest( void );
+                ~LibXmlTest( void );
            
                 void setUp( void );
                 void tearDown( void );
 
-                void test_inheritance( void );
-                void test_nothrow( void );
-                void test_unexpected( void );
+                void test_simple( void );
                 
                 static CppUnit::TestSuite* getSuite( void );
 

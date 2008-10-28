@@ -12,7 +12,12 @@ include_directories   (${cppunit_INCLUDE}      )
 link_directories      (${cppunit_LIBRARY_DIRS} )
 add_definitions       (${cppunit_CFLAGS}       )
 
-set(LINK_LIBS     ${Boost_LIBRARIES} ${cppunit_LIBRARIES} ${apr_LIBRARIES} dl maxmm maxmmTest)
+set(    LINK_LIBS     
+        ${Boost_LIBRARIES} 
+        ${cppunit_LIBRARIES} 
+        ${apr_LIBRARIES}
+        ${libxml++_LIBRARIES} 
+        dl maxmm maxmmTest )
 
 
 include_directories   (./include     )
