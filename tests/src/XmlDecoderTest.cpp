@@ -4,7 +4,7 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <LibXmlTest.h>
+#include <XmlDecoderTest.h>
 
 #include <maxmm/XmlDecoder.h>
 
@@ -60,28 +60,23 @@ namespace maxmm
 {
     namespace test
     {
-        LibXmlTest::LibXmlTest( void )
+        XmlDecoderTest::XmlDecoderTest( void )
         { }
 
-        LibXmlTest::~LibXmlTest( void )
+        XmlDecoderTest::~XmlDecoderTest( void )
         { }
 
-        void LibXmlTest::setUp( void )
+        void XmlDecoderTest::setUp( void )
         { }
 
-        void LibXmlTest::tearDown( void )
+        void XmlDecoderTest::tearDown( void )
         { }
-
-        void LibXmlTest::test_simple( void )
+        
+        void XmlDecoderTest::test_primitive( void )
         {
-            {
-                Glib::ustring xml("<root><node1>12</node1></root>");
-                
-                xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                std::cout << parser.get_document( )->get_root_node( )->get_name( ) << std::endl;
-            }
-
+            //
+            // Test that a valid xml is correclty decoded.
+            //
             {
                 Glib::ustring xml("<root><node1>12</node1></root>");
                 
@@ -90,11 +85,21 @@ namespace maxmm
                 XmlDecoder decoder( parser.get_document( ) );
                 
                 XmlPrimitiveMandatory test;
-                test.decode( decoder );
-
+                try
+                {
+                    test.decode( decoder );
+                }
+                catch( ... )
+                {
+                    CPPUNIT_ASSERT( false );
+                }
                 CPPUNIT_ASSERT( test._value == 12 );
             }
             
+            //
+            // Test that an xml withouth the mandatory node raise the correct
+            // exception.
+            //
             {
                 Glib::ustring xml("<root><node2>12</node2></root>");
                 
@@ -103,6 +108,7 @@ namespace maxmm
                 XmlDecoder decoder( parser.get_document( ) );
                 
                 XmlPrimitiveMandatory test;
+                int exception = 0;
                 try
                 {
                     test.decode( decoder );
@@ -110,13 +116,19 @@ namespace maxmm
                 catch( maxmm::XmlDecoderException& e )
                 {
                     std::cout << e.what( ) << std::endl; 
+                    exception = 1;
                 }
                 catch( ... )
                 {
-                    CPPUNIT_ASSERT( false );
+                    exception = 2;
                 }
+                CPPUNIT_ASSERT_EQUAL( int( 1 ) , exception );
             }
             
+            //
+            // Test that the decoder raises an exception when multiple nodes are
+            // found.
+            //
             {
                 Glib::ustring xml("<root><node1>12</node1><node1>13</node1></root>");
                 
@@ -125,6 +137,7 @@ namespace maxmm
                 XmlDecoder decoder( parser.get_document( ) );
                 
                 XmlPrimitiveMandatory test;
+                int exception = 0;
                 try
                 {
                     test.decode( decoder );
@@ -132,13 +145,20 @@ namespace maxmm
                 catch( maxmm::XmlDecoderException& e )
                 {
                     std::cout << e.what( ) << std::endl; 
+                    exception = 1;
                 }
                 catch( ... )
                 {
-                    CPPUNIT_ASSERT( false );
+                    exception = 2;
                 }
+
+                CPPUNIT_ASSERT_EQUAL( int( 1 ) , exception );
             }
             
+            //
+            // Test that the decoder raises an exception when no content is
+            // found in the node.
+            //
             {
                 Glib::ustring xml("<root><node1><boom></boom></node1></root>");
                 
@@ -147,6 +167,7 @@ namespace maxmm
                 XmlDecoder decoder( parser.get_document( ) );
                 
                 XmlPrimitiveMandatory test;
+                int exception = 0;
                 try
                 {
                     test.decode( decoder );
@@ -154,35 +175,22 @@ namespace maxmm
                 catch( maxmm::XmlDecoderException& e )
                 {
                     std::cout << e.what( ) << std::endl; 
+                    exception = 1;
                 }
                 catch( ... )
                 {
-                    CPPUNIT_ASSERT( false );
+                    exception = 2;
                 }
-            }
-            
-            {
-                Glib::ustring xml("<root></root>");
-                
-                xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
-                
-                XmlPrimitiveOptional test;
-                try
-                {
-                    test.decode( decoder );
-                }
-                catch( maxmm::XmlDecoderException& e )
-                {
-                    CPPUNIT_ASSERT( false );
-                }
-                catch( ... )
-                {
-                    CPPUNIT_ASSERT( false );
-                }
+                CPPUNIT_ASSERT_EQUAL( int( 1 ) , exception );
             }
 
+        }
+        
+        void XmlDecoderTest::test_classlike( void )
+        {
+            //
+            // Test that a valid xml is correctly decoded.
+            //
             {
                 Glib::ustring xml("<root><primitive><node1>12</node1></primitive></root>");
                 
@@ -191,11 +199,26 @@ namespace maxmm
                 XmlDecoder decoder( parser.get_document( ) );
                 
                 XmlClassLike test;
-                test.decode( decoder );
-
+                try
+                {
+                    test.decode( decoder );
+                }
+                catch( ... )
+                {
+                    CPPUNIT_ASSERT( false );
+                }
                 CPPUNIT_ASSERT( test._primitive._value == 12 );
             }
-            {
+            
+        }
+        
+        void XmlDecoderTest::test_rootnode( void )
+        {
+
+           //
+           // Test that a top level class is correctly decoded.
+           //
+           {
                 Glib::ustring xml("<root><node1>12</node1></root>");
                 
                 xmlpp::DomParser parser;
@@ -215,26 +238,9 @@ namespace maxmm
                 CPPUNIT_ASSERT( 12  == test._value );
             }
             
-            {
-                Glib::ustring xml("<root><node1>12</node1></root>");
-                
-                xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
-                
-                XmlPrimitiveOptional test;
-                try
-                {
-                    decoder.read_element( test );
-                }
-                catch( ... )
-                {
-                    CPPUNIT_ASSERT( false );
-                }
-                
-                CPPUNIT_ASSERT( 12  == test._value );
-            }
-            
+            //
+            // Test that an invalid root node is correctly detected.
+            //
             {
                 Glib::ustring xml("<invalid><node1>12</node1></invalid>");
                 
@@ -260,20 +266,26 @@ namespace maxmm
                 
                 CPPUNIT_ASSERT( 1  == except );
             }
-
         }
         
-        CppUnit::TestSuite *LibXmlTest::getSuite( void )
+        CppUnit::TestSuite *XmlDecoderTest::getSuite( void )
         {
              CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
              suite->addTest(
-                new CppUnit::TestCaller<LibXmlTest>(
-                    "LibXmlTest::test_simple",
-                    &LibXmlTest::test_simple) );
-         
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_primitive",
+                    &XmlDecoderTest::test_primitive) );
+             suite->addTest(
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_classlike",
+                    &XmlDecoderTest::test_classlike) );
+             suite->addTest(
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_rootnode",
+                    &XmlDecoderTest::test_rootnode) );
+       
              return suite; 
         }
-   
     }
 }
 

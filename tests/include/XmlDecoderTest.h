@@ -4,8 +4,8 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxmm_test_LibXmlTest_h
-#define maxmm_test_LibXmlTest_h
+#ifndef maxmm_test_XmlDecoderTest_h
+#define maxmm_test_XmlDecoderTest_h
 
 
 #include <cppunit/TestFixture.h>
@@ -16,17 +16,18 @@ namespace maxmm
 {
     namespace test
     {
-        class LibXmlTest : CppUnit::TestFixture 
+        class XmlDecoderTest : CppUnit::TestFixture 
         {
             public:
-                LibXmlTest( void );
-                ~LibXmlTest( void );
+                XmlDecoderTest( void );
+                ~XmlDecoderTest( void );
            
                 void setUp( void );
                 void tearDown( void );
 
-                void test_simple( void );
-                
+                void test_primitive( void );
+                void test_classlike( void );
+                void test_rootnode( void );
                 static CppUnit::TestSuite* getSuite( void );
 
             private:

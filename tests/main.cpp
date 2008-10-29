@@ -13,7 +13,7 @@
 #include <LockFreeQueueTest.h>
 #include <IomanipTest.h>
 #include <ExceptionTest.h>
-#include <LibXmlTest.h>
+#include <XmlDecoderTest.h>
 
 #include <TestCommon.h>
 
@@ -42,7 +42,7 @@ int main( int argc , char ** argv)
     runner.addTest(maxmm::test::LockFreeQueueTest::getSuite( ));
     runner.addTest(maxmm::test::IomanipTest::getSuite( ));
     runner.addTest(maxmm::test::ExceptionTest::getSuite( ));
-    runner.addTest(maxmm::test::LibXmlTest::getSuite( ));
+    runner.addTest(maxmm::test::XmlDecoderTest::getSuite( ));
 
     bool ret = false ;
 

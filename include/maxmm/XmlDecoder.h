@@ -17,6 +17,9 @@
 
 namespace maxmm
 {
+    
+    //! \brief generic exception class for xml decoding.
+    //!
     class XmlDecoderException : public std::runtime_error
     {
         public :
@@ -28,26 +31,54 @@ namespace maxmm
     template < int X >
     struct Int2Type { enum { value = X }; };
 
+    //! \brief define the 2 xml typed. 
+    //!
+    //! * primitive correspond to type which are like <node>the value of the
+    //! type</node>. The primitive type has no further decomposition, it is the
+    //! end leaf of the class decomposition tree.
+    //! * classlike corresponds to type that decompose themselves into other
+    //! types, either classlike or primitive.
+    //!
     enum EXmlType
     {
         primitive,
         classlike
     };
     
+    //! \brief utility class to decide if a type is primitive or classlike.
+    //!
+    //! By default the T is classlike, if one decide that T should be primitive
+    //! then this class should be specialize and the typedef made accordingly.
+    //!
     template < typename T >
     struct XmlSwitcher
     {
         typedef Int2Type< classlike > XmlType;
     };
 
+    //! \bried decode an Xml document into a class hierarchy.
+    //!
     class XmlDecoder
     {
         public:
+            
+            //! \brief Constructor.
+            //!
+            //! \param document the xml document.
+            //!
             XmlDecoder( const xmlpp::Document  *document)
             :   _document( document ),
                 _current_node( _document->get_root_node( ) )
             { }
             
+            //! \brief method for Xml classes to register an element.
+            //!
+            //! \param value_name the name of the Xml node to read.
+            //! \param value the variable to assign the xml value.
+            //! \param optional indicate if the xml node is optional or not. If
+            //! the node/value is not optional and the node is not found in the
+            //! xml document an exception will be thrown.
+            //!
             template< typename T >
             void read_element( 
                 const Glib::ustring &value_name , 
@@ -58,6 +89,13 @@ namespace maxmm
                 this->read_element( xml_type, value_name , value , optional );
             }
             
+            //! \brief read the top level value of the xml document.
+            //! 
+            //! This method make sure the root node correspond to the one
+            //! indicated by the class T if not throws an exception.
+            //!
+            //! \param value the value matching the root node.
+            //!
             template< typename  T >
             void read_element(
                 T& value )
