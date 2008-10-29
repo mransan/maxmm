@@ -10,10 +10,54 @@
 
 #include <libxml++/libxml++.h>
 #include <glibmm/ustring.h>
+#include <libxml/tree.h>
 
 #include <sstream>
 #include <stdexcept>
 
+
+namespace
+{
+    struct NodeReseter
+    {
+        NodeReseter( xmlpp::Node *& current_node )
+        :   _current_node( current_node ) , _rec( current_node )
+        { }
+
+        ~NodeReseter( void )
+        {
+            _current_node = _rec ;
+        }
+
+        private:
+            xmlpp::Node *&_current_node;
+            xmlpp::Node  *_rec;
+    };
+    struct NodeExchanger
+    {
+        NodeExchanger( 
+            xmlpp::Node *exchangee , 
+            xmlpp::Node *prev_parent , 
+            xmlpp::Node *new_parent )
+        :   _exchangee( exchangee ) , 
+            _prev_parent( prev_parent ) , 
+            _new_parent( new_parent )
+        {
+            xmlUnlinkNode( exchangee->cobj( ) );
+            xmlAddChild( new_parent->cobj( ) , exchangee->cobj( ) );
+        }
+
+        ~NodeExchanger( void )
+        {
+            xmlUnlinkNode( _exchangee->cobj( ) );
+            xmlAddChild( _prev_parent->cobj( ) , _exchangee->cobj( ) );
+        }
+
+        xmlpp::Node *_exchangee;
+        xmlpp::Node *_prev_parent;
+        xmlpp::Node *_new_parent;
+    };
+}
 
 namespace maxmm
 {
@@ -102,14 +146,13 @@ namespace maxmm
             {
                 if( T::root_node == _current_node->get_name( ) )
                 {
-                    xmlpp::Node * current_node_rec = _current_node;
+                    NodeReseter reseter( _current_node );
                     try
                     {
                         value.decode( *this );
                     }
                     catch( std::exception & )
                     {
-                        _current_node = current_node_rec;
                         throw;
                     }
                 }
@@ -124,7 +167,69 @@ namespace maxmm
                     throw XmlDecoderException( error.str( ) );
                 }
             }
-        private:
+            template< typename T >
+            void read_sequence( 
+                const Glib::ustring &sequence_name , 
+                const Glib::ustring &item_name , 
+                T& sequence ,
+                bool optional = false )
+            {
+                xmlpp::Element * sequence_element 
+                    = this->get_value_element(
+                        sequence_name , 
+                        optional );
+                if( 0 == sequence_element )
+                {
+                    return ;
+                }
+
+                sequence.clear( );
+
+                xmlpp::Node::NodeList nodes 
+                    = sequence_element->get_children( item_name );
+                if( true == nodes.empty( ) )
+                {
+                    std::ostringstream error;
+                    error << "no item found for sequence " << sequence_name;
+                    throw XmlDecoderException( error.str( ) );
+                }
+                
+                NodeReseter reseter( _current_node );                
+                for( xmlpp::Node::NodeList::iterator 
+                        itr  = nodes.begin( ) ;
+                        itr != nodes.end( ) ;
+                        ++itr )
+                {
+                    // 
+                    // If an error occurs here then it means that the contains
+                    // in the sequence does NOT have a default constructor.
+                    //
+                    typename T::value_type new_item;
+                    
+                    //
+                    // In order to reuse the this->read_element method we must
+                    // provide a node with a single child, the child being the
+                    // current node of the list.
+                    //
+                    xmlpp::Document fake_document;
+                    fake_document.create_root_node( "fake" );
+                    {
+                        //
+                        // This insure that the document remains the same if an
+                        // exception is thrown.
+                        //
+                        NodeExchanger exchanger( 
+                            *itr , 
+                            sequence_element ,
+                            fake_document.get_root_node( ) );
+                                        
+                        _current_node = fake_document.get_root_node( );
+                        this->read_element( item_name , new_item );
+                        _current_node = 0;
+                        sequence.push_back( new_item );
+                    }
+                }
+            } 
             
             template< typename T >
             void read_element( 
@@ -138,11 +243,10 @@ namespace maxmm
                 {
                     return ;
                 }
-               
-                xmlpp::Node *current_node_rec = _current_node;
+                
+                NodeReseter reseter( _current_node );
                 _current_node = value_element;
                 value.decode( *this );
-                _current_node = current_node_rec;
             }
                     
             template< typename T >
@@ -222,6 +326,7 @@ namespace maxmm
                 }
                 return value_element;            
             }
+            
         private:
             const xmlpp::Document *_document;
             xmlpp::Node *_current_node;

@@ -7,6 +7,7 @@
 #include <XmlDecoderTest.h>
 
 #include <maxmm/XmlDecoder.h>
+#include <libxml/tree.h>
 
 namespace 
 {
@@ -43,15 +44,17 @@ namespace
     struct XmlClassLike
     {
         XmlClassLike( void )
-        :   _primitive( )
+        :   _primitive1( ) , _primitive2( )
         { }
 
         void decode( maxmm::XmlDecoder & decoder )
         {
-            decoder.read_element( "primitive" , _primitive , true );
+            decoder.read_element( "primitive1" , _primitive1 , true );
+            decoder.read_element( "primitive2" , _primitive2 , true );
         }
 
-        XmlPrimitiveMandatory _primitive;
+        XmlPrimitiveMandatory _primitive1;
+        XmlPrimitiveMandatory _primitive2;
     };
 }
 
@@ -192,7 +195,15 @@ namespace maxmm
             // Test that a valid xml is correctly decoded.
             //
             {
-                Glib::ustring xml("<root><primitive><node1>12</node1></primitive></root>");
+                Glib::ustring xml(
+                    "<root>"
+                        "<primitive1>"
+                            "<node1>12</node1>"
+                        "</primitive1>"
+                        "<primitive2>"
+                            "<node1>13</node1>"
+                        "</primitive2>"
+                    "</root>");
                 
                 xmlpp::DomParser parser;
                 parser.parse_memory( xml );
@@ -207,7 +218,8 @@ namespace maxmm
                 {
                     CPPUNIT_ASSERT( false );
                 }
-                CPPUNIT_ASSERT( test._primitive._value == 12 );
+                CPPUNIT_ASSERT( test._primitive1._value == 12 );
+                CPPUNIT_ASSERT( test._primitive2._value == 13 );
             }
             
         }
@@ -268,6 +280,42 @@ namespace maxmm
             }
         }
         
+
+        void XmlDecoderTest::test_sequence( void )
+        {
+            {
+                Glib::ustring xml(
+                    "<root>\
+                        <list>\
+                            <item>1</item>\
+                            <item>2</item>\
+                            <item>3</item>\
+                        </list>\
+                     </root>");
+                
+                xmlpp::DomParser parser;
+                parser.parse_memory( xml );
+                XmlDecoder decoder( parser.get_document( ) );
+
+                std::vector< uint32_t > list;
+
+                try
+                {
+                    decoder.read_sequence( "list" , "item" , list );
+                }
+                catch( std::exception& e )
+                {
+                    std::cout << e.what( ) << std::endl;
+                    CPPUNIT_ASSERT( false );
+                }
+                
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , list[0] );
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , list[1] );
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 3 ) , list[2] );
+            } 
+        }
+
+        
         CppUnit::TestSuite *XmlDecoderTest::getSuite( void )
         {
              CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
@@ -283,7 +331,11 @@ namespace maxmm
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_rootnode",
                     &XmlDecoderTest::test_rootnode) );
-       
+             suite->addTest(
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_sequence",
+                    &XmlDecoderTest::test_sequence) );
+      
              return suite; 
         }
     }

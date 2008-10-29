@@ -28,6 +28,8 @@ namespace maxmm
                 void test_primitive( void );
                 void test_classlike( void );
                 void test_rootnode( void );
+                void test_sequence( void );
+
                 static CppUnit::TestSuite* getSuite( void );
 
             private:
