@@ -8,56 +8,12 @@
 #ifndef maxmm_XmlDecoder_h 
 #define maxmm_XmlDecoder_h
 
-#include <libxml++/libxml++.h>
-#include <glibmm/ustring.h>
-#include <libxml/tree.h>
+#include <maxmm/detail/Xml_detail.h>
 
 #include <sstream>
 #include <stdexcept>
 
-
-namespace
-{
-    struct NodeReseter
-    {
-        NodeReseter( xmlpp::Node *& current_node )
-        :   _current_node( current_node ) , _rec( current_node )
-        { }
-
-        ~NodeReseter( void )
-        {
-            _current_node = _rec ;
-        }
-
-        private:
-            xmlpp::Node *&_current_node;
-            xmlpp::Node  *_rec;
-    };
-    struct NodeExchanger
-    {
-        NodeExchanger( 
-            xmlpp::Node *exchangee , 
-            xmlpp::Node *prev_parent , 
-            xmlpp::Node *new_parent )
-        :   _exchangee( exchangee ) , 
-            _prev_parent( prev_parent ) , 
-            _new_parent( new_parent )
-        {
-            xmlUnlinkNode( exchangee->cobj( ) );
-            xmlAddChild( new_parent->cobj( ) , exchangee->cobj( ) );
-        }
-
-        ~NodeExchanger( void )
-        {
-            xmlUnlinkNode( _exchangee->cobj( ) );
-            xmlAddChild( _prev_parent->cobj( ) , _exchangee->cobj( ) );
-        }
-
-        xmlpp::Node *_exchangee;
-        xmlpp::Node *_prev_parent;
-        xmlpp::Node *_new_parent;
-    };
-}
+#include <list>
 
 namespace maxmm
 {
@@ -72,34 +28,8 @@ namespace maxmm
             { }
     };
     
-    template < int X >
-    struct Int2Type { enum { value = X }; };
 
-    //! \brief define the 2 xml typed. 
-    //!
-    //! * primitive correspond to type which are like <node>the value of the
-    //! type</node>. The primitive type has no further decomposition, it is the
-    //! end leaf of the class decomposition tree.
-    //! * classlike corresponds to type that decompose themselves into other
-    //! types, either classlike or primitive.
-    //!
-    enum EXmlType
-    {
-        primitive,
-        classlike
-    };
-    
-    //! \brief utility class to decide if a type is primitive or classlike.
-    //!
-    //! By default the T is classlike, if one decide that T should be primitive
-    //! then this class should be specialize and the typedef made accordingly.
-    //!
-    template < typename T >
-    struct XmlSwitcher
-    {
-        typedef Int2Type< classlike > XmlType;
-    };
-
+   
     //! \bried decode an Xml document into a class hierarchy.
     //!
     class XmlDecoder
@@ -111,8 +41,7 @@ namespace maxmm
             //! \param document the xml document.
             //!
             XmlDecoder( const xmlpp::Document  *document)
-            :   _document( document ),
-                _current_node( _document->get_root_node( ) )
+            :   _current_node( document->get_root_node( ) )
             { }
             
             //! \brief method for Xml classes to register an element.
@@ -127,9 +56,9 @@ namespace maxmm
             void read_element( 
                 const Glib::ustring &value_name , 
                 T &value , 
-                bool optional = false )
+                bool optional = false ) const 
             {
-                typename XmlSwitcher< T >::XmlType xml_type;
+                typename detail::XmlSwitcher< T >::XmlType xml_type;
                 this->read_element( xml_type, value_name , value , optional );
             }
             
@@ -142,11 +71,11 @@ namespace maxmm
             //!
             template< typename  T >
             void read_element(
-                T& value )
+                T& value ) const 
             {
                 if( T::root_node == _current_node->get_name( ) )
                 {
-                    NodeReseter reseter( _current_node );
+                    detail::NodeReseter reseter( _current_node );
                     try
                     {
                         value.decode( *this );
@@ -167,34 +96,40 @@ namespace maxmm
                     throw XmlDecoderException( error.str( ) );
                 }
             }
-            template< typename T >
-            void read_sequence( 
-                const Glib::ustring &sequence_name , 
-                const Glib::ustring &item_name , 
-                T& sequence ,
+            
+            
+            template<template < typename  Y > class T , typename Y>
+            void read_container( 
+                const Glib::ustring container_name , 
+                const Glib::ustring item_name , 
+                T< Y > & container , 
                 bool optional = false )
             {
-                xmlpp::Element * sequence_element 
-                    = this->get_value_element(
-                        sequence_name , 
+                xmlpp::Element * container_element 
+                    = this->get_value_element( 
+                        container_name , 
                         optional );
-                if( 0 == sequence_element )
+                if( 0 == container_element )
                 {
                     return ;
                 }
-
-                sequence.clear( );
-
+            
+                container.clear( );
+                
                 xmlpp::Node::NodeList nodes 
-                    = sequence_element->get_children( item_name );
+                     = container_element->get_children( item_name );
                 if( true == nodes.empty( ) )
                 {
                     std::ostringstream error;
-                    error << "no item found for sequence " << sequence_name;
+                    error << "no item found for set " << container_name ;
                     throw XmlDecoderException( error.str( ) );
                 }
                 
-                NodeReseter reseter( _current_node );                
+                detail::NodeReseter reseter( _current_node );                
+                typename 
+                    detail::XmlBehaviorSwitcher< T , Y >::XmlContainerBehavior 
+                        container_behavior;
+                
                 for( xmlpp::Node::NodeList::iterator 
                         itr  = nodes.begin( ) ;
                         itr != nodes.end( ) ;
@@ -204,7 +139,7 @@ namespace maxmm
                     // If an error occurs here then it means that the contains
                     // in the sequence does NOT have a default constructor.
                     //
-                    typename T::value_type new_item;
+                    Y new_item;
                     
                     //
                     // In order to reuse the this->read_element method we must
@@ -218,25 +153,44 @@ namespace maxmm
                         // This insure that the document remains the same if an
                         // exception is thrown.
                         //
-                        NodeExchanger exchanger( 
+                        detail::NodeExchanger exchanger( 
                             *itr , 
-                            sequence_element ,
+                            container_element ,
                             fake_document.get_root_node( ) );
                                         
                         _current_node = fake_document.get_root_node( );
                         this->read_element( item_name , new_item );
                         _current_node = 0;
-                        sequence.push_back( new_item );
+                        XmlDecoder::generic_insert( container_behavior , container , new_item );
                     }
                 }
-            } 
+            }
+        private:
             
+            template< class T >
+            static void generic_insert( 
+                detail::Int2Type< detail::use_push_back > container_behavior , 
+                T& container , 
+                const typename T::value_type& value )
+            {
+                container.push_back( value );
+            }
+
+            template< class T >
+            static void generic_insert(
+                detail::Int2Type< detail::use_insert > container_behavior ,
+                T& container , 
+                typename T::value_type& value )
+            {
+                container.insert( value );
+            }
+
             template< typename T >
             void read_element( 
-                Int2Type< classlike > xml_type,
+                detail::Int2Type< detail::classlike > xml_type,
                 const Glib::ustring &value_name,
                 T &value , 
-                bool optional)
+                bool optional) const 
             {
                 xmlpp::Element *value_element = this->get_value_element( value_name , optional );
                 if( 0 == value_element ) 
@@ -244,17 +198,17 @@ namespace maxmm
                     return ;
                 }
                 
-                NodeReseter reseter( _current_node );
+                detail::NodeReseter reseter( _current_node );
                 _current_node = value_element;
                 value.decode( *this );
             }
                     
             template< typename T >
             void read_element( 
-                Int2Type< primitive > xml_type,
+                detail::Int2Type< detail::primitive > xml_type,
                 const Glib::ustring &value_name , 
                 T &value , 
-                bool optional )
+                bool optional ) const 
             {
                 xmlpp::Element *value_element = this->get_value_element( value_name , optional );
                 if( 0 == value_element ) 
@@ -276,7 +230,7 @@ namespace maxmm
             }
 
             
-            xmlpp::Element * get_value_element( const Glib::ustring& value_name , bool optional )
+            xmlpp::Element * get_value_element( const Glib::ustring& value_name , bool optional ) const 
             {
                 xmlpp::Node::NodeList nodes = _current_node->get_children( value_name );
                 
@@ -328,20 +282,10 @@ namespace maxmm
             }
             
         private:
-            const xmlpp::Document *_document;
-            xmlpp::Node *_current_node;
+             mutable xmlpp::Node *_current_node;
     };
 }
 
-#define MAKE_TYPE_XML_PRIMITIVE( type ) \
-namespace maxmm\
-{\
-template< >\
-    struct XmlSwitcher< type >\
-    {\
-        typedef Int2Type< primitive > XmlType;\
-    };\
-}
 
 MAKE_TYPE_XML_PRIMITIVE( uint8_t )
 MAKE_TYPE_XML_PRIMITIVE( uint16_t )
@@ -354,5 +298,9 @@ MAKE_TYPE_XML_PRIMITIVE( int32_t )
 MAKE_TYPE_XML_PRIMITIVE( int64_t )
 
 MAKE_TYPE_XML_PRIMITIVE( std::string )
+
+
+MAKE_CONTAINER_USE_PUSH_BACK( std::list );
+MAKE_CONTAINER_USE_PUSH_BACK( std::vector );
 
 #endif

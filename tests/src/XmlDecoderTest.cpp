@@ -9,6 +9,8 @@
 #include <maxmm/XmlDecoder.h>
 #include <libxml/tree.h>
 
+#include <set>
+
 namespace 
 {
     struct XmlPrimitiveMandatory
@@ -17,7 +19,7 @@ namespace
         :   _value( 0 )
         { }
 
-        void decode( maxmm::XmlDecoder & decoder )
+        void decode( const maxmm::XmlDecoder & decoder )
         {
              decoder.read_element( "node1" , _value );
         }
@@ -32,7 +34,7 @@ namespace
         :   _value( 0 )
         { }
 
-        void decode( maxmm::XmlDecoder & decoder )
+        void decode( const maxmm::XmlDecoder & decoder )
         {
              decoder.read_element( "node1" , _value , true);
         }
@@ -47,7 +49,7 @@ namespace
         :   _primitive1( ) , _primitive2( )
         { }
 
-        void decode( maxmm::XmlDecoder & decoder )
+        void decode( const maxmm::XmlDecoder & decoder )
         {
             decoder.read_element( "primitive1" , _primitive1 , true );
             decoder.read_element( "primitive2" , _primitive2 , true );
@@ -281,7 +283,7 @@ namespace maxmm
         }
         
 
-        void XmlDecoderTest::test_sequence( void )
+        void XmlDecoderTest::test_container( void )
         {
             {
                 Glib::ustring xml(
@@ -301,7 +303,7 @@ namespace maxmm
 
                 try
                 {
-                    decoder.read_sequence( "list" , "item" , list );
+                    decoder.read_container( "list" , "item" , list );
                 }
                 catch( std::exception& e )
                 {
@@ -312,7 +314,40 @@ namespace maxmm
                 CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , list[0] );
                 CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , list[1] );
                 CPPUNIT_ASSERT_EQUAL( uint32_t( 3 ) , list[2] );
+            }
+            {
+                Glib::ustring xml(
+                    "<root>\
+                        <set>\
+                            <item>1</item>\
+                            <item>2</item>\
+                            <item>3</item>\
+                        </set>\
+                     </root>");
+                
+                xmlpp::DomParser parser;
+                parser.parse_memory( xml );
+                XmlDecoder decoder( parser.get_document( ) );
+
+                std::set< uint32_t > set;
+
+                try
+                {
+                    decoder.read_container( "set" , "item" , set );
+                }
+                catch( std::exception& e )
+                {
+                    std::cout << e.what( ) << std::endl;
+                    CPPUNIT_ASSERT( false );
+                }
+                
+                std::set< uint32_t > set_ref;
+                set_ref.insert( 1 );
+                set_ref.insert( 2 );
+                set_ref.insert( 3 );
+                CPPUNIT_ASSERT( set_ref == set );
             } 
+
         }
 
         
@@ -333,8 +368,8 @@ namespace maxmm
                     &XmlDecoderTest::test_rootnode) );
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
-                    "XmlDecoderTest::test_sequence",
-                    &XmlDecoderTest::test_sequence) );
+                    "XmlDecoderTest::test_container",
+                    &XmlDecoderTest::test_container) );
       
              return suite; 
         }
