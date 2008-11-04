@@ -58,6 +58,15 @@ namespace
         XmlPrimitiveMandatory _primitive1;
         XmlPrimitiveMandatory _primitive2;
     };
+
+    struct Compare
+    {
+        bool operator( )( uint32_t lhs , uint32_t rhs )
+        {
+            std::cout << "less" << std::endl;
+            return lhs < rhs ;
+        }
+    };
 }
 
 
@@ -349,8 +358,86 @@ namespace maxmm
             } 
 
         }
-
         
+        void XmlDecoderTest::test_pair( void )
+        {
+            {
+                Glib::ustring xml(
+                    "<root>\
+                        <first>1</first>\
+                        <second>2</second>\
+                    </root>");
+
+                xmlpp::DomParser parser;
+                parser.parse_memory( xml );
+                XmlDecoder decoder( parser.get_document( ) );
+
+                std::pair< uint32_t , uint32_t > pair;
+                try
+                {
+                    decoder.read_element( "first" , "second" , pair );
+                }
+                catch( ... )
+                {
+                    CPPUNIT_ASSERT( false );
+                }
+
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , pair.first );
+                CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , pair.second );
+            }
+        }
+        
+        void XmlDecoderTest::test_map( void )
+        {
+            {
+                Glib::ustring xml(
+                    "<root>\
+                        <map>\
+                            <item>\
+                                <first>1</first>\
+                                <second>2</second>\
+                            </item>\
+                            <item>\
+                                <first>3</first>\
+                                <second>4</second>\
+                            </item>\
+                        </map>\
+                    </root>");
+
+                xmlpp::DomParser parser;
+                parser.parse_memory( xml );
+                XmlDecoder decoder( parser.get_document( ) );
+
+                std::map< uint32_t , uint32_t > map;
+                //
+                // Map with custom compare operator are not supported.
+                // The following is an example of a non supported map.
+                //
+                // std::map< uint32_t , uint32_t , Compare > map
+                //
+                try
+                {
+                    decoder.read_container( 
+                        "map" , 
+                        "item" , 
+                        "first" , 
+                        "second" ,
+                        map);
+                }
+                catch( std::exception& e )
+                {
+                    std::cout << e.what( ) << std::endl;
+                    CPPUNIT_ASSERT( false );
+                }
+                
+                std::map< uint32_t , uint32_t > map_ref;
+                map_ref.insert( std::make_pair( 1 , 2 ) );
+                map_ref.insert( std::make_pair( 3 , 4 ) );
+                
+                CPPUNIT_ASSERT( map_ref == map );
+            }
+           
+        }
         CppUnit::TestSuite *XmlDecoderTest::getSuite( void )
         {
              CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
@@ -370,7 +457,15 @@ namespace maxmm
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_container",
                     &XmlDecoderTest::test_container) );
-      
+             suite->addTest(
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_pair",
+                    &XmlDecoderTest::test_pair) );
+             suite->addTest(
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_map",
+                    &XmlDecoderTest::test_map) );
+    
              return suite; 
         }
     }

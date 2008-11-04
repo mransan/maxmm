@@ -97,8 +97,43 @@ namespace maxmm
                 }
             }
             
+            template< typename T , typename U >
+            void read_element( 
+                const Glib::ustring &first_name , 
+                const Glib::ustring &second_name ,
+                std::pair< T , U > &pair , 
+                bool optional = false )
+            {
+                this->read_element( first_name , pair.first , optional );
+                this->read_element( second_name , pair.second , optional );
+            }
+           
             
-            template<template < typename  Y > class T , typename Y>
+            //! \brief read a single entry container( set , list , vector ) from an XML. 
+            //!
+            //! Due to template specification , it does not yet support std::set with custom 
+            //! comparaison operator.
+            //!
+            //! \verbatim 
+/*
+<container_name>
+    <item_name>
+        < ... ></ ... > <!-- xml decomposition of the item element.
+    </item_name>
+    <item_name>
+        < ... ></ ... >
+    </item_name>
+</container_name> \endverbatim */ 
+            //!
+            //!
+            //! \param container_name the xml tag of the container.
+            //! \param item_name the xml tag of each item of the container.
+            //! \param container the container itself.
+            //! \param optional indicate if the container is optional or not. If
+            //! it is optional and the container_name xml node is not found an
+            //! exception is thrown.
+            //!
+            template< template < typename  Y > class T , typename Y >
             void read_container( 
                 const Glib::ustring container_name , 
                 const Glib::ustring item_name , 
@@ -165,8 +200,77 @@ namespace maxmm
                     }
                 }
             }
+
+            //! \brief read a double-entry container such as std::map
+            //!
+            //! Due to template specification , it does not yet support std::set with custom 
+            //! comparaison operator.
+            //!
+            template<
+                template < 
+                    typename  Y , 
+                    typename Z   > class T , 
+                typename Y , 
+                typename Z >
+            void read_container( 
+                const Glib::ustring container_name , 
+                const Glib::ustring item_name ,
+                const Glib::ustring first_name ,
+                const Glib::ustring second_name ,
+                T< Y , Z > & container , 
+                bool optional = false )
+            {
+                xmlpp::Element * container_element 
+                    = this->get_value_element( 
+                        container_name , 
+                        optional );
+                if( 0 == container_element )
+                {
+                    return ;
+                }
+            
+                container.clear( );
+                
+                xmlpp::Node::NodeList nodes 
+                     = container_element->get_children( item_name );
+                if( true == nodes.empty( ) )
+                {
+                    std::ostringstream error;
+                    error << "no item found for set " << container_name ;
+                    throw XmlDecoderException( error.str( ) );
+                }
+                
+                detail::NodeReseter reseter( _current_node );                
+ 
+                for( xmlpp::Node::NodeList::iterator 
+                        itr  = nodes.begin( ) ;
+                        itr != nodes.end( ) ;
+                        ++itr )
+                {
+                    // 
+                    // If an error occurs here then it means that the contains
+                    // in the sequence does NOT have a default constructor.
+                    //
+                    std::pair< Y , Z>  new_pair;
+                    
+                    _current_node = *itr;
+                    this->read_element( first_name , second_name , new_pair );
+                    _current_node = 0;
+                    container.insert( new_pair );
+                }
+            }
+
         private:
             
+            //! \brief insert a new item in a container using the push_back
+            //! method.
+            //!
+            //! \param container_behavior this paramerter is just to provide a
+            //! different method signature. ( see Int2Type from alexandrescu ).
+            //! \param container the container in which the new element is
+            //! inserted.
+            //! \param value the item to insert.
+            //!
             template< class T >
             static void generic_insert( 
                 detail::Int2Type< detail::use_push_back > container_behavior , 
@@ -175,7 +279,16 @@ namespace maxmm
             {
                 container.push_back( value );
             }
-
+            
+            //! \brief insert a new item in a container using the insert
+            //! method.
+            //!
+            //! \param container_behavior this paramerter is just to provide a
+            //! different method signature. ( see Int2Type from alexandrescu ).
+            //! \param container the container in which the new element is
+            //! inserted.
+            //! \param value the item to insert.
+            //!
             template< class T >
             static void generic_insert(
                 detail::Int2Type< detail::use_insert > container_behavior ,
@@ -184,7 +297,9 @@ namespace maxmm
             {
                 container.insert( value );
             }
+            
 
+            
             template< typename T >
             void read_element( 
                 detail::Int2Type< detail::classlike > xml_type,
