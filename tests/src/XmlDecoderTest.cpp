@@ -15,17 +15,17 @@ namespace
 {
     struct XmlPrimitiveMandatory
     {
-        XmlPrimitiveMandatory( void )
-        :   _value( 0 )
+        XmlPrimitiveMandatory(void)
+        :   _value(0)
         { }
         
-        bool operator<( const XmlPrimitiveMandatory &v ) const 
+        bool operator<(const XmlPrimitiveMandatory &v) const 
         {
             return _value < v._value ;
         }
-        void decode( const maxmm::XmlDecoder & decoder )
+        void decode(const maxmm::XmlDecoder & decoder)
         {
-             decoder.read_element( "node1" , _value );
+             decoder.read_element("node1" , _value);
         }
 
         uint32_t _value;
@@ -34,13 +34,13 @@ namespace
     struct XmlPrimitiveOptional
     {
         static const Glib::ustring root_node;
-        XmlPrimitiveOptional( void )
-        :   _value( 0 )
+        XmlPrimitiveOptional(void)
+        :   _value(0)
         { }
 
-        void decode( const maxmm::XmlDecoder & decoder )
+        void decode(const maxmm::XmlDecoder & decoder)
         {
-             decoder.read_element( "node1" , _value , true);
+             decoder.read_element("node1" , _value , true);
         }
 
         uint32_t _value;
@@ -49,14 +49,14 @@ namespace
     
     struct XmlClassLike
     {
-        XmlClassLike( void )
-        :   _primitive1( ) , _primitive2( )
+        XmlClassLike(void)
+        :   _primitive1() , _primitive2()
         { }
 
-        void decode( const maxmm::XmlDecoder & decoder )
+        void decode(const maxmm::XmlDecoder & decoder)
         {
-            decoder.read_element( "primitive1" , _primitive1 , true );
-            decoder.read_element( "primitive2" , _primitive2 , true );
+            decoder.read_element("primitive1" , _primitive1 , true);
+            decoder.read_element("primitive2" , _primitive2 , true);
         }
 
         XmlPrimitiveMandatory _primitive1;
@@ -65,14 +65,14 @@ namespace
     
     struct SysClass
     {
-        SysClass( void )
+        SysClass(void)
         { }
         
-        void decode( maxmm::XmlDecoder &decoder )
+        void decode(maxmm::XmlDecoder &decoder)
         {
-            decoder.read_element( "primitive" , _primitive );
-            decoder.read_element( "classlike" , _classlike );
-            decoder.read_container( "set" , "item" , _set );
+            decoder.read_element("primitive" , _primitive);
+            decoder.read_element("classlike" , _classlike);
+            decoder.read_container("set" , "item" , _set);
         }
 
         XmlPrimitiveMandatory _primitive;
@@ -82,7 +82,7 @@ namespace
     
     struct Compare
     {
-        bool operator( )( uint32_t lhs , uint32_t rhs )
+        bool operator()(uint32_t lhs , uint32_t rhs)
         {
             std::cout << "less" << std::endl;
             return lhs < rhs ;
@@ -95,19 +95,19 @@ namespace maxmm
 {
     namespace test
     {
-        XmlDecoderTest::XmlDecoderTest( void )
+        XmlDecoderTest::XmlDecoderTest(void)
         { }
 
-        XmlDecoderTest::~XmlDecoderTest( void )
+        XmlDecoderTest::~XmlDecoderTest(void)
         { }
 
-        void XmlDecoderTest::setUp( void )
+        void XmlDecoderTest::setUp(void)
         { }
 
-        void XmlDecoderTest::tearDown( void )
+        void XmlDecoderTest::tearDown(void)
         { }
         
-        void XmlDecoderTest::test_primitive( void )
+        void XmlDecoderTest::test_primitive(void)
         {
             //
             // Test that a valid xml is correclty decoded.
@@ -116,19 +116,19 @@ namespace maxmm
                 Glib::ustring xml("<root><node1>12</node1></root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlPrimitiveMandatory test;
                 try
                 {
-                    test.decode( decoder );
+                    test.decode(decoder);
                 }
-                catch( ... )
+                catch(...)
                 {
-                    CPPUNIT_ASSERT( false );
+                    CPPUNIT_ASSERT(false);
                 }
-                CPPUNIT_ASSERT( test._value == 12 );
+                CPPUNIT_ASSERT(test._value == 12);
             }
             
             //
@@ -139,25 +139,25 @@ namespace maxmm
                 Glib::ustring xml("<root><node2>12</node2></root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlPrimitiveMandatory test;
                 int exception = 0;
                 try
                 {
-                    test.decode( decoder );
+                    test.decode(decoder);
                 }
-                catch( maxmm::XmlDecoderException& e )
+                catch(maxmm::XmlDecoderException& e)
                 {
-                    std::cout << e.what( ) << std::endl; 
+                    std::cout << e.what() << std::endl; 
                     exception = 1;
                 }
-                catch( ... )
+                catch(...)
                 {
                     exception = 2;
                 }
-                CPPUNIT_ASSERT_EQUAL( int( 1 ) , exception );
+                CPPUNIT_ASSERT_EQUAL(int(1) , exception);
             }
             
             //
@@ -168,26 +168,26 @@ namespace maxmm
                 Glib::ustring xml("<root><node1>12</node1><node1>13</node1></root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlPrimitiveMandatory test;
                 int exception = 0;
                 try
                 {
-                    test.decode( decoder );
+                    test.decode(decoder);
                 }
-                catch( maxmm::XmlDecoderException& e )
+                catch(maxmm::XmlDecoderException& e)
                 {
-                    std::cout << e.what( ) << std::endl; 
+                    std::cout << e.what() << std::endl; 
                     exception = 1;
                 }
-                catch( ... )
+                catch(...)
                 {
                     exception = 2;
                 }
 
-                CPPUNIT_ASSERT_EQUAL( int( 1 ) , exception );
+                CPPUNIT_ASSERT_EQUAL(int(1) , exception);
             }
             
             //
@@ -198,30 +198,30 @@ namespace maxmm
                 Glib::ustring xml("<root><node1><boom></boom></node1></root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlPrimitiveMandatory test;
                 int exception = 0;
                 try
                 {
-                    test.decode( decoder );
+                    test.decode(decoder);
                 }
-                catch( maxmm::XmlDecoderException& e )
+                catch(maxmm::XmlDecoderException& e)
                 {
-                    std::cout << e.what( ) << std::endl; 
+                    std::cout << e.what() << std::endl; 
                     exception = 1;
                 }
-                catch( ... )
+                catch(...)
                 {
                     exception = 2;
                 }
-                CPPUNIT_ASSERT_EQUAL( int( 1 ) , exception );
+                CPPUNIT_ASSERT_EQUAL(int(1) , exception);
             }
 
         }
         
-        void XmlDecoderTest::test_classlike( void )
+        void XmlDecoderTest::test_classlike(void)
         {
             //
             // Test that a valid xml is correctly decoded.
@@ -238,25 +238,25 @@ namespace maxmm
                     "</root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlClassLike test;
                 try
                 {
-                    test.decode( decoder );
+                    test.decode(decoder);
                 }
-                catch( ... )
+                catch(...)
                 {
-                    CPPUNIT_ASSERT( false );
+                    CPPUNIT_ASSERT(false);
                 }
-                CPPUNIT_ASSERT( test._primitive1._value == 12 );
-                CPPUNIT_ASSERT( test._primitive2._value == 13 );
+                CPPUNIT_ASSERT(test._primitive1._value == 12);
+                CPPUNIT_ASSERT(test._primitive2._value == 13);
             }
             
         }
         
-        void XmlDecoderTest::test_rootnode( void )
+        void XmlDecoderTest::test_rootnode(void)
         {
 
            //
@@ -266,20 +266,20 @@ namespace maxmm
                 Glib::ustring xml("<root><node1>12</node1></root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlPrimitiveOptional test;
                 try
                 {
-                    decoder.read_element( test );
+                    decoder.read_element(test);
                 }
-                catch( ... )
+                catch(...)
                 {
-                    CPPUNIT_ASSERT( false );
+                    CPPUNIT_ASSERT(false);
                 }
                 
-                CPPUNIT_ASSERT( 12  == test._value );
+                CPPUNIT_ASSERT(12  == test._value);
             }
             
             //
@@ -289,31 +289,31 @@ namespace maxmm
                 Glib::ustring xml("<invalid><node1>12</node1></invalid>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
                 
                 XmlPrimitiveOptional test;
                 int except = 0;
                 try
                 {
-                    decoder.read_element( test );
+                    decoder.read_element(test);
                 }
-                catch( maxmm::XmlDecoderException & e )
+                catch(maxmm::XmlDecoderException & e)
                 {
-                    std::cout << e.what( ) << std::endl;
+                    std::cout << e.what() << std::endl;
                     except = 1;
                 }
-                catch( std::exception & )
+                catch(std::exception &)
                 {
                     except = 2;
                 }
                 
-                CPPUNIT_ASSERT( 1  == except );
+                CPPUNIT_ASSERT(1  == except);
             }
         }
         
 
-        void XmlDecoderTest::test_container( void )
+        void XmlDecoderTest::test_container(void)
         {
             {
                 Glib::ustring xml(
@@ -326,24 +326,24 @@ namespace maxmm
                      </root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
 
                 std::vector< uint32_t > list;
 
                 try
                 {
-                    decoder.read_container( "list" , "item" , list );
+                    decoder.read_container("list" , "item" , list);
                 }
-                catch( std::exception& e )
+                catch(std::exception& e)
                 {
-                    std::cout << e.what( ) << std::endl;
-                    CPPUNIT_ASSERT( false );
+                    std::cout << e.what() << std::endl;
+                    CPPUNIT_ASSERT(false);
                 }
                 
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , list[0] );
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , list[1] );
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 3 ) , list[2] );
+                CPPUNIT_ASSERT_EQUAL(uint32_t(1) , list[0]);
+                CPPUNIT_ASSERT_EQUAL(uint32_t(2) , list[1]);
+                CPPUNIT_ASSERT_EQUAL(uint32_t(3) , list[2]);
             }
             {
                 Glib::ustring xml(
@@ -356,26 +356,26 @@ namespace maxmm
                      </root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
 
                 std::set< uint32_t > set;
 
                 try
                 {
-                    decoder.read_container( "set" , "item" , set );
+                    decoder.read_container("set" , "item" , set);
                 }
-                catch( std::exception& e )
+                catch(std::exception& e)
                 {
-                    std::cout << e.what( ) << std::endl;
-                    CPPUNIT_ASSERT( false );
+                    std::cout << e.what() << std::endl;
+                    CPPUNIT_ASSERT(false);
                 }
                 
                 std::set< uint32_t > set_ref;
-                set_ref.insert( 1 );
-                set_ref.insert( 2 );
-                set_ref.insert( 3 );
-                CPPUNIT_ASSERT( set_ref == set );
+                set_ref.insert(1);
+                set_ref.insert(2);
+                set_ref.insert(3);
+                CPPUNIT_ASSERT(set_ref == set);
             } 
             {
                 Glib::ustring xml(
@@ -388,30 +388,30 @@ namespace maxmm
                      </root>");
                 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
 
                 std::set< uint32_t, std::greater< uint32_t > > set;
 
                 try
                 {
-                    decoder.read_container( "set" , "item" , set );
+                    decoder.read_container("set" , "item" , set);
                 }
-                catch( std::exception& e )
+                catch(std::exception& e)
                 {
-                    std::cout << e.what( ) << std::endl;
-                    CPPUNIT_ASSERT( false );
+                    std::cout << e.what() << std::endl;
+                    CPPUNIT_ASSERT(false);
                 }
                 
                 std::set< uint32_t, std::greater< uint32_t > > set_ref;
-                set_ref.insert( 1 );
-                set_ref.insert( 2 );
-                set_ref.insert( 3 );
-                CPPUNIT_ASSERT( set_ref == set );
+                set_ref.insert(1);
+                set_ref.insert(2);
+                set_ref.insert(3);
+                CPPUNIT_ASSERT(set_ref == set);
             } 
         }
         
-        void XmlDecoderTest::test_pair( void )
+        void XmlDecoderTest::test_pair(void)
         {
             {
                 Glib::ustring xml(
@@ -423,26 +423,26 @@ namespace maxmm
                     </root>");
 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
 
                 std::pair< uint32_t , uint32_t > pair;
                 try
                 {
-                    decoder.read_element("pair", "first", "second", pair );
+                    decoder.read_element("pair", "first", "second", pair);
                 }
-                catch(std::exception &e )
+                catch(std::exception &e)
                 {
                     std::cout << "exception " <<  e.what() << std::endl;
-                    CPPUNIT_ASSERT( false );
+                    CPPUNIT_ASSERT(false);
                 }
 
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , pair.first );
-                CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , pair.second );
+                CPPUNIT_ASSERT_EQUAL(uint32_t(1) , pair.first);
+                CPPUNIT_ASSERT_EQUAL(uint32_t(2) , pair.second);
             }
         }
         
-        void XmlDecoderTest::test_map( void )
+        void XmlDecoderTest::test_map(void)
         {
             {
                 Glib::ustring xml(
@@ -460,31 +460,31 @@ namespace maxmm
                     </root>");
 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
 
                 std::map< uint32_t , uint32_t > map;
                 
                 try
                 {
-                    decoder.read_container( 
+                    decoder.read_container(
                         "map" , 
                         "item" , 
                         "first" , 
                         "second" ,
                         map);
                 }
-                catch( std::exception& e )
+                catch(std::exception& e)
                 {
-                    std::cout << e.what( ) << std::endl;
-                    CPPUNIT_ASSERT( false );
+                    std::cout << e.what() << std::endl;
+                    CPPUNIT_ASSERT(false);
                 }
                 
                 std::map< uint32_t , uint32_t > map_ref;
-                map_ref.insert( std::make_pair( 1 , 2 ) );
-                map_ref.insert( std::make_pair( 3 , 4 ) );
+                map_ref.insert(std::make_pair(1 , 2));
+                map_ref.insert(std::make_pair(3 , 4));
                 
-                CPPUNIT_ASSERT( map_ref == map );
+                CPPUNIT_ASSERT(map_ref == map);
             }
             {
                 Glib::ustring xml(
@@ -502,35 +502,35 @@ namespace maxmm
                     </root>");
 
                 xmlpp::DomParser parser;
-                parser.parse_memory( xml );
-                XmlDecoder decoder( parser.get_document( ) );
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
 
                 std::map< uint32_t , uint32_t , std::greater< uint32_t > > map;
                 
                 try
                 {
-                    decoder.read_container( 
+                    decoder.read_container(
                         "map" , 
                         "item" , 
                         "first" , 
                         "second" ,
                         map);
                 }
-                catch( std::exception& e )
+                catch(std::exception& e)
                 {
-                    std::cout << e.what( ) << std::endl;
-                    CPPUNIT_ASSERT( false );
+                    std::cout << e.what() << std::endl;
+                    CPPUNIT_ASSERT(false);
                 }
                 
                 std::map< uint32_t , uint32_t , std::greater< uint32_t > > map_ref;
-                map_ref.insert( std::make_pair( 1 , 2 ) );
-                map_ref.insert( std::make_pair( 3 , 4 ) );
+                map_ref.insert(std::make_pair(1 , 2));
+                map_ref.insert(std::make_pair(3 , 4));
                 
-                CPPUNIT_ASSERT( map_ref == map );
+                CPPUNIT_ASSERT(map_ref == map);
             }
         }
 
-        void XmlDecoderTest::test_system( void )
+        void XmlDecoderTest::test_system(void)
         {
             Glib::ustring xml(
                 "<root>\
@@ -549,62 +549,160 @@ namespace maxmm
                         <item><node1>4</node1></item>\
                         <item><node1>5</node1></item>\
                     </set>\
-                </root>" );
+                </root>");
             
             xmlpp::DomParser parser;
-            parser.parse_memory( xml );
-            XmlDecoder decoder( parser.get_document( ) );
+            parser.parse_memory(xml);
+            XmlDecoder decoder(parser.get_document());
 
             SysClass test;
             try
             {
-                test.decode( decoder );
+                test.decode(decoder);
             }
-            catch( XmlDecoderException& e )
+            catch(XmlDecoderException& e)
             {
-                std::cout << e.what( ) << std::endl;
-                CPPUNIT_ASSERT( false );
+                std::cout << e.what() << std::endl;
+                CPPUNIT_ASSERT(false);
             }
             
-            CPPUNIT_ASSERT_EQUAL( uint32_t( 1 ) , test._primitive._value );
-            CPPUNIT_ASSERT_EQUAL( uint32_t( 2 ) , test._classlike._primitive1._value );
-            CPPUNIT_ASSERT_EQUAL( uint32_t( 3 ) , test._classlike._primitive2._value );
-            CPPUNIT_ASSERT_EQUAL( uint32_t( 4 ) , test._set.begin( )->_value );
-            CPPUNIT_ASSERT_EQUAL( uint32_t( 5 ) , (++test._set.begin( ))->_value );
+            CPPUNIT_ASSERT_EQUAL(uint32_t(1) , test._primitive._value);
+            CPPUNIT_ASSERT_EQUAL(uint32_t(2) , test._classlike._primitive1._value);
+            CPPUNIT_ASSERT_EQUAL(uint32_t(3) , test._classlike._primitive2._value);
+            CPPUNIT_ASSERT_EQUAL(uint32_t(4) , test._set.begin()->_value);
+            CPPUNIT_ASSERT_EQUAL(uint32_t(5) , (++test._set.begin())->_value);
         }
         
-        CppUnit::TestSuite *XmlDecoderTest::getSuite( void )
+        void XmlDecoderTest::test_nullable(void)
+        {
+            {
+                Glib::ustring xml("<root/>");
+                
+                xmlpp::DomParser parser;
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
+                
+                NullableValue<uint32_t> value;
+                try
+                {
+                    decoder.read_element("nullable", value);
+                }
+                catch(std::exception &e)
+                {
+                    CPPUNIT_ASSERT(false);
+                }
+
+                CPPUNIT_ASSERT(value.null());
+            }
+        
+            {
+                Glib::ustring xml("<root/>");
+                
+                xmlpp::DomParser parser;
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
+                
+                NullableValue<uint32_t> value(4);
+                CPPUNIT_ASSERT(!value.null());
+                try
+                {
+                    decoder.read_element("nullable", value);
+                }
+                catch(std::exception &e)
+                {
+                    CPPUNIT_ASSERT(false);
+                }
+
+                CPPUNIT_ASSERT(value.null());
+            }
+            
+            {
+                Glib::ustring xml(
+                    "<root>\
+                      <nullable>2</nullable>\
+                     </root>");
+                
+                xmlpp::DomParser parser;
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
+                
+                NullableValue<uint32_t> value;
+                CPPUNIT_ASSERT(value.null());
+                try
+                {
+                    decoder.read_element("nullable", value);
+                }
+                catch(std::exception &e)
+                {
+                    CPPUNIT_ASSERT(false);
+                }
+
+                CPPUNIT_ASSERT(!value.null());
+                CPPUNIT_ASSERT_EQUAL((uint32_t)(2), value.value());
+            }
+            
+            {
+                Glib::ustring xml(
+                    "<root>\
+                      <nullable>2</nullable>\
+                     </root>");
+                
+                xmlpp::DomParser parser;
+                parser.parse_memory(xml);
+                XmlDecoder decoder(parser.get_document());
+                
+                NullableValue<uint32_t> value(4);
+                CPPUNIT_ASSERT(!value.null());
+                try
+                {
+                    decoder.read_element("nullable", value);
+                }
+                catch(std::exception &e)
+                {
+                    CPPUNIT_ASSERT(false);
+                }
+
+                CPPUNIT_ASSERT(!value.null());
+                CPPUNIT_ASSERT_EQUAL((uint32_t)(2), value.value());
+            }
+        }
+
+        CppUnit::TestSuite *XmlDecoderTest::getSuite(void)
         {
              CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_primitive",
-                    &XmlDecoderTest::test_primitive) );
+                    &XmlDecoderTest::test_primitive));
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_classlike",
-                    &XmlDecoderTest::test_classlike) );
+                    &XmlDecoderTest::test_classlike));
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_rootnode",
-                    &XmlDecoderTest::test_rootnode) );
+                    &XmlDecoderTest::test_rootnode));
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_container",
-                    &XmlDecoderTest::test_container) );
+                    &XmlDecoderTest::test_container));
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_pair",
-                    &XmlDecoderTest::test_pair) );
+                    &XmlDecoderTest::test_pair));
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_map",
-                    &XmlDecoderTest::test_map) );
+                    &XmlDecoderTest::test_map));
              suite->addTest(
                 new CppUnit::TestCaller<XmlDecoderTest>(
                     "XmlDecoderTest::test_system",
-                    &XmlDecoderTest::test_system) );
-   
+                    &XmlDecoderTest::test_system));
+             suite->addTest(
+                new CppUnit::TestCaller<XmlDecoderTest>(
+                    "XmlDecoderTest::test_nullable",
+                    &XmlDecoderTest::test_nullable));
+  
              return suite; 
         }
     }
