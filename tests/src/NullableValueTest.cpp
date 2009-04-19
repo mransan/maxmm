@@ -8,6 +8,7 @@
 #include <NullableValueTest.h>
 namespace 
 {
+
 }
 namespace maxmm
 {
@@ -23,7 +24,6 @@ NullableValueTest::~NullableValueTest(void)
 {
 
 }
-
 
 void NullableValueTest::setUp(void)
 {
@@ -73,6 +73,15 @@ void NullableValueTest::test_simple(void)
         copy = value;
 
         CPPUNIT_ASSERT_EQUAL((uint32_t)(3),copy.value()); 
+    }
+    {
+        maxmm::NullableValue<uint32_t> value(3);
+
+        CPPUNIT_ASSERT(!value.null());
+        
+        value.makeNull();
+
+        CPPUNIT_ASSERT(value.null());
     }
 }
 

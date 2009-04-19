@@ -14,6 +14,10 @@
 #include <IomanipTest.h>
 #include <ExceptionTest.h>
 #include <XmlDecoderTest.h>
+#include <XmlEncoderTest.h>
+#include <StringUtilsTest.h>
+#include <NullableValueTest.h>
+
 
 #include <TestCommon.h>
 
@@ -43,6 +47,9 @@ int main( int argc , char ** argv)
     runner.addTest(maxmm::test::IomanipTest::getSuite( ));
     runner.addTest(maxmm::test::ExceptionTest::getSuite( ));
     runner.addTest(maxmm::test::XmlDecoderTest::getSuite( ));
+    runner.addTest(maxmm::test::XmlEncoderTest::getSuite( ));
+    runner.addTest(maxmm::test::StringUtilsTest::getSuite( ));
+    runner.addTest(maxmm::test::NullableValueTest::getSuite( ));
 
     bool ret = false ;
 

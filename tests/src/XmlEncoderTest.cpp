@@ -5,7 +5,7 @@
 /********************************/
 
 #include <XmlEncoderTest.h>
-
+#include <maxmm/NullableValue.h>
 #include <maxmm/XmlEncoder.h>
 #include <libxml/tree.h>
 
@@ -423,7 +423,36 @@ namespace maxmm
                 CPPUNIT_ASSERT_EQUAL(expected, xml);
             }
         }
+            
+        void XmlEncoderTest::test_nullable(void)
+        {
+            {
+                xmlpp::Document document;
+                {
+                    document.create_root_node("root");
+                }
+                
+                XmlEncoder encoder(&document);
 
+                NullableValue<uint32_t>  value(3);
+                encoder.write_element("value", value);
+
+                std::cout << document.write_to_string() << std::endl;
+            }
+            {
+                xmlpp::Document document;
+                {
+                    document.create_root_node("root");
+                }
+                
+                XmlEncoder encoder(&document);
+
+                NullableValue<uint32_t> value;
+                encoder.write_element("value", value);
+
+                std::cout << document.write_to_string() << std::endl;
+            }
+        }
                 
         CppUnit::TestSuite *XmlEncoderTest::getSuite(void)
         {
@@ -452,7 +481,11 @@ namespace maxmm
                 new CppUnit::TestCaller<XmlEncoderTest>(
                     "XmlEncoderTest::test_map",
                     &XmlEncoderTest::test_map));
-   
+             suite->addTest(
+                new CppUnit::TestCaller<XmlEncoderTest>(
+                    "XmlEncoderTest::test_nullable",
+                    &XmlEncoderTest::test_nullable));
+  
              return suite; 
         }
     }

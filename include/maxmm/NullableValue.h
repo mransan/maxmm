@@ -46,7 +46,8 @@ public:
     T& makeValue(void);
 
     T& makeValue(const T &value);
-
+    
+    void makeNull(void);
 private:
     T _value;
     bool _null;
@@ -140,6 +141,13 @@ T &NullableValue<T>::makeValue(const T &value)
     return _value;
 }
 
+template<typename T>
+void NullableValue<T>::makeNull(void)
+{
+    _null = true;
+    T value;
+    _value = value;
+}
 
 }
 

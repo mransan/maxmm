@@ -30,6 +30,7 @@ namespace maxmm
                 void test_pair(void);
                 void test_container(void);
                 void test_map(void);
+                void test_nullable(void);
 
                 static CppUnit::TestSuite* getSuite(void);
 

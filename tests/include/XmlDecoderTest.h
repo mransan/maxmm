@@ -19,19 +19,20 @@ namespace maxmm
         class XmlDecoderTest : CppUnit::TestFixture 
         {
             public:
-                XmlDecoderTest( void );
-                ~XmlDecoderTest( void );
+                XmlDecoderTest(void);
+                ~XmlDecoderTest(void);
            
-                void setUp( void );
-                void tearDown( void );
+                void setUp(void);
+                void tearDown(void);
 
-                void test_primitive( void );
-                void test_classlike( void );
-                void test_rootnode( void );
-                void test_container( void );
-                void test_pair( void );
-                void test_map( void );
-                static CppUnit::TestSuite* getSuite( void );
+                void test_primitive(void);
+                void test_classlike(void);
+                void test_rootnode(void);
+                void test_container(void);
+                void test_pair(void);
+                void test_map(void);
+                void test_system(void);
+                static CppUnit::TestSuite* getSuite(void);
 
             private:
         };
