@@ -11,6 +11,9 @@
 #include <stdexcept>
 #include <string>
 
+
+#include <maxmm/StackBuffer.h>
+
 namespace maxmm
 {
 
@@ -49,7 +52,10 @@ public:
     
     void makeNull(void);
 private:
-    T _value;
+    typedef StackBufferAccessor<T> Accessor;
+    
+    StackBuffer<T> _buffer;
+    Accessor _accessor;
     bool _null;
 };
 
@@ -61,8 +67,8 @@ private:
 
 template<typename T>
 NullableValue<T>::NullableValue(void)
-:   _value(),
-    _null(true)
+:   _accessor(_buffer)
+    ,_null(true)
 {
 
 }
@@ -70,18 +76,21 @@ NullableValue<T>::NullableValue(void)
 
 template<typename T>
 NullableValue<T>::NullableValue(const T& value)
-:   _value(value)
-   ,_null(false)
+:   _accessor(_buffer),
+    _null(false)
 {
-
+    _accessor.make(value);
 }
 
 template<typename T>
 NullableValue<T>::NullableValue(const NullableValue<T> &nullableValue)
-:   _value(nullableValue._value)
-   ,_null(nullableValue._null)
+:   _accessor(_buffer),
+    _null(nullableValue._null)
 {
-
+    if(false == _null)
+    {
+       _accessor.make(nullableValue.value());
+    }
 }
 
 template<typename T>
@@ -92,9 +101,13 @@ NullableValue<T>& NullableValue<T>::operator=(const NullableValue<T> &nullableVa
         return *this;
     }
 
-    _value = nullableValue._value;
     _null  = nullableValue._null;
-
+    
+    if(false == _null)
+    {
+        _accessor.make(nullableValue.value());
+    }
+    
     return *this;
 }
 
@@ -112,7 +125,7 @@ const T& NullableValue<T>::value(void) const
         throw maxmm::NullableValueException("invalid access");    
     }
     
-    return _value;
+    return *(_accessor.get());
 }
 
 template<typename T>
@@ -122,31 +135,28 @@ T &NullableValue<T>::value(void)
     {
         throw maxmm::NullableValueException("invalid excess");
     }
-
-    return _value;
+        
+    return *(_accessor.get());
 }
 
 template<typename T>
 T &NullableValue<T>::makeValue(void)
 {
-    _null = false;
-    return _value;
+    _null  = false;
+    return *(_accessor.make());
 }
 
 template<typename T>
 T &NullableValue<T>::makeValue(const T &value)
 {
     _null  = false;
-    _value = value;
-    return _value;
+    return *(_accessor.makeValue(value));
 }
 
 template<typename T>
 void NullableValue<T>::makeNull(void)
 {
     _null = true;
-    T value;
-    _value = value;
 }
 
 }

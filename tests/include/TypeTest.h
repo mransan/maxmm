@@ -19,18 +19,18 @@ namespace maxmm
         class TypeTest : CppUnit::TestFixture 
         {
             public:
-                TypeTest( void );
-                ~TypeTest( void );
+                TypeTest(void);
+                ~TypeTest(void);
            
-                void setUp( void );
-                void tearDown( void );
+                void setUp(void);
+                void tearDown(void);
 
-                void test_static_cast( void );
-                void test_reinterpret_cast( void );
-                void test_primitive_type_cast( void );
-                void test_const_cast( void );
-                void test_const_ptr( void );
-                void test_assignment( void );
+                void test_static_cast(void);
+                void test_reinterpret_cast(void);
+                void test_primitive_type_cast(void);
+                void test_const_cast(void);
+                void test_const_ptr(void);
+                void test_assignment(void);
                 
                 
                 //! \brief test virtual inheritance.
@@ -49,18 +49,20 @@ namespace maxmm
                 //! struct C : B3 , B2 , B1
                 //!
                 //! The constructor list is:
-                //! A::A( ) A::A( ) B3::B3( ) B2::B2( ) B1::B1( ) C::C( )
+                //! A::A() A::A() B3::B3() B2::B2() B1::B1() C::C()
                 //!
-                void test_virtual_inheritance( void );
+                void test_virtual_inheritance(void);
                 
                 //! \brief test function pointer syntax for both C and C++
                 //!
                 //! example were done using the following tutorial
                 //! http://www.newty.de/fpt/index.html
                 //!
-                void test_function_ptr( void );
+                void test_function_ptr(void);
+                
+                void test_union(void);
 
-                static CppUnit::TestSuite* getSuite( void );
+                static CppUnit::TestSuite* getSuite(void);
 
             private:
         };

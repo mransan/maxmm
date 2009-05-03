@@ -35,14 +35,22 @@ class XmlEncoder
 {
     public:
         
-
-        XmlEncoder(const xmlpp::Document *document)
-        : _current_node(document->get_root_node()) 
+        //! \brief Constructor
+        //!
+        //! \param document - xml++ document object
+        //!
+        XmlEncoder(xmlpp::Document &document)
+        : _current_node(document.get_root_node()) 
         {
         
         }
 
 
+        //! \brief write an Xml element.
+        //! 
+        //! \param value_name: the name of the element
+        //! \param  value: the object to encode in the xml element
+        //!
         template<typename T>
         void write_element(
             const Glib::ustring &value_name, 
@@ -52,6 +60,11 @@ class XmlEncoder
             this->write_element(xml_type, value_name, value );
         }
         
+        //! \brief write an Xml element that can exist or not.
+        //!
+        //! \param value_name:  name of the element to create
+        //! \param value: nullable value to write.
+        //!
         template<typename T>
         void write_element(
             const Glib::ustring &value_name,

@@ -56,6 +56,29 @@ namespace
             return lhs <rhs ;
         }
     };
+
+    class Choice
+    {
+    public:
+        Choice();
+
+
+    private:
+        union selection
+        {
+            maxmm::StackBuffer<XmlClassLike> _classlike;
+            maxmm::StackBuffer<XmlPrimitiveMandatory> _primitive;
+        };
+
+        enum selection_id
+        {
+           CLASSLIKE = 1
+          ,PRIMITIVE = 2
+          ,INVALID
+        };
+    
+    };
+
 }
 
 
@@ -85,7 +108,7 @@ namespace maxmm
                 {
                     document.create_root_node("root");
                 }
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
                 
                 XmlPrimitiveMandatory test(1);
                 try
@@ -116,7 +139,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
                 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
                 
                 XmlClassLike test;
                 try
@@ -210,7 +233,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 std::vector<uint32_t> list;
                 {
@@ -246,7 +269,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
                 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 std::set<uint32_t> set;
                 {
@@ -282,7 +305,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
                 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 std::set<uint32_t, std::greater<uint32_t> > set;
                 {
@@ -321,7 +344,7 @@ namespace maxmm
                 {
                     document.create_root_node("root");
                 }
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 std::pair<uint32_t , uint32_t> pair;
                 pair.first = 12;
@@ -347,7 +370,7 @@ namespace maxmm
                 {
                     document.create_root_node("root");
                 }
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 std::map<uint32_t , uint32_t> map;
                 map.insert(std::make_pair<uint32_t, uint32_t>(1, 1));
@@ -388,7 +411,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 std::map<uint32_t , uint32_t , std::greater<uint32_t> > map;
                 map.insert(std::make_pair<uint32_t, uint32_t>(1, 1));
@@ -432,7 +455,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
                 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 NullableValue<uint32_t>  value(3);
                 encoder.write_element("value", value);
@@ -445,7 +468,7 @@ namespace maxmm
                     document.create_root_node("root");
                 }
                 
-                XmlEncoder encoder(&document);
+                XmlEncoder encoder(document);
 
                 NullableValue<uint32_t> value;
                 encoder.write_element("value", value);
