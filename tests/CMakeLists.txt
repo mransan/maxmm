@@ -2,6 +2,7 @@ include(FindPkgConfig)
 
 include_directories   (${maxmm_SOURCE_DIRECTORY}/include)
 link_directories      (${maxmm_SOURCE_DIRECTORY})
+link_directories      (${maxmm_SOURCE_DIRECTORY}/src/ma/)
 add_definitions       (-g)
 
 #
@@ -17,7 +18,10 @@ set(    LINK_LIBS
         ${cppunit_LIBRARIES} 
         ${apr_LIBRARIES}
         ${libxml++_LIBRARIES} 
-        dl maxmm maxmmTest )
+        dl 
+        maxmm 
+        maxmmma
+        maxmmTest )
 
 
 include_directories   (./include     )
