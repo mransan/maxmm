@@ -55,6 +55,7 @@ target_link_libraries ( maxmm
 #
 add_subdirectory     (tests EXCLUDE_FROM_ALL)
 add_subdirectory     (example)
+add_subdirectory     (src)
 
 
 #

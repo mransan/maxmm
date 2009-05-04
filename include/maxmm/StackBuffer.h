@@ -1,7 +1,7 @@
 /********************************/
-/* Copyright (c) 2008           */
-/* Maxime Ransan - Jan 2008     */
-/* All rights reserved.         */
+/* copyright (c) 2008           */
+/* maxime ransan - jan 2008     */
+/* all rights reserved.         */
 /********************************/
 
 
