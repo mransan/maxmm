@@ -21,6 +21,7 @@
 #include <AssignmentTest.h>
 #include <ABTOkMessageTest.h>
 #include <ABTNoGoodMessageTest.h>
+#include <ABTMessageTest.h>
 
 #include <TestCommon.h>
 
@@ -57,6 +58,7 @@ int main(int argc , char ** argv)
     runner.addTest(maxmm::test::AssignmentTest::getSuite());
     runner.addTest(maxmm::test::ABTOkMessageTest::getSuite());
     runner.addTest(maxmm::test::ABTNoGoodMessageTest::getSuite());
+    runner.addTest(maxmm::test::ABTMessageTest::getSuite());
 
     
     bool ret = false ;

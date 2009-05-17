@@ -25,10 +25,11 @@ void ABTOkMessageTest::test_accessors(void)
     {
         ABTOkMessage<uint32_t, uint32_t> ok;
         
-        ok.assignment().assign(3, 4); 
+        ok.agent_assignment().agent_id() = AgentId(1);
+        ok.agent_assignment().assignment().assign(3, 4); 
 
-        CPPUNIT_ASSERT_EQUAL(uint32_t(3), ok.assignment().value());
-        CPPUNIT_ASSERT_EQUAL(uint32_t(4), ok.assignment().variable());
+        CPPUNIT_ASSERT_EQUAL(uint32_t(3), ok.agent_assignment().assignment().value());
+        CPPUNIT_ASSERT_EQUAL(uint32_t(4), ok.agent_assignment().assignment().variable());
     }
 }
 
@@ -38,7 +39,8 @@ void ABTOkMessageTest::test_xml(void)
     {
         ABTOkMessage<uint32_t, uint32_t> ok;
         
-        ok.assignment().assign(3, 4);
+        ok.agent_assignment().agent_id()  = AgentId(2);
+        ok.agent_assignment().assignment().assign(3, 4);
     
         xmlpp::Document document;
         document.create_root_node("ok_message");

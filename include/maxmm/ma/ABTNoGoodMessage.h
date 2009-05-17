@@ -8,6 +8,8 @@
 #define maxmm_ma_ABTNoGoodMessage_h
 
 #include <maxmm/ma/Assignment.h>
+#include <maxmm/ma/AgentId.h>
+#include <maxmm/ma/AgentAssignment.h>
 #include <maxmm/XmlEncoder.h>
 #include <maxmm/XmlDecoder.h>
 
@@ -28,13 +30,13 @@ public:
     void decode(const maxmm::XmlDecoder &decoder);
     void encode(maxmm::XmlEncoder &encoder) const;
 
-
-    std::vector<Assignment<VARIABLE, VALUE> >       &nogoods(void);
-    std::vector<Assignment<VARIABLE, VALUE> > const &nogoods(void) const;
+    
+    std::vector<AgentAssignment<VARIABLE, VALUE> >       & nogoods(void);
+    std::vector<AgentAssignment<VARIABLE, VALUE> > const & nogoods(void) const;
 
 private:
 
-    std::vector<Assignment<VARIABLE, VALUE> > _nogoods;
+    std::vector<AgentAssignment<VARIABLE, VALUE> > _nogoods;
 };
 
 
@@ -66,14 +68,14 @@ void ABTNoGoodMessage<VARIABLE, VALUE>::encode(
 
 
 template<typename VARIABLE, typename VALUE>
-std::vector<Assignment<VARIABLE, VALUE> > &
+std::vector<AgentAssignment<VARIABLE, VALUE> > & 
 ABTNoGoodMessage<VARIABLE, VALUE>::nogoods(void)
 {
     return _nogoods;
 }
 
 template<typename VARIABLE, typename VALUE>
-std::vector<Assignment<VARIABLE, VALUE> >const &
+std::vector<AgentAssignment<VARIABLE, VALUE> >const &
 ABTNoGoodMessage<VARIABLE, VALUE>::nogoods(void) const
 {
     return _nogoods;

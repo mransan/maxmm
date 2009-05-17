@@ -25,13 +25,17 @@ void ABTNoGoodMessageTest::test_accessors(void)
     {
         ABTNoGoodMessage<uint32_t, uint32_t> nogood_msg;
         
-        nogood_msg.nogoods().push_back(Assignment<uint32_t, uint32_t>(0, 1));
-        nogood_msg.nogoods().push_back(Assignment<uint32_t, uint32_t>(2, 3));
+        nogood_msg.nogoods().push_back(AgentAssignment<uint32_t, uint32_t>(
+            AgentId(1), 
+            Assignment<uint32_t, uint32_t>(0, 1)));
+        nogood_msg.nogoods().push_back(AgentAssignment<uint32_t, uint32_t>(
+            AgentId(1),
+            Assignment<uint32_t, uint32_t>(2, 3)));
 
-        CPPUNIT_ASSERT_EQUAL(uint32_t(0), nogood_msg.nogoods().at(0).variable());
-        CPPUNIT_ASSERT_EQUAL(uint32_t(1), nogood_msg.nogoods().at(0).value());
-        CPPUNIT_ASSERT_EQUAL(uint32_t(2), nogood_msg.nogoods().at(1).variable());
-        CPPUNIT_ASSERT_EQUAL(uint32_t(3), nogood_msg.nogoods().at(1).value());
+        CPPUNIT_ASSERT_EQUAL(uint32_t(0), nogood_msg.nogoods().at(0).assignment().variable());
+        CPPUNIT_ASSERT_EQUAL(uint32_t(1), nogood_msg.nogoods().at(0).assignment().value());
+        CPPUNIT_ASSERT_EQUAL(uint32_t(2), nogood_msg.nogoods().at(1).assignment().variable());
+        CPPUNIT_ASSERT_EQUAL(uint32_t(3), nogood_msg.nogoods().at(1).assignment().value());
 
     }
 }
@@ -42,8 +46,12 @@ void ABTNoGoodMessageTest::test_xml(void)
     {
         ABTNoGoodMessage<uint32_t, uint32_t> nogood_msg;
         
-        nogood_msg.nogoods().push_back(Assignment<uint32_t, uint32_t>(0, 1));
-        nogood_msg.nogoods().push_back(Assignment<uint32_t, uint32_t>(2, 3));
+        nogood_msg.nogoods().push_back(AgentAssignment<uint32_t, uint32_t>(
+            AgentId(1),
+            Assignment<uint32_t,uint32_t>(0, 1)));
+        nogood_msg.nogoods().push_back(AgentAssignment<uint32_t, uint32_t>(
+            AgentId(1),
+            Assignment<uint32_t, uint32_t>(2, 3)));
         
         xmlpp::Document document;
         document.create_root_node("nogood_message");

@@ -8,6 +8,7 @@
 #ifndef maxmm_ma_AgentId_h 
 #define maxmm_ma_AgentId_h
 
+
 #include <stdint.h>
 #include <boost/operators.hpp>
 #include <ostream>
@@ -25,6 +26,10 @@ std::ostream &operator<<(std::ostream &stream,
 
 namespace maxmm
 {
+
+class XmlEncoder;
+class XmlDecoder;
+
 namespace ma
 {
 
@@ -34,12 +39,20 @@ friend bool ::operator==(const AgentId &lhs,
                          const AgentId &rhs);
 friend class maxmm::test::AgentTest;
 public:
+    
+    explicit AgentId(void);
     explicit AgentId(uint32_t id);
 
 
     uint32_t id(void) const;
+    bool valid(void) const;
+    void encode(XmlEncoder &encoder) const;
+    void decode(const XmlDecoder &decoder);
+
     
 private:
+    
+    static uint32_t INVALID_ID();
     uint32_t _id;
 };
 

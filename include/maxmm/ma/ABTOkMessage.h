@@ -7,7 +7,9 @@
 #ifndef maxmm_ma_ABTOkMessage_h
 #define maxmm_ma_ABTOkMessage_h
 
+#include <maxmm/ma/AgentId.h>
 #include <maxmm/ma/Assignment.h>
+#include <maxmm/ma/AgentAssignment.h>
 #include <maxmm/XmlEncoder.h>
 #include <maxmm/XmlDecoder.h>
 
@@ -27,12 +29,12 @@ public:
     void encode(maxmm::XmlEncoder &encoder) const;
 
 
-    Assignment<VARIABLE, VALUE>       &assignment(void);
-    Assignment<VARIABLE, VALUE> const &assignment(void) const;
+    AgentAssignment<VARIABLE, VALUE>       &agent_assignment(void);
+    AgentAssignment<VARIABLE, VALUE> const &agent_assignment(void) const;
 
 private:
 
-    Assignment<VARIABLE, VALUE> _assignment;
+    AgentAssignment<VARIABLE, VALUE> _agent_assignment;
 };
 
 
@@ -51,7 +53,7 @@ template<typename VARIABLE, typename VALUE>
 void ABTOkMessage<VARIABLE, VALUE>::decode(
     const maxmm::XmlDecoder &decoder)
 {
-    decoder.read_element("assignment", _assignment);
+    decoder.read_element("_agent_assignment", _agent_assignment);
 }
 
 
@@ -59,21 +61,22 @@ template<typename VARIABLE, typename VALUE>
 void ABTOkMessage<VARIABLE, VALUE>::encode(
     maxmm::XmlEncoder &encoder) const
 {
-    encoder.write_element("assignment", _assignment);
+    encoder.write_element("_agent_assignment", _agent_assignment);
 }
 
 
 template<typename VARIABLE, typename VALUE>
-Assignment<VARIABLE, VALUE> &ABTOkMessage<VARIABLE, VALUE>::assignment(void)
+AgentAssignment<VARIABLE, VALUE> &
+ABTOkMessage<VARIABLE, VALUE>::agent_assignment(void)
 {
-    return _assignment;
+    return _agent_assignment;
 }
 
 template<typename VARIABLE, typename VALUE>
-Assignment<VARIABLE, VALUE> const &
-ABTOkMessage<VARIABLE, VALUE>::assignment(void) const
+AgentAssignment<VARIABLE, VALUE> const &
+ABTOkMessage<VARIABLE, VALUE>::agent_assignment(void) const
 {
-    return _assignment;
+    return _agent_assignment;
 }
 
 }// namespace ma
