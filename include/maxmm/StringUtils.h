@@ -22,23 +22,27 @@ namespace maxmm
             //!
             struct DefaultTokenHandler
             {
+                DefaultTokenHandler( std::vector< std::string > &tokens )
+                : _tokens( tokens )
+                { 
+                    _tokens.clear( );
+                }
+                
                 void operator( )(
-                    const std::string &str ,
-                    std::string::size_type start , 
-                    std::string::size_type end )
+                    const std::string& str )
                 {
-                    _tokens.push_back( str.substr( start , end - start ) );
+                    _tokens.push_back( str );
                 }
                 
                 //! \brief return copy of the token array.
                 //!
-                std::vector< std::string > tokens( void )
+                std::vector< std::string >& tokens( void )
                 { 
                     return _tokens;
                 }
                 
                 private:
-                    std::vector< std::string > _tokens;
+                    std::vector< std::string > &_tokens;
             };
             
             //! \brief tokenise a string and return the token handler.
@@ -72,27 +76,41 @@ namespace maxmm
                 TokenHandler &handler ,
                 const char delimiter = ',')
             {
+                if( true == str.empty( ) )
+                {
+                    return ;
+                }
+                
                 std::string::size_type start = 0;
                 std::string::size_type end = str.find( delimiter , start );
                 std::size_t size = str.size( );
                 
+                //
+                // The behavior that this found variable controls is the fact
+                // that if not a single delimiter character is found then do not
+                // consider the entire string as being one token.
+                //
                 bool found = false;
                 while(  ( std::string::npos != end )
                         &&
                         ( start != size ) )
                 {
-                    handler( str , start , end );
+                    handler( str.substr( start , end - start ) );
                     start = ++end;
                     end = str.find( delimiter , start );
                     found = true;
                 }
-                if( found == true  && ( start != str.size( ) ) )
+                if( found == true  && ( start != size ) )
                 {
-                    handler(  str , start , size );
+                    handler(  str.substr( start , size - start) );
                 } 
             }
 
         private:
+            
+            //! \brief hides the default constructor since the class should not
+            //! be instanciated.
+            //!
             StringUtils( void )
             { }
     };

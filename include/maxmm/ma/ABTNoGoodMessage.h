@@ -7,7 +7,6 @@
 #ifndef maxmm_ma_ABTNoGoodMessage_h
 #define maxmm_ma_ABTNoGoodMessage_h
 
-#include <maxmm/ma/Assignment.h>
 #include <maxmm/ma/AgentId.h>
 #include <maxmm/ma/AgentAssignment.h>
 #include <maxmm/XmlEncoder.h>
@@ -20,7 +19,7 @@ namespace maxmm
 namespace ma
 {
 
-template<typename VARIABLE, typename VALUE>
+template<typename VALUE>
 class ABTNoGoodMessage 
 {
 
@@ -31,12 +30,12 @@ public:
     void encode(maxmm::XmlEncoder &encoder) const;
 
     
-    std::vector<AgentAssignment<VARIABLE, VALUE> >       & nogoods(void);
-    std::vector<AgentAssignment<VARIABLE, VALUE> > const & nogoods(void) const;
+    std::vector<AgentAssignment<VALUE> >       & nogoods(void);
+    std::vector<AgentAssignment<VALUE> > const & nogoods(void) const;
 
 private:
 
-    std::vector<AgentAssignment<VARIABLE, VALUE> > _nogoods;
+    std::vector<AgentAssignment<VALUE> > _nogoods;
 };
 
 
@@ -45,38 +44,38 @@ private:
 // --------------
 //
 
-template<typename VARIABLE, typename VALUE>
-ABTNoGoodMessage<VARIABLE, VALUE>::ABTNoGoodMessage(void)
+template<typename VALUE>
+ABTNoGoodMessage<VALUE>::ABTNoGoodMessage(void)
 {
 
 }
 
-template<typename VARIABLE, typename VALUE>
-void ABTNoGoodMessage<VARIABLE, VALUE>::decode(
+template<typename VALUE>
+void ABTNoGoodMessage<VALUE>::decode(
     const maxmm::XmlDecoder &decoder)
 {
     decoder.read_container("assignments", "assignment",  _nogoods);
 }
 
 
-template<typename VARIABLE, typename VALUE>
-void ABTNoGoodMessage<VARIABLE, VALUE>::encode(
+template<typename VALUE>
+void ABTNoGoodMessage<VALUE>::encode(
     maxmm::XmlEncoder &encoder) const
 {
     encoder.write_container("assignments", "assignment",  _nogoods);
 }
 
 
-template<typename VARIABLE, typename VALUE>
-std::vector<AgentAssignment<VARIABLE, VALUE> > & 
-ABTNoGoodMessage<VARIABLE, VALUE>::nogoods(void)
+template<typename VALUE>
+std::vector<AgentAssignment<VALUE> > & 
+ABTNoGoodMessage<VALUE>::nogoods(void)
 {
     return _nogoods;
 }
 
-template<typename VARIABLE, typename VALUE>
-std::vector<AgentAssignment<VARIABLE, VALUE> >const &
-ABTNoGoodMessage<VARIABLE, VALUE>::nogoods(void) const
+template<typename VALUE>
+std::vector<AgentAssignment<VALUE> >const &
+ABTNoGoodMessage<VALUE>::nogoods(void) const
 {
     return _nogoods;
 }

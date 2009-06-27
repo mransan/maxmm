@@ -18,10 +18,10 @@
 #include <StringUtilsTest.h>
 #include <NullableValueTest.h>
 #include <AgentTest.h>
-#include <AssignmentTest.h>
 #include <ABTOkMessageTest.h>
 #include <ABTNoGoodMessageTest.h>
 #include <ABTMessageTest.h>
+#include <ABTProcessorTest.h>
 
 #include <TestCommon.h>
 
@@ -55,11 +55,10 @@ int main(int argc , char ** argv)
     runner.addTest(maxmm::test::StringUtilsTest::getSuite());
     runner.addTest(maxmm::test::NullableValueTest::getSuite());
     runner.addTest(maxmm::test::AgentTest::getSuite());
-    runner.addTest(maxmm::test::AssignmentTest::getSuite());
     runner.addTest(maxmm::test::ABTOkMessageTest::getSuite());
     runner.addTest(maxmm::test::ABTNoGoodMessageTest::getSuite());
     runner.addTest(maxmm::test::ABTMessageTest::getSuite());
-
+    runner.addTest(maxmm::test::ABTProcessorTest::getSuite());
     
     bool ret = false ;
 

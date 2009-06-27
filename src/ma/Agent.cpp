@@ -47,6 +47,18 @@ void Agent::add_outlink(AgentId to)
     _outlinks.push_back(OutLink(_id, to));
 }
 
+std::vector<AgentId> Agent::outlinks_to(void) const
+{
+    std::vector<AgentId> ret;
+    for(std::vector<OutLink>::const_iterator itr = _outlinks.begin();
+        itr != _outlinks.end();
+        ++itr)
+    {
+        ret.push_back(itr->to());
+    }
+
+    return ret;
+}
 
 } // namespace ma
 } // namespace maxmm

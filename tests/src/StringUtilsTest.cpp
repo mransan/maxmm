@@ -12,45 +12,49 @@ namespace maxmm
 {
     namespace test
     {
-    
         void StringUtilsTest::test_tokenise( void )
         {
             typedef StringUtils::DefaultTokenHandler THandler;
             {
                 std::string str("bim , bam , boom");
-                THandler handler 
-                    = StringUtils::tokenise< StringUtils::DefaultTokenHandler >( str );
                 
-                std::vector< std::string > tokens = handler.tokens( );
+                std::vector< std::string > tokens;
+                THandler handler( tokens );
+                StringUtils::tokenise< THandler >( str , handler );
+                
                 CPPUNIT_ASSERT_EQUAL( std::size_t( 3 ) , tokens.size( ) );
                 CPPUNIT_ASSERT( tokens[ 0 ] ==  "bim " );
                 CPPUNIT_ASSERT( tokens[ 1 ] ==  " bam " );
                 CPPUNIT_ASSERT( tokens[ 2 ] ==  " boom" );
             }
+            
             {
                 std::string str("");
-                THandler handler
-                    = StringUtils::tokenise< StringUtils::DefaultTokenHandler >( str );
-                
                 std::vector< std::string > tokens;
-                CPPUNIT_ASSERT_EQUAL( std::size_t( 0 ) , tokens.size( ) );
+                THandler handler( tokens );
+                StringUtils::tokenise< THandler >( str , handler );
+                
+                CPPUNIT_ASSERT( tokens.empty( ) );
             }
             
             {
                 std::string str("boom,");
-                THandler handler
-                    = StringUtils::tokenise< StringUtils::DefaultTokenHandler >( str );
                 
-                std::vector< std::string > tokens = handler.tokens( );
+                std::vector< std::string > tokens ;
+                THandler handler ( tokens );
+                StringUtils::tokenise< THandler >( str , handler );
+                
                 CPPUNIT_ASSERT_EQUAL( std::size_t( 1 ) , tokens.size( ) );
                 CPPUNIT_ASSERT( tokens[0] == "boom" );
             }
+            
             {
                 std::string str("boom,,,,,");
-                THandler handler
-                    = StringUtils::tokenise< StringUtils::DefaultTokenHandler >( str );
                 
-                std::vector< std::string > tokens = handler.tokens( );
+                std::vector< std::string > tokens;
+                THandler handler( tokens );
+                StringUtils::tokenise< THandler >( str , handler);
+                
                 CPPUNIT_ASSERT_EQUAL( std::size_t( 5 ) , tokens.size( ) );
                 CPPUNIT_ASSERT( tokens[0] == "boom" );
                 CPPUNIT_ASSERT( tokens[1].empty( ) );
@@ -58,10 +62,11 @@ namespace maxmm
 
             {
                 std::string str(",,,,,boom");
-                THandler handler
-                    = StringUtils::tokenise< StringUtils::DefaultTokenHandler >( str );
+                
+                std::vector< std::string > tokens;
+                THandler handler( tokens );
+                StringUtils::tokenise< THandler >( str , handler );
 
-                std::vector< std::string > tokens = handler.tokens( );
                 
                 CPPUNIT_ASSERT_EQUAL( std::size_t( 6 ) , tokens.size( ) );
                 CPPUNIT_ASSERT( tokens[5] == "boom" );
@@ -79,6 +84,5 @@ namespace maxmm
     
              return suite; 
         }
-
     }
 }

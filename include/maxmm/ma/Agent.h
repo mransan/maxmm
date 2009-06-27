@@ -32,6 +32,8 @@ public:
 
     void add_outlink(AgentId to);
 
+    std::vector<AgentId> outlinks_to(void) const;
+
     std::ostream &print(std::ostream &ostream) const;
 
 private:

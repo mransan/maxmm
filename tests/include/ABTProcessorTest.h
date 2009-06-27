@@ -4,8 +4,8 @@
 /* All rights reserved.         */
 /********************************/
 
-#ifndef maxmm_test_AssignmentTest_h
-#define maxmm_test_AssignmentTest_h
+#ifndef maxmm_test_ABTProcessorTest_h
+#define maxmm_test_ABTProcessorTest_h
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
@@ -17,7 +17,7 @@ namespace maxmm
 namespace test
 {
 
-class AssignmentTest : public CppUnit::TestFixture
+class ABTProcessorTest : public CppUnit::TestFixture
 {
 public:
 
@@ -25,12 +25,9 @@ public:
 
     void tearDown(void);
 
-    void test_constructor(void);
-    void test_accessors(void);                
-    void test_xml(void);
+    void test_simple(void);                
 
     static CppUnit::TestSuite* getSuite(void);
-
 };
 
 } // namespace test

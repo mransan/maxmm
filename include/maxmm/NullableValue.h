@@ -67,7 +67,7 @@ private:
 
 template<typename T>
 NullableValue<T>::NullableValue(void)
-:   _accessor(_buffer)
+:   _accessor(&_buffer)
     ,_null(true)
 {
 
@@ -76,7 +76,7 @@ NullableValue<T>::NullableValue(void)
 
 template<typename T>
 NullableValue<T>::NullableValue(const T& value)
-:   _accessor(_buffer),
+:   _accessor(&_buffer),
     _null(false)
 {
     _accessor.make(value);
@@ -84,7 +84,7 @@ NullableValue<T>::NullableValue(const T& value)
 
 template<typename T>
 NullableValue<T>::NullableValue(const NullableValue<T> &nullableValue)
-:   _accessor(_buffer),
+:   _accessor(&_buffer),
     _null(nullableValue._null)
 {
     if(false == _null)

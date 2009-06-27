@@ -17,16 +17,16 @@ namespace maxmm{ namespace test{ class AssignmentTest; } }
 namespace maxmm{ namespace ma{ template<typename VARIABLE,
                                         typename VALUE> class Assignment; } }
 
-template<typename VARIABLE, typename VALUE>
-bool operator==(const maxmm::ma::Assignment<VARIABLE, VALUE> &lhs,
-                const maxmm::ma::Assignment<VARIABLE, VALUE> &rhs);
+template<typename VALUE>
+bool operator==(const maxmm::ma::Assignment<VALUE> &lhs,
+                const maxmm::ma::Assignment<VALUE> &rhs);
 
 namespace maxmm
 {
 namespace ma
 {
 
-template<typename VARIABLE, typename VALUE>
+template<typename VALUE>
 class Assignment 
 {
 friend class maxmm::test::AssignmentTest;
@@ -49,15 +49,15 @@ private:
     bool _set;
 };
 
-template<typename VARIABLE, typename VALUE>
-Assignment<VARIABLE, VALUE>::Assignment(void)
+template<typename VALUE>
+Assignment<VALUE>::Assignment(void)
 :   _set(false)
 {
 
 }
 
-template<typename VARIABLE, typename VALUE>
-Assignment<VARIABLE, VALUE>::Assignment(VARIABLE var, VALUE val)
+template<typename VALUE>
+Assignment<VALUE>::Assignment(VARIABLE var, VALUE val)
 :   _variable(var),
     _value(val),
     _set(true)
@@ -65,28 +65,28 @@ Assignment<VARIABLE, VALUE>::Assignment(VARIABLE var, VALUE val)
 
 }
 
-template<typename VARIABLE, typename VALUE>
-VARIABLE Assignment<VARIABLE, VALUE>::variable(void) const
+template<typename VALUE>
+VARIABLE Assignment<VALUE>::variable(void) const
 {
     return _variable;
 }
 
-template<typename VARIABLE, typename VALUE>
-VALUE Assignment<VARIABLE, VALUE>::value(void) const
+template<typename VALUE>
+VALUE Assignment<VALUE>::value(void) const
 {
     return _value;
 }
 
-template<typename VARIABLE, typename VALUE>
-void Assignment<VARIABLE, VALUE>::decode(const maxmm::XmlDecoder &decoder)
+template<typename VALUE>
+void Assignment<VALUE>::decode(const maxmm::XmlDecoder &decoder)
 {
     decoder.read_element("variable", _variable);
     decoder.read_element("value", _value);
     _set = true;
 }
 
-template<typename VARIABLE, typename VALUE>
-void Assignment<VARIABLE, VALUE>::encode(maxmm::XmlEncoder &encoder) const
+template<typename VALUE>
+void Assignment<VALUE>::encode(maxmm::XmlEncoder &encoder) const
 {
     if(false == _set)
     {
@@ -97,8 +97,8 @@ void Assignment<VARIABLE, VALUE>::encode(maxmm::XmlEncoder &encoder) const
     encoder.write_element("value", _value);
 }
 
-template<typename VARIABLE, typename VALUE>
-void Assignment<VARIABLE, VALUE>::assign(VARIABLE variable, VALUE value)
+template<typename VALUE>
+void Assignment<VALUE>::assign(VARIABLE variable, VALUE value)
 {
     _variable = variable;
     _value = value;
@@ -110,9 +110,9 @@ void Assignment<VARIABLE, VALUE>::assign(VARIABLE variable, VALUE value)
 } // namespace maxmm
 
 
-template<typename VARIABLE, typename VALUE>
-bool operator==(const maxmm::ma::Assignment<VARIABLE, VALUE> &lhs,
-                const maxmm::ma::Assignment<VARIABLE, VALUE> &rhs)
+template<typename VALUE>
+bool operator==(const maxmm::ma::Assignment<VALUE> &lhs,
+                const maxmm::ma::Assignment<VALUE> &rhs)
 {
     if( (lhs._set == false) || (rhs._set == false) )
     {
