@@ -26,8 +26,8 @@ public:
     AgentId const& agent_id() const;
     AgentId      & agent_id();
 
-    VALUE const & value(void) const;
-    VALUE       & value(void);
+    VALUE const& value(void) const;
+    VALUE      & value(void);
     
     void decode(XmlDecoder const& decoder);
     void encode(XmlEncoder & encoder) const;
@@ -36,8 +36,6 @@ private:
     AgentId _agent_id;
     VALUE _value;
 };
-
-
 
 template<typename VALUE>
 AgentAssignment<VALUE>::AgentAssignment(void)
@@ -103,8 +101,20 @@ AgentAssignment<VALUE>::encode(maxmm::XmlEncoder & encoder) const
     encoder.write_element("value", _value);
 }
 
+} // ma namespace 
+} // maxmm namespace 
 
-}
+template<typename VALUE>
+std::ostream & operator<<(  
+    std::ostream &stream, 
+    maxmm::ma::AgentAssignment<VALUE> const& aa)
+{
+    stream << "Agent Assignment:("
+           << aa.agent_id()
+           << ", value: "
+           << aa.value()
+           << ")";
+    return stream;
 }
 
 #endif

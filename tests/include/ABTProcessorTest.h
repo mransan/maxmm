@@ -26,6 +26,7 @@ public:
     void tearDown(void);
 
     void test_simple(void);                
+    void test_backtrack(void);
 
     static CppUnit::TestSuite* getSuite(void);
 };

@@ -24,8 +24,7 @@ void ABTMessageTest::test_constructor(void)
     {
         ABTMessage<uint32_t> message; 
         
-        ABTMessage<uint32_t>::MessageType expected 
-             = ABTMessage<uint32_t>::INVALID;
+        ma::MessageType expected = ma::INVALID;
 
         CPPUNIT_ASSERT_EQUAL(expected,
                              message._message_type);

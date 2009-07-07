@@ -21,6 +21,13 @@ namespace maxmm
 namespace ma
 {
 
+enum MessageType
+{
+    OK_MESSAGE     = 0,
+    NOGOOD_MESSAGE = 1,
+    INVALID
+};
+
 template<typename VALUE>
 class ABTMessage 
 {
@@ -34,12 +41,6 @@ public:
     
     ~ABTMessage(void);
 
-    enum MessageType
-    {
-        OK_MESSAGE     = 0,
-        NOGOOD_MESSAGE = 1,
-        INVALID
-    };
     
     MessageType message_type(void) const;
 
@@ -142,7 +143,7 @@ ABTMessage<VALUE>::~ABTMessage(void)
 }
 
 template<typename VALUE>
-typename ABTMessage<VALUE>::MessageType 
+MessageType 
 ABTMessage<VALUE>::message_type(void) const
 {
     return _message_type;

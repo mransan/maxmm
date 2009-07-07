@@ -14,67 +14,62 @@
 #include <maxmm/Condition.h>
 
 
+namespace maxmm { namespace test { class ThreadPoolTest; } }
+namespace maxmm { class Mutex; }
+namespace maxmm { class ScopeLock; }
+
 namespace maxmm
 {
     
-    namespace test
-    {
-        class ThreadPoolTest;
-    }
-    class Mutex;
-    class ScopeLock;
-    
-    class IWork
-    {
-        public:
-            virtual ~IWork( void ) { };
-            virtual void execute( void ) = 0 ;
-    };
+class IWork
+{
+public:
+    virtual ~IWork(void) { };
+    virtual void execute(void) = 0 ;
+};
 
-    class ThreadPool
-    {
-        friend class maxmm::test::ThreadPoolTest;
-        public:
+class ThreadPool
+{
+friend class maxmm::test::ThreadPoolTest;
+public:
+    
+    ThreadPool(int nb_thread);
+    ~ThreadPool(void);
+
+    bool append_work(IWork* work);
+
+    IWork *get_next_work(void);
+
+    void stop(void);
+
+    void start(void);
+
+    std::vector< uint64_t > execution_stats(void) const ;
+private:
+    class Thread : public maxmm::Thread< ConditionController >
+    { 
+        public :
+            Thread(Condition &condition , ThreadPool &thread_pool);
+            virtual ~Thread(void);
+            virtual void loop(void);
+            virtual void init(void);
+            virtual void clean(void);
             
-    
-
-            ThreadPool( int nb_thread );
-            ~ThreadPool( void );
-
-            bool append_work( IWork* work );
-
-            IWork *get_next_work( void );
-
-            void stop( void );
-
-            void start( void );
-
-            std::vector< uint64_t > execution_stats( void ) const ;
+            uint64_t nb_works(void) const ;
         private:
-            class Thread : public maxmm::Thread< ConditionController >
-            { 
-                public :
-                    Thread( Condition &condition , ThreadPool &thread_pool);
-                    virtual ~Thread( void );
-                    virtual void loop( void );
-                    virtual void init( void );
-                    virtual void clean( void );
-                    
-                    uint64_t nb_works( void ) const ;
-                private:
-                    ThreadPool &_thread_pool;
-                    uint64_t _work_counter;
-            };
-
-            std::vector< ThreadPool::Thread* > _threads;
-            Mutex _mutex;
-            Condition _condition;
-
-            Mutex _works_mtx;
-            std::list< IWork* > _works;
-
-            bool _stoped;
+            ThreadPool &_thread_pool;
+            uint64_t _work_counter;
     };
+
+    std::vector< ThreadPool::Thread* > _threads;
+    Mutex _mutex;
+    Condition _condition;
+
+    Mutex _works_mtx;
+    std::list< IWork* > _works;
+
+    bool _stoped;
+};
 }
 
 

@@ -10,32 +10,32 @@
 namespace maxmm
 {
 
-    Mutex::Mutex( void )
-    :_boost_mtx( )
-    {
-    }
-    Mutex::~Mutex( void )
-    {
-    }
-    
-    ScopeLock::ScopeLock(Mutex& mtx)
-    :_mutex( mtx )
-    {
-    	_boost_lock = new boost::mutex::scoped_lock( mtx._boost_mtx );
-    }
-    
-    ScopeLock::~ScopeLock( void )
-    {
-    	delete _boost_lock;
-    }
-    
-    void ScopeLock::lock( void )
-    {
-    	_boost_lock->lock( );
-    }
-    
-    void ScopeLock::unlock( void )
-    {
-    	_boost_lock->unlock( );
-    }
+Mutex::Mutex(void)
+:_boost_mtx()
+{
+}
+Mutex::~Mutex(void)
+{
+}
+
+ScopeLock::ScopeLock(Mutex& mtx)
+:_mutex(mtx)
+{
+	_boost_lock = new boost::mutex::scoped_lock(mtx._boost_mtx);
+}
+
+ScopeLock::~ScopeLock(void)
+{
+	delete _boost_lock;
+}
+
+void ScopeLock::lock(void)
+{
+	_boost_lock->lock();
+}
+
+void ScopeLock::unlock(void)
+{
+	_boost_lock->unlock();
+}
 }

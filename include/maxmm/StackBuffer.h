@@ -12,8 +12,6 @@
 namespace maxmm
 {
 
-
-
 template<typename T>
 struct StackBuffer
 {

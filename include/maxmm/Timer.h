@@ -11,42 +11,42 @@
 namespace maxmm
 {
 
-    //! \brief Timer class to measure time elapsed since a given point.
+//! \brief Timer class to measure time elapsed since a given point.
+//!
+class Timer
+{
+public:
+    //! \brief Constructor set the timer origin to now.
     //!
-    class Timer
+    Timer(void)
+    :   _start(Time::now())
+    { }
+
+    //! \brief Destructor.
+    //!
+    ~Timer(void)
+    { }
+
+    //! \brief return the time elapsed since the initial point.
+    //!
+    Time elapsed(void)
     {
-        public:
-            //! \brief Constructor set the timer origin to now.
-            //!
-            Timer( void )
-            :   _start( Time::now( ) )
-            { }
+        return Time::now() - _start;
+    }
 
-            //! \brief Destructor.
-            //!
-            ~Timer( void )
-            { }
+    //! \brief reset the init point to now.
+    //!
+    void reset(void)
+    {
+        _start = Time::now();
+    }
 
-            //! \brief return the time elapsed since the initial point.
-            //!
-            Time elapsed( void )
-            {
-                return Time::now( ) - _start;
-            }
-
-            //! \brief reset the init point to now.
-            //!
-            void reset( void )
-            {
-                _start = Time::now( );
-            }
-
-        private:
-            
-            //! \brief origin point.
-            //!
-            Time _start;
-    };
+private:
+    
+    //! \brief origin point.
+    //!
+    Time _start;
+};
 }
 
 

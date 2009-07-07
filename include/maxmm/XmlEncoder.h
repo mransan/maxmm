@@ -173,17 +173,34 @@ class XmlEncoder
                                   const value_type &) = &XmlEncoder::write_element;
             
             using namespace boost;
-            std::for_each(container.begin(),
-                          container.end(),
-                          bind(
-                            f,
-                            this,
-                            boost::cref(item_name),
-                            boost::cref(first_name),
-                            boost::cref(second_name),
-                            _1));
+            std::for_each(
+                container.begin(),
+                container.end(),
+                bind(
+                    f,
+                    this,
+                    boost::cref(item_name),
+                    boost::cref(first_name),
+                    boost::cref(second_name),
+                    _1));
         }
-        
+    
+        template<typename T>
+        static std::ostream& to_stream(
+            std::ostream &stream, 
+            T const& value,
+            std::string const& root_node)
+        {
+            xmlpp::Document document;
+            {
+                document.create_root_node(root_node);
+            }
+            maxmm::XmlEncoder encoder(document);
+            value.encode(encoder);
+            stream << document.write_to_string();
+
+            return stream ;
+        }
 
     private:
 
