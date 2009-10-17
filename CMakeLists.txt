@@ -5,7 +5,7 @@ cmake_minimum_required( VERSION 2.6 )
 include(FindBoost)
 include(FindPkgConfig)
 
-FIND_PACKAGE( Boost 1.36 COMPONENTS thread system )
+FIND_PACKAGE( Boost 1.39 COMPONENTS thread system )
 
 #
 # Compiler flag.
