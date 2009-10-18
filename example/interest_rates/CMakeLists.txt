@@ -1,7 +1,7 @@
 include_directories   (${maxmm_SOURCE_DIRECTORY}/include)
 link_directories      (${maxmm_SOURCE_DIRECTORY})
 
-set(LINK_LIBS     dl maxmm)
+set(LINK_LIBS     maxmmfinance maxmm dl)
 
 
 add_executable        (interest_rates interest_rates_main.cpp)

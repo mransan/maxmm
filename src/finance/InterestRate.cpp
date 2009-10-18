@@ -4,11 +4,13 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxmm/InterestRate.h>
+#include <maxmm/finance/InterestRate.h>
 
 #include <cmath>
 
 namespace maxmm
+{
+namespace finance
 {
 
 InterestRate::InterestRate(double rate)
@@ -37,4 +39,5 @@ InterestRate::rate_frequency_compounding(unsigned int frequency) const
     return frequency * (exp(_rate/(double)(frequency)) - 1);
 }
 
+} // namespace finance
 } // namespace maxmm

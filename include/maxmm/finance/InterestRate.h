@@ -5,11 +5,13 @@
 /********************************/
 
 
-#ifndef maxmm_InterestRate_h 
-#define maxmm_InterestRate_h
+#ifndef maxmm_finance_InterestRate_h 
+#define maxmm_finance_InterestRate_h
 
 
 namespace maxmm
+{
+namespace finance
 {
 
 class InterestRate
@@ -48,6 +50,8 @@ private:
     double _rate;
 
 };
+
+} // namespace finance
 } // namespace maxmm
 
 #endif

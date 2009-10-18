@@ -5,10 +5,11 @@
 /********************************/
 
 
-#include <maxmm/IRCouponCalculator.h>
-
+#include <maxmm/finance/IRCouponCalculator.h>
 
 namespace maxmm
+{
+namespace finance
 {
 
 IRCouponCalculator::IRCouponCalculator(InterestRate const& ir)
@@ -38,7 +39,7 @@ IRCouponCalculator::calculate(
         double coupon_value = final_amount * rate;
         final_amount += coupon_value;
         coupons.push_back(
-            maxmm::IRCoupon(
+            maxmm::finance::IRCoupon(
                 i_coupon + 1,
                 false,
                 coupon_value));
@@ -46,11 +47,12 @@ IRCouponCalculator::calculate(
     
     final_amount += final_amount * rate;
     coupons.push_back(
-        maxmm::IRCoupon(
+        maxmm::finance::IRCoupon(
             total_number_of_coupons,
             true,
             final_amount));
     return coupons;
 }
 
+} // namespace finance
 } // namespace maxmm

@@ -4,12 +4,15 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxmm/IRCalculator.h>
+#include <maxmm/finance/IRCalculator.h>
 
 #include <cmath>
 
 namespace maxmm
 {
+namespace finance
+{
+
 IRCalculator::IRCalculator(InterestRate const& ir)
 :   _ir(ir)
 {
@@ -40,5 +43,6 @@ IRCalculator::discountedValue(
 }
 
 
-}
+} // namespace finance
+} // namespace maxmm
 

@@ -8,9 +8,11 @@
 #ifndef maxmm_IRCalculator_h 
 #define maxmm_IRCalculator_h
 
-#include <maxmm/InterestRate.h>
+#include <maxmm/finance/InterestRate.h>
 
 namespace maxmm
+{
+namespace finance
 {
 
 //! \brief Calculate received interest on an initial amount
@@ -52,6 +54,7 @@ private:
     InterestRate _ir;
 };
 
+} // namespace finance
 } // namespace maxmm
 
 #endif

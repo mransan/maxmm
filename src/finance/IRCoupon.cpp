@@ -4,9 +4,11 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <maxmm/IRCoupon.h>
+#include <maxmm/finance/IRCoupon.h>
 
 namespace maxmm
+{
+namespace finance
 {
 
 IRCoupon::IRCoupon(unsigned int number, bool is_final, double amount)
@@ -42,5 +44,6 @@ operator<(IRCoupon const& lhs, IRCoupon const& rhs)
     return lhs.number() < rhs.number();
 }
 
+} // namespace finance
 } // namespace maxmm
 

@@ -9,6 +9,8 @@
 
 namespace maxmm 
 {
+namespace finance
+{
 
 //! \brief Coupon representation for interest rate gains.
 //!
@@ -50,6 +52,8 @@ private:
 
 bool operator<(IRCoupon const& lhs, IRCoupon const& rhs);
 
+
+} // namespace finance
 } // namespace maxmm 
 
 #endif
