@@ -33,7 +33,7 @@ public:
     //! 
     //! \return the final value of the investment.
     //!
-    double interestValue(
+    double interest_value(
         double fraction_of_year,
         double initial_amount) const;
     
@@ -46,7 +46,7 @@ public:
     //!
     //! \return the initial amount required.
     //!
-    double discountedValue(
+    double discounted_value(
         double fraction_of_year,
         double final_amount) const;
 private:

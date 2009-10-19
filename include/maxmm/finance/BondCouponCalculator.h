@@ -33,7 +33,7 @@ public:
         double fraction_of_year_elapsed,
         Bond const& bond);
     
-
+    
 private:
     
     //! \brief Class -> namespace

@@ -21,7 +21,7 @@ IRCalculator::IRCalculator(InterestRate const& ir)
 
 
 double
-IRCalculator::interestValue(
+IRCalculator::interest_value(
     double fraction_of_year,
     double initial_amount) const
 {
@@ -32,7 +32,7 @@ IRCalculator::interestValue(
 }
 
 double
-IRCalculator::discountedValue(
+IRCalculator::discounted_value(
     double fraction_of_year,
     double final_amount) const
 {

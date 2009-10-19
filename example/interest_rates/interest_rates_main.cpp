@@ -4,13 +4,41 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <iostream>
 #include <maxmm/finance/InterestRate.h>
 #include <maxmm/finance/IRCouponCalculator.h>
 #include <maxmm/finance/IRCalculator.h>
 #include <maxmm/finance/Bond.h>
 #include <maxmm/finance/BondCouponCalculator.h>
+#include <maxmm/finance/BondPricer.h>
 
+#include <iostream>
+#include <stdexcept>
+
+namespace 
+{
+    double zero_rates(double foy)
+    {
+        if(foy == 0.5)
+        {
+            return 0.05;
+        }
+        if(foy == 1.0)
+        {
+            return 0.058;
+        }
+        if(foy == 1.5)
+        {
+            return 0.064;
+        }
+        if(foy == 2.0)
+        {
+            return 0.068;
+        }
+    
+        throw std::runtime_error("invalid foy asked");
+    }
+
+} // namespace unnamed.
 int main(void)
 {
     std::cout << "/** Interest Rates **/" 
@@ -139,11 +167,11 @@ int main(void)
         maxmm::finance::IRCalculator calc(ir);
 
         std::cout << "5 years amount with 100 initial amount:"
-                  << calc.interestValue(5, 100)
+                  << calc.interest_value(5, 100)
                   << std::endl;
         std::cout << "Initial amount required so that after 5 years "
                   << "the final amount is 100: "
-                  << calc.discountedValue(5, 100)
+                  << calc.discounted_value(5, 100)
                   << std::endl;
     }
     {
@@ -159,7 +187,7 @@ int main(void)
         typedef Coupons::const_iterator         CouponsCItr;
 
         std::vector<std::pair<maxmm::finance::IRCoupon, double> > coupons
-            = maxmm::finance::BondCouponCalculator::calculate(1.9, bond);
+            = maxmm::finance::BondCouponCalculator::calculate(0.0, bond);
         
         for(CouponsCItr itr_coupon = coupons.begin();
             itr_coupon != coupons.end();
@@ -176,6 +204,15 @@ int main(void)
                       << "."
                       << std::endl;
         }
+    }
+    {
+        maxmm::finance::InterestRate ir(2, 0.06);
+        maxmm::finance::Bond         bond(ir, 2, 2.0, 100);
+
+        maxmm::finance::BondPricer   pricer(zero_rates);
+        std::cout << "Bond price: "
+                  << pricer.price(bond)
+                  << std::endl;
     }
     return 0;
 }

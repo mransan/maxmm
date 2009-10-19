@@ -51,7 +51,7 @@ BondCouponCalculator::calculate(
     
     IRCalculator calc(bond.ir());
     double coupon_value 
-        = calc.interestValue(1.0/bond.frequency(), bond.principal()) -
+        = calc.interest_value(1.0/bond.frequency(), bond.principal()) -
           bond.principal(); 
 
     std::vector<std::pair<IRCoupon, double> > coupons;
