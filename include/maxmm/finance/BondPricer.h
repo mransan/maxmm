@@ -22,20 +22,9 @@ namespace finance
 
 //! \brief Pricing utility for bonds.
 //!
-//! This class needs the zero rate accessor to be able to price 
-//! a bond.
-//!
 class BondPricer
 {
 public:
-    
-    //! \brief Constructor
-    //! 
-    //! \param[in] zero_rate_accessor: functor allowing the access to 
-    //! zero rate value. Given a number of year returns the zero rate
-    //!
-    BondPricer(
-        boost::function1<double, double> zero_rate_accessor);
     
     //! \brief price the given bond
     //!
@@ -43,11 +32,24 @@ public:
     //! 
     //! \return the price which will be in the same unit as the bond principal
     //!
-    double price(Bond const& bond) const;
+    static double price(
+        boost::function1<double, double> zero_rate_accessor,
+        Bond const& bond); 
+
+    //! \brief bond yield calculation (Hull 4.4 Bond Yield)
+    //!
+    //! \param[in] bond: the bond on which to calculate the bond yield.
+    //! \param[in] price: the bond price
+    //!
+    //! \return the bond yield.
+    //!
+    static double bond_yield(Bond const& bond, double price);
 
 private:
     
-    boost::function1<double, double> _zero_rate_accessor;
+    BondPricer(void);
+    BondPricer(BondPricer const&);
+    Bond& operator=(BondPricer const&);
 };
 
 } // namespace finance

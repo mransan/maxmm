@@ -25,14 +25,14 @@ public:
     //!
     //! \param[in] ir: interest rate of the bond.
     //! \param[in] frequency: frequency of the coupon
-    //! \param[in] fraction_of_year_duration: the duration of the bond expressed
+    //! \param[in] length: the duration of the bond expressed
     //! in fraction of year.
     //! \param[in] principal: the bond principal
     //! 
     Bond(
         InterestRate const& ir,
-        unsigned int frequency,
-        double fraction_of_year_duration,
+        unsigned int coupon_frequency,
+        double length,
         double principal);
 
     //! \brief interest rate accessor.
@@ -41,11 +41,11 @@ public:
 
     //! \brief frequency accessor.
     //!
-    unsigned int frequency(void) const;
+    unsigned int coupon_frequency(void) const;
     
-    //! \brief duration accessor.
+    //! \brief length accessor.
     //!
-    double fraction_of_year_duration(void) const;
+    double length(void) const;
 
     //! \brief principal accessor.
     //!
@@ -54,8 +54,8 @@ public:
 private:
     
     InterestRate _ir;
-    unsigned int _frequency;
-    double _fraction_of_year_duration;
+    unsigned int _coupon_frequency;
+    double _length;
     double _principal;
 
 };

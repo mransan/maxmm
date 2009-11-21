@@ -209,10 +209,13 @@ int main(void)
         maxmm::finance::InterestRate ir(2, 0.06);
         maxmm::finance::Bond         bond(ir, 2, 2.0, 100);
 
-        maxmm::finance::BondPricer   pricer(zero_rates);
         std::cout << "Bond price: "
-                  << pricer.price(bond)
+                  << maxmm::finance::BondPricer::price(zero_rates, bond)
                   << std::endl;
+        std::cout << "Bond yield for price 98.39: "
+                  << maxmm::finance::BondPricer::bond_yield(bond, 98.39)
+                  << std::endl;
+
     }
     return 0;
 }

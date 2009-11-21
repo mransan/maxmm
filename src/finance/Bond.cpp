@@ -13,12 +13,12 @@ namespace finance
 
 Bond::Bond(
     InterestRate const& ir,
-    unsigned int frequency,
-    double fraction_of_year_duration,
+    unsigned int coupon_frequency,
+    double length,
     double principal)
 :   _ir(ir),
-    _frequency(frequency),
-    _fraction_of_year_duration(fraction_of_year_duration),
+    _coupon_frequency(coupon_frequency),
+    _length(length),
     _principal(principal)
 {
 
@@ -32,15 +32,15 @@ Bond::ir(void) const
 
 
 unsigned int 
-Bond::frequency(void) const
+Bond::coupon_frequency(void) const
 {
-    return _frequency;
+    return _coupon_frequency;
 }
 
 double 
-Bond::fraction_of_year_duration(void) const
+Bond::length(void) const
 {
-    return _fraction_of_year_duration;
+    return _length;
 }
 
 double

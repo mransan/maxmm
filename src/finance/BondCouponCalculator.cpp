@@ -23,7 +23,7 @@ BondCouponCalculator::calculate(
     Bond const& bond)
 {
     double remaining_duration 
-        = bond.fraction_of_year_duration() - fraction_of_year_elapsed;
+        = bond.length() - fraction_of_year_elapsed;
     
     // return no coupons.
     if(remaining_duration < 0)
@@ -33,7 +33,7 @@ BondCouponCalculator::calculate(
     }
 
     double full_coupon_duration_foy 
-        = 1.0 / bond.frequency();
+        = 1.0 / bond.coupon_frequency();
 
     double number_of_coupon_foy
         = remaining_duration / full_coupon_duration_foy;
@@ -51,7 +51,9 @@ BondCouponCalculator::calculate(
     
     IRCalculator calc(bond.ir());
     double coupon_value 
-        = calc.interest_value(1.0/bond.frequency(), bond.principal()) -
+        = calc.interest_value(
+            (1.0/bond.coupon_frequency()), 
+            bond.principal()) -
           bond.principal(); 
 
     std::vector<std::pair<IRCoupon, double> > coupons;
