@@ -7,7 +7,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${maxmm_SOURCE_DIR}/lib)
 include(FindBoost)
 include(FindPkgConfig)
 
-FIND_PACKAGE( Boost 1.39 COMPONENTS thread system )
+find_package( Boost COMPONENTS thread system REQUIRED)
 
 #
 # Compiler flag.

@@ -13,6 +13,7 @@
 #include <list>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 namespace maxmm
 {

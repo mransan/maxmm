@@ -14,23 +14,23 @@
 
 namespace maxmm
 {
-    namespace test
-    {
-        class NullableValueTest : CppUnit::TestFixture 
-        {
-            public:
-                NullableValueTest(void);
-                ~NullableValueTest(void);
-           
-                void setUp(void);
-                void tearDown(void);
+namespace test
+{
+class NullableValueTest : CppUnit::TestFixture 
+{
+public:
+    NullableValueTest(void);
+    ~NullableValueTest(void);
 
-                void test_simple(void); 
-                static CppUnit::TestSuite* getSuite(void);
+    void setUp(void);
+    void tearDown(void);
 
-            private:
-        };
-    }
+    void test_simple(void); 
+    static CppUnit::TestSuite* getSuite(void);
+
+private:
+};
+}
 }
 
 #endif

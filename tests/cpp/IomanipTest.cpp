@@ -4,11 +4,12 @@
 /* All rights reserved.         */
 /********************************/
 
+#include <IomanipTest.h>
+
 #include <iomanip>
 #include <iostream>
 
-#include <IomanipTest.h>
-
+#include <stdint.h>
 namespace
 {
     struct FlagReseter

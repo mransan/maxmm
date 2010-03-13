@@ -4,52 +4,56 @@
 /* All rights reserved.         */
 /********************************/
 
-#include <iomanip>
-#include <iostream>
-#include <exception>
-#include <stdexcept>
 #include <ExceptionTest.h>
 
 #include <boost/bind.hpp>
 
+#include <iomanip>
+#include <iostream>
+#include <exception>
+#include <stdexcept>
+
+
+#include <stdint.h>
 namespace
 {
-    struct NoThrow
+
+struct NoThrow
+{
+    void nothrow_test( void ) throw( std::bad_exception )
     {
-        void nothrow_test( void ) throw( std::bad_exception )
-        {
-            throw std::string( "boom" );
-        }
+        throw std::string( "boom" );
+    }
+    
+    void unexpected_test( void ) throw( std::bad_exception , int )
+    {
+        throw std::string( "boom" );
+    }
+    static void on_unexpected( void )
+    {
+        ++unexpected_called ;
+        throw;
+    }
+
+    static uint8_t unexpected_called;
+};
+
+uint8_t NoThrow::unexpected_called = 0;
+
+struct UnexpectedReseter
+{
+        UnexpectedReseter(
+            void(* on_unexpected)( void ) )
+        :   _previous_unexpected( std::set_unexpected( on_unexpected ) )
+        { }
         
-        void unexpected_test( void ) throw( std::bad_exception , int )
+        ~UnexpectedReseter( void )
         {
-            throw std::string( "boom" );
+            std::set_unexpected( _previous_unexpected ); 
         }
-        static void on_unexpected( void )
-        {
-            ++unexpected_called ;
-            throw;
-        }
-
-        static uint8_t unexpected_called;
-    };
-
-    uint8_t NoThrow::unexpected_called = 0;
-
-    struct UnexpectedReseter
-    {
-            UnexpectedReseter(
-                void(* on_unexpected)( void ) )
-            :   _previous_unexpected( std::set_unexpected( on_unexpected ) )
-            { }
-            
-            ~UnexpectedReseter( void )
-            {
-                std::set_unexpected( _previous_unexpected ); 
-            }
-        private:
-            void(* _previous_unexpected)( void );
-    };
+    private:
+        void(* _previous_unexpected)( void );
+};
 }
 
 namespace maxmm

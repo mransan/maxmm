@@ -8,6 +8,7 @@
 #ifndef maxmm_StackBuffer_h 
 #define maxmm_StackBuffer_h
 
+#include <stdint.h>
 
 namespace maxmm
 {

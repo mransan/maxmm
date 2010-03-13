@@ -23,7 +23,7 @@ public:
         std::vector<Color> const& allowed);
 
 protected:
-    std::pair<bool, ABTMessagesTo> check_agent_view(void);
+    std::pair<bool, ABTMsgsTo> check_agent_view(void);
 
 private:
     std::vector<Color> _allowed;
@@ -40,13 +40,13 @@ SimpleABT::SimpleABT(
     
 }
 
-std::pair<bool, SimpleABT::ABTMessagesTo>
+std::pair<bool, SimpleABT::ABTMsgsTo>
 SimpleABT::check_agent_view(void)
 {
     // hold all of the already assigned value
     std::vector<Color> nopossible;
 
-    for(AgentAssignments::const_iterator itr=_agent_view.begin();
+    for(AgtAssignments::const_iterator itr=_agent_view.begin();
         itr != _agent_view.end();
         ++itr)
     {
@@ -54,13 +54,13 @@ SimpleABT::check_agent_view(void)
         nopossible.push_back(assignment);
     }
     
-    ABTMessagesTo ret;
+    ABTMsgsTo ret;
     Color myvalue = _current_assignment; 
     if(nopossible.end() 
             == std::find(nopossible.begin(), nopossible.end(), myvalue))
     {
         // already good value.
-        return std::make_pair<bool, ABTMessagesTo>(true, ret);
+        return std::make_pair<bool, ABTMsgsTo>(true, ret);
     }
 
     // look for all the values that we can assign to.
@@ -115,7 +115,7 @@ SimpleABT::check_agent_view(void)
         ret.push_back(std::make_pair(msg, *itr));
     }
 
-    return std::make_pair<bool, ABTMessagesTo>(true, ret);
+    return std::make_pair<bool, ABTMsgsTo>(true, ret);
 }
 } // unnamed namespace
 
@@ -224,7 +224,7 @@ ABTProcessorTest::test_simple(void)
     CPPUNIT_ASSERT_EQUAL(size_t(1), processor._agent.outlinks_to().size());
    
     // message to be sent
-    SimpleABT::ABTMessage  msgfrom1;
+    SimpleABT::ABTMsg  msgfrom1;
     {
         msgfrom1.make_ok();
         msgfrom1.ok().agent_assignment().agent_id() = ma::AgentId(1);
@@ -232,12 +232,12 @@ ABTProcessorTest::test_simple(void)
     }
     
     // simulate the receiving of a message.
-    std::pair<bool,SimpleABT::ABTMessagesTo> ret  
+    std::pair<bool,SimpleABT::ABTMsgsTo> ret  
         = processor.process(msgfrom1, ma::AgentId(1));
     {
         // making sure that the internal agent view structure is correct.
         CPPUNIT_ASSERT_EQUAL(size_t(1), processor._agent_view.size());
-        SimpleABT::AgentAssignment const& aa = *(processor._agent_view.begin());
+        SimpleABT::AgtAssignment const& aa = *(processor._agent_view.begin());
         CPPUNIT_ASSERT_EQUAL(ma::AgentId(1), aa.agent_id());
         CPPUNIT_ASSERT_EQUAL(RED, aa.value());
     }
@@ -245,7 +245,7 @@ ABTProcessorTest::test_simple(void)
         CPPUNIT_ASSERT_EQUAL(true, ret.first);
     }
     
-    SimpleABT::ABTMessagesTo &msgs = ret.second;
+    SimpleABT::ABTMsgsTo &msgs = ret.second;
     bool isempty = msgs.empty();
     CPPUNIT_ASSERT(isempty);
     {
@@ -267,7 +267,7 @@ ABTProcessorTest::test_simple(void)
     CPPUNIT_ASSERT_EQUAL(ma::AgentId(3), msgs.at(0).second);
     
     // make sure it is a valid assignment.
-    SimpleABT::AgentAssignment const& aa = msgs.at(0).first.ok().agent_assignment();
+    SimpleABT::AgtAssignment const& aa = msgs.at(0).first.ok().agent_assignment();
     CPPUNIT_ASSERT_EQUAL(ma::AgentId(2), aa.agent_id());
     CPPUNIT_ASSERT(BLUE != aa.value());
     CPPUNIT_ASSERT_EQUAL(RED, aa.value());
@@ -288,15 +288,15 @@ ABTProcessorTest::test_backtrack(void)
     }
     
     // first message from agent 1 indicating that its value BLUE.
-    SimpleABT::ABTMessage msg_from1;
+    SimpleABT::ABTMsg msg_from1;
     {
         msg_from1.make_ok();
         msg_from1.ok().agent_assignment().agent_id() = ma::AgentId(1);
         msg_from1.ok().agent_assignment().value() = BLUE;
     }
-    std::pair<bool, SimpleABT::ABTMessagesTo> ret 
+    std::pair<bool, SimpleABT::ABTMsgsTo> ret 
         = processor.process(msg_from1, ma::AgentId(1));
-    SimpleABT::ABTMessagesTo &msgs1  = ret.second;
+    SimpleABT::ABTMsgsTo &msgs1  = ret.second;
     // verification of the processing of the new msg. 
     {
         // make sure the agent has correctly updated its value;
@@ -304,7 +304,7 @@ ABTProcessorTest::test_backtrack(void)
         
         // make sure the agent has correctly updated its agent view.
         CPPUNIT_ASSERT_EQUAL(size_t(1), processor._agent_view.size());
-        SimpleABT::AgentAssignment const& aa = *processor._agent_view.begin();
+        SimpleABT::AgtAssignment const& aa = *processor._agent_view.begin();
         CPPUNIT_ASSERT_EQUAL(ma::AgentId(1), aa.agent_id());
         CPPUNIT_ASSERT_EQUAL(BLUE, aa.value());
 
@@ -313,14 +313,14 @@ ABTProcessorTest::test_backtrack(void)
     }
     
     // second message from agent 2 indicating that it is BLUE as well.
-    SimpleABT::ABTMessage msg_from2;
+    SimpleABT::ABTMsg msg_from2;
     {
         msg_from2.make_ok();
         msg_from2.ok().agent_assignment().agent_id() = ma::AgentId(2);
         msg_from2.ok().agent_assignment().value() = BLUE;
     }
     ret  = processor.process(msg_from2, ma::AgentId(2));
-    SimpleABT::ABTMessagesTo &msgs2 = ret.second; 
+    SimpleABT::ABTMsgsTo &msgs2 = ret.second; 
     {
         // make sure that the internal value is RED which does not conflict
         // with other value.
@@ -328,7 +328,7 @@ ABTProcessorTest::test_backtrack(void)
 
         // make sure that the agent view has the expected new agent in it.
         CPPUNIT_ASSERT_EQUAL(size_t(2), processor._agent_view.size());
-        SimpleABT::AgentAssignment const& aa = *processor._agent_view.begin();
+        SimpleABT::AgtAssignment const& aa = *processor._agent_view.begin();
         CPPUNIT_ASSERT_EQUAL(ma::AgentId(2), aa.agent_id());
         
         // make sure that there is no message being sent.
@@ -337,7 +337,7 @@ ABTProcessorTest::test_backtrack(void)
     }
     
     // third message from agent 2 indicating that it is RED now.
-    SimpleABT::ABTMessage msg2_from2;
+    SimpleABT::ABTMsg msg2_from2;
     {
         msg2_from2.make_ok();
         msg2_from2.ok().agent_assignment().agent_id() = ma::AgentId(2);
@@ -345,15 +345,15 @@ ABTProcessorTest::test_backtrack(void)
     }
 
     ret  = processor.process(msg2_from2, ma::AgentId(2));
-    SimpleABT::ABTMessagesTo &msg3 = ret.second;
+    SimpleABT::ABTMsgsTo &msg3 = ret.second;
     {
         // make sure that there is one message sent...
         CPPUNIT_ASSERT_EQUAL(size_t(1), msg3.size());
         CPPUNIT_ASSERT_EQUAL(true, ret.first);
-        SimpleABT::ABTMessageTo const& msgto = msg3.at(0);
+        SimpleABT::ABTMsgTo const& msgto = msg3.at(0);
         // ... to agent with the lowest priority (2)
         CPPUNIT_ASSERT_EQUAL(ma::AgentId(2), msgto.second);
-        SimpleABT::ABTMessage const& msg = msgto.first;
+        SimpleABT::ABTMsg const& msg = msgto.first;
         // ... and that it is a no good.
         CPPUNIT_ASSERT_EQUAL(ma::NOGOOD_MESSAGE, msg.message_type());
         

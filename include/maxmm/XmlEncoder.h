@@ -11,11 +11,12 @@
 #include <maxmm/detail/Xml_detail.h>
 #include <maxmm/NullableValue.h>
 #include <boost/bind.hpp>
-#include <sstream>
-#include <stdexcept>
 
+#include <algorithm>
 #include <list>
 #include <set>
+#include <sstream>
+#include <stdexcept>
 
 namespace maxmm
 {

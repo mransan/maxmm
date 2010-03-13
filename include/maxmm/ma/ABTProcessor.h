@@ -26,12 +26,12 @@ class ABTProcessor
 friend class maxmm::test::ABTProcessorTest;
 public:
 
-    typedef ABTMessage<VALUE>               ABTMessage;
-    typedef std::pair<ABTMessage, AgentId>  ABTMessageTo;
-    typedef std::vector<ABTMessageTo>       ABTMessagesTo;
-    typedef ABTOkMessage<VALUE>             ABTOkMessage;
-    typedef ABTNoGoodMessage<VALUE>         ABTNoGoodMessage;
-    typedef AgentAssignment<VALUE>          AgentAssignment;
+    typedef ABTMessage<VALUE>               ABTMsg;
+    typedef std::pair<ABTMsg, AgentId>  ABTMsgTo;
+    typedef std::vector<ABTMsgTo>       ABTMsgsTo;
+    typedef ABTOkMessage<VALUE>             ABTOkMsg;
+    typedef ABTNoGoodMessage<VALUE>         ABTNoGoodMsg;
+    typedef AgentAssignment<VALUE>          AgtAssignment;
 
     explicit ABTProcessor(
         AgentId const &agent_id,
@@ -44,8 +44,8 @@ public:
     //! \param agent: the agent that this message is comming from.
     //! \return the list of messages that must be sent.
     //!
-    std::pair<bool, ABTMessagesTo> process(  
-        ABTMessage const &abt_message, 
+    std::pair<bool, ABTMsgsTo> process(  
+        ABTMsg const &abt_message, 
         AgentId const &agent);
 
     //! \brief add an agent to the problem definition.
@@ -57,26 +57,26 @@ public:
     void add_agent(AgentId const &agent);
 protected:
     
-    struct AgentAssignmentCmp
+    struct AgtAssignmentCmp
     {
-        bool operator()(AgentAssignment const& lhs,
-                        AgentAssignment const& rhs) const;
+        bool operator()(AgtAssignment const& lhs,
+                        AgtAssignment const& rhs) const;
     };
 
 
     //! \brief method that the subclass must implement for domain specific
     //! algorithms.
-    virtual std::pair<bool, ABTMessagesTo> check_agent_view(void) = 0;
+    virtual std::pair<bool, ABTMsgsTo> check_agent_view(void) = 0;
     
-    virtual std::pair<bool, ABTMessagesTo> backtrack(void);
+    virtual std::pair<bool, ABTMsgsTo> backtrack(void);
     
-    typedef std::set<AgentAssignment, AgentAssignmentCmp> AgentAssignments;
+    typedef std::set<AgtAssignment, AgtAssignmentCmp> AgtAssignments;
     
     //! \brief  the agent view containing the various assignment.
-    AgentAssignments _agent_view;
+    AgtAssignments _agent_view;
     
     //! \brief  the current list of no goods.
-    std::vector<AgentAssignments> _no_goods;
+    std::vector<AgtAssignments> _no_goods;
 
     //! \brief  the current assignment
     VALUE _current_assignment;
@@ -105,8 +105,8 @@ private:
     //! \param agent: the agent from which this message comes from.
     //! \return a list of messages.
     //!
-    std::pair<bool, ABTMessagesTo> process(
-        ABTOkMessage const &ok_message,
+    std::pair<bool, ABTMsgsTo> process(
+        ABTOkMsg const &ok_message,
         AgentId const &agent);
     
     
@@ -115,8 +115,8 @@ private:
     //! \param nogood_message: the no good message to process.
     //! \param agent: the agent from which this message comes from.
     //! \return list of messages to sent.
-    std::pair<bool, ABTMessagesTo> process(
-        ABTNoGoodMessage const &nogood_message,
+    std::pair<bool, ABTMsgsTo> process(
+        ABTNoGoodMsg const &nogood_message,
         AgentId const &agent);
 };
 
@@ -138,9 +138,9 @@ ABTProcessor<VALUE>::ABTProcessor(
 }
 
 template<typename VALUE>
-std::pair<bool, typename ABTProcessor<VALUE>::ABTMessagesTo>
+std::pair<bool, typename ABTProcessor<VALUE>::ABTMsgsTo>
 ABTProcessor<VALUE>::process(
-    ABTMessage const &abt_message,
+    ABTMsg const &abt_message,
     AgentId const &agent)
 {
     MessageType message_type = abt_message.message_type();
@@ -165,12 +165,12 @@ ABTProcessor<VALUE>::process(
 }
 
 template<typename VALUE>
-std::pair<bool, typename ABTProcessor<VALUE>::ABTMessagesTo>
+std::pair<bool, typename ABTProcessor<VALUE>::ABTMsgsTo>
 ABTProcessor<VALUE>::process(
-    ABTOkMessage const &ok_message,
+    ABTOkMsg const &ok_message,
     AgentId const &agent)
 {
-    std::pair<typename AgentAssignments::iterator, bool> ret 
+    std::pair<typename AgtAssignments::iterator, bool> ret 
         = _agent_view.insert(ok_message.agent_assignment()); 
     if(false == ret.second)
     {
@@ -182,15 +182,15 @@ ABTProcessor<VALUE>::process(
 }
 
 template<typename VALUE>
-std::pair<bool, typename ABTProcessor<VALUE>::ABTMessagesTo>
+std::pair<bool, typename ABTProcessor<VALUE>::ABTMsgsTo>
 ABTProcessor<VALUE>::process(
-    ABTNoGoodMessage const &nogood_message,
+    ABTNoGoodMsg const &nogood_message,
     AgentId const &agent)
 {
-    AgentAssignments no_goods;
+    AgtAssignments no_goods;
     _no_goods.push_back(no_goods);
-    AgentAssignments &no_goods_ref = _no_goods.back();
-    for(typename std::vector<AgentAssignment>::const_iterator 
+    AgtAssignments &no_goods_ref = _no_goods.back();
+    for(typename std::vector<AgtAssignment>::const_iterator 
             itr = nogood_message.nogoods().begin();
         itr != nogood_message.nogoods().end();
         ++itr)
@@ -212,20 +212,20 @@ ABTProcessor<VALUE>::add_agent(const AgentId &agent)
 }
 
 template<typename VALUE>
-std::pair<bool, typename ABTProcessor<VALUE>::ABTMessagesTo>
+std::pair<bool, typename ABTProcessor<VALUE>::ABTMsgsTo>
 ABTProcessor<VALUE>::backtrack(void)
 {
-    ABTMessagesTo ret;
+    ABTMsgsTo ret;
 
     if(true == _agent_view.empty())
     {
         // TODO - Maxime log that.
-        return std::make_pair<bool, ABTMessagesTo>(false, ret);
+        return std::make_pair<bool, ABTMsgsTo>(false, ret);
     }
     
     // when backtracing you need to send the current agent view 
     // to the agent with the lowest id.
-    typename AgentAssignments::const_iterator itr = _agent_view.begin();
+    typename AgtAssignments::const_iterator itr = _agent_view.begin();
     maxmm::ma::AgentId agentto = itr->agent_id();
     for(++itr ; itr!=_agent_view.end() ;++itr)
     {
@@ -239,12 +239,12 @@ ABTProcessor<VALUE>::backtrack(void)
     
     if(agentto.id() > _agent.id().id())
     {
-        return std::make_pair<bool, ABTMessagesTo>(false, ret);
+        return std::make_pair<bool, ABTMsgsTo>(false, ret);
     }
     
     ret.push_back(
-        std::pair<ABTMessage, 
-                  maxmm::ma::AgentId>(ABTMessage(), agentto));
+        std::pair<ABTMsg, 
+                  maxmm::ma::AgentId>(ABTMsg(), agentto));
     
     ret.front().first.make_nogood();
     
@@ -255,9 +255,9 @@ ABTProcessor<VALUE>::backtrack(void)
     // we need to remove it from the agent view assuming it will change
     // its assignment.
     {
-        AgentAssignment aa_to_remove;
+        AgtAssignment aa_to_remove;
         aa_to_remove.agent_id() = agentto;
-        typename AgentAssignments::iterator itr 
+        typename AgtAssignments::iterator itr 
             = _agent_view.find(aa_to_remove);
         // this is really for the sake of error checking since 
         // it does not look possible that the agent later found 
@@ -272,14 +272,14 @@ ABTProcessor<VALUE>::backtrack(void)
         _agent_view.erase(itr);
     }
 
-    return std::make_pair<bool, ABTMessagesTo>(true, ret);
+    return std::make_pair<bool, ABTMsgsTo>(true, ret);
 }
 
 template<typename VALUE>
 bool
 ABTProcessor<VALUE>::check_value_with_no_goods(VALUE const&value) const
 {
-    typedef std::vector<AgentAssignments> NoGoods;
+    typedef std::vector<AgtAssignments> NoGoods;
     typedef typename NoGoods::const_iterator NoGoodsItr;
     
     // for each no good 
@@ -289,7 +289,7 @@ ABTProcessor<VALUE>::check_value_with_no_goods(VALUE const&value) const
     {
         bool valid = false;
         // for each agent involved in the no good. 
-        for(typename AgentAssignments::const_iterator aa = no_good->begin();
+        for(typename AgtAssignments::const_iterator aa = no_good->begin();
             aa != no_good->end();
             ++aa)
         {
@@ -297,7 +297,7 @@ ABTProcessor<VALUE>::check_value_with_no_goods(VALUE const&value) const
             VALUE const &no_good_value = aa->value();
             
             //get the agent in the current view.
-            typename AgentAssignments::iterator aa_current
+            typename AgtAssignments::iterator aa_current
                 = _agent_view.find(*aa);
             
             if(_agent_view.end() == aa_current)
@@ -324,9 +324,9 @@ ABTProcessor<VALUE>::check_value_with_no_goods(VALUE const&value) const
 
 template<typename VALUE>
 bool
-ABTProcessor<VALUE>::AgentAssignmentCmp::operator()(
-    AgentAssignment const &lhs,
-    AgentAssignment const &rhs) const
+ABTProcessor<VALUE>::AgtAssignmentCmp::operator()(
+    AgtAssignment const &lhs,
+    AgtAssignment const &rhs) const
 {
     return (lhs.agent_id().id() > rhs.agent_id().id());
 }

@@ -8,7 +8,9 @@
 #define maxmm_TimeTT_h
 
 #include <boost/operators.hpp>
+
 #include <time.h>
+#include <stdint.h>
 
 namespace maxmm
 {
