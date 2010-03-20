@@ -68,10 +68,10 @@ public:
                       maxmm::NullableValue<T> &value)
     {
         typename detail::XmlSwitcher<T>::XmlType xml_type;
-        bool found = this->read_element(xml_type, value_name, value.makeValue(), true);
+        bool found = this->read_element(xml_type, value_name, value.make_value(), true);
         if(false == found)
         {
-            value.makeNull();
+            value.make_null();
         }
     }
 

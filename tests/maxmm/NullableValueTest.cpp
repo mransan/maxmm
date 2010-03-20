@@ -44,7 +44,7 @@ void NullableValueTest::test_simple(void)
     } 
     {
         maxmm::NullableValue<uint32_t> value;
-        value.makeValue() = 3;
+        value.make_value() = 3;
 
         CPPUNIT_ASSERT(!value.null());
         CPPUNIT_ASSERT_EQUAL((uint32_t)3 , value.value());
@@ -79,7 +79,7 @@ void NullableValueTest::test_simple(void)
 
         CPPUNIT_ASSERT(!value.null());
         
-        value.makeNull();
+        value.make_null();
 
         CPPUNIT_ASSERT(value.null());
     }

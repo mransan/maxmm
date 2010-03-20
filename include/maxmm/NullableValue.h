@@ -46,11 +46,11 @@ public:
 
     T& value(void);
 
-    T& makeValue(void);
+    T& make_value(void);
 
-    T& makeValue(const T &value);
+    T& make_value(const T &value);
     
-    void makeNull(void);
+    void make_null(void);
 private:
     typedef StackBufferAccessor<T> Accessor;
     
@@ -100,12 +100,25 @@ NullableValue<T>& NullableValue<T>::operator=(const NullableValue<T> &nullableVa
     {
         return *this;
     }
-
-    _null  = nullableValue._null;
-    
-    if(false == _null)
+    if(_null == nullableValue._null)
     {
-        _accessor.make(nullableValue.value());
+        if(!_null)
+        {
+            value() = nullableValue.value();
+        }
+    }
+    else
+    {
+        _null  = nullableValue._null;
+        if(!_null)
+        {
+            // this means that before we were null and not anymore.
+            _accessor.make(nullableValue.value());
+        }
+        else
+        {
+            // we should destroy the buffer.
+        }
     }
     
     return *this;
@@ -140,21 +153,21 @@ T &NullableValue<T>::value(void)
 }
 
 template<typename T>
-T &NullableValue<T>::makeValue(void)
+T &NullableValue<T>::make_value(void)
 {
     _null  = false;
     return *(_accessor.make());
 }
 
 template<typename T>
-T &NullableValue<T>::makeValue(const T &value)
+T &NullableValue<T>::make_value(const T &value)
 {
     _null  = false;
-    return *(_accessor.makeValue(value));
+    return *(_accessor.make_value(value));
 }
 
 template<typename T>
-void NullableValue<T>::makeNull(void)
+void NullableValue<T>::make_null(void)
 {
     _null = true;
 }
