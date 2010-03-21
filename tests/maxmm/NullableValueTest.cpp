@@ -8,8 +8,40 @@
 #include <NullableValueTest.h>
 namespace 
 {
+class IsAClass
+{
+public:
+    explicit IsAClass(uint32_t *i);
+    IsAClass(IsAClass const& copy);
+    ~IsAClass(void);
+private:
+    uint32_t *_i;
+};
+
+IsAClass::IsAClass(uint32_t *i)
+:   _i(i)
+{
+    std::cout << "constructor" << std::endl;
+    ++(*_i);
+}
+
+IsAClass::~IsAClass(void)
+{
+    std::cout << "destructor" << std::endl;
+    --(*_i);
+}
+
+IsAClass::IsAClass(IsAClass const& copy)
+:   _i(copy._i)
+{
+    std::cout << "copy constructor" << std::endl;
+    ++(*_i);
+}
+
 
 }
+
+
 namespace maxmm
 {
 namespace test
@@ -85,6 +117,53 @@ void NullableValueTest::test_simple(void)
     }
 }
 
+void NullableValueTest::test_class(void)
+{
+    {
+        uint32_t counter = 10;
+        {
+            maxmm::NullableValue<IsAClass> value;
+            value.make_value(IsAClass(&counter));
+            
+            CPPUNIT_ASSERT(value.null() == false);
+            CPPUNIT_ASSERT(counter == 11);
+        }
+        CPPUNIT_ASSERT(counter == 10);
+    }
+    
+    {
+        uint32_t counter = 10;
+        {
+            maxmm::NullableValue<IsAClass> value;
+            value.make_value(IsAClass(&counter));
+            
+            CPPUNIT_ASSERT_EQUAL(value.null(), false);
+            CPPUNIT_ASSERT_EQUAL(counter, uint32_t(11));
+
+            value.make_null();
+            CPPUNIT_ASSERT_EQUAL(counter, uint32_t(10));
+        }
+        CPPUNIT_ASSERT_EQUAL(counter, uint32_t(10));
+    }
+    
+    {
+        uint32_t counter = 10;
+        {
+            maxmm::NullableValue<IsAClass> value;
+            value.make_value(IsAClass(&counter));
+            
+            value.make_value(value.value());
+            value.make_value(IsAClass(&counter));
+
+            CPPUNIT_ASSERT_EQUAL(value.null(), false);
+            CPPUNIT_ASSERT_EQUAL(counter, uint32_t(11));
+
+        }
+        CPPUNIT_ASSERT_EQUAL(counter, uint32_t(10));
+    }
+}
+
+
 CppUnit::TestSuite *NullableValueTest::getSuite(void)
 {
      CppUnit::TestSuite          *suite = new CppUnit::TestSuite();
@@ -92,7 +171,11 @@ CppUnit::TestSuite *NullableValueTest::getSuite(void)
         new CppUnit::TestCaller<NullableValueTest>(
             "NullableValueTest::test_simple",
             &NullableValueTest::test_simple));
-        
+      suite->addTest(
+        new CppUnit::TestCaller<NullableValueTest>(
+            "NullableValueTest::test_class",
+            &NullableValueTest::test_class));
+  
      return suite; 
 }
 }

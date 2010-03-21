@@ -8,6 +8,9 @@
 #ifndef maxmm_StackBuffer_h 
 #define maxmm_StackBuffer_h
 
+
+#include <boost/type_traits/is_class.hpp>
+
 #include <stdint.h>
 
 namespace maxmm
@@ -38,9 +41,17 @@ public:
     T* make(void);
     
     T* make(const T& value);
+
+    void destroy(void);
+
+private:
+    void destroy(boost::true_type is_class);
+    void destroy(boost::false_type is_class);
+
 private:
     StackBuffer<T> *_buffer;
 };
+
 
 
 // 
@@ -81,6 +92,26 @@ T* StackBufferAccessor<T>::make(const T& value)
     T* tmp = new (&_buffer->_buffer._begin[0]) T(value);
     return tmp;
 }
+
+template<typename T>
+void StackBufferAccessor<T>::destroy(void) 
+{
+    destroy(typename boost::is_class<T>::type());
+}
+
+template<typename T>
+void StackBufferAccessor<T>::destroy(boost::true_type is_class)
+{
+    T* tmp = get();
+    tmp->~T();
+}
+
+template<typename T>
+void StackBufferAccessor<T>::destroy(boost::false_type is_class)
+{
+    // do nothing.
+}
+
 
 }
 

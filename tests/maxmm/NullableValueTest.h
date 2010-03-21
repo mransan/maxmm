@@ -26,6 +26,8 @@ public:
     void tearDown(void);
 
     void test_simple(void); 
+    void test_class(void);
+    
     static CppUnit::TestSuite* getSuite(void);
 
 private:

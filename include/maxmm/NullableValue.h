@@ -32,6 +32,8 @@ template<typename T>
 class NullableValue
 {
 public:
+    ~NullableValue(void);
+
     NullableValue(void);
 
     NullableValue(const T& value);
@@ -59,11 +61,20 @@ private:
     bool _null;
 };
 
-
 //
 // IMPLEMENTATION
 // --------------
 //
+
+template<typename T>
+NullableValue<T>::~NullableValue(void)
+{
+    if(!_null)
+    {
+        _accessor.destroy();
+    }
+}
+
 
 template<typename T>
 NullableValue<T>::NullableValue(void)
@@ -155,20 +166,39 @@ T &NullableValue<T>::value(void)
 template<typename T>
 T &NullableValue<T>::make_value(void)
 {
-    _null  = false;
+    if(!_null)
+    {
+        _accessor.destroy();
+    }
+    else
+    {
+        _null = false;
+    }
+    
     return *(_accessor.make());
 }
 
 template<typename T>
 T &NullableValue<T>::make_value(const T &value)
 {
-    _null  = false;
-    return *(_accessor.make_value(value));
+    if(!_null)
+    {
+        _accessor.destroy();
+    }
+    else
+    {
+        _null  = false;
+    }
+    return *(_accessor.make(value));
 }
 
 template<typename T>
 void NullableValue<T>::make_null(void)
 {
+    if(!_null)
+    {
+        _accessor.destroy();
+    }
     _null = true;
 }
 
